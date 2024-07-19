@@ -30,17 +30,18 @@ namespace Kratos
      * @author Klaus B Sautter
      */
 
-    class KRATOS_API(STRUCTURAL_MECHANICS_APPLICATION) TrussElement3D2N : public Element
+    template<unsigned int TDim>
+    class KRATOS_API(STRUCTURAL_MECHANICS_APPLICATION) TrussElement2N : public Element
     {
     protected:
         //const values
-        static constexpr int msNumberOfNodes = 2;
-        static constexpr int msDimension = 3;
+        static constexpr unsigned int msNumberOfNodes = 2;
+        static constexpr unsigned int msDimension = TDim;
         static constexpr unsigned int msLocalSize = msNumberOfNodes * msDimension;
         ConstitutiveLaw::Pointer mpConstitutiveLaw = nullptr;
 
     public:
-        KRATOS_CLASS_INTRUSIVE_POINTER_DEFINITION(TrussElement3D2N);
+        KRATOS_CLASS_INTRUSIVE_POINTER_DEFINITION(TrussElement2N<TDim>);
 
 
         typedef Element BaseType;
@@ -54,16 +55,18 @@ namespace Kratos
         typedef BaseType::EquationIdVectorType EquationIdVectorType;
         typedef BaseType::DofsVectorType DofsVectorType;
 
+        using ElementStiffnessMatrixType = BoundedMatrix<double, msLocalSize, msLocalSize>;
+        using BodyForceVectorType = BoundedVector<double, msLocalSize>;
 
-        TrussElement3D2N() {};
-        TrussElement3D2N(IndexType NewId,
-                        GeometryType::Pointer pGeometry);
-        TrussElement3D2N(IndexType NewId,
-                        GeometryType::Pointer pGeometry,
-                        PropertiesType::Pointer pProperties);
+        TrussElement2N() {};
+        TrussElement2N(IndexType NewId,
+                       GeometryType::Pointer pGeometry);
+        TrussElement2N(IndexType NewId,
+                       GeometryType::Pointer pGeometry,
+                       PropertiesType::Pointer pProperties);
 
 
-        ~TrussElement3D2N() override;
+        ~TrussElement2N() override;
 
     /**
      * @brief Creates a new element
@@ -104,7 +107,7 @@ namespace Kratos
         /**
          * @brief This function calculates the total stiffness matrix for the element
          */
-        virtual BoundedMatrix<double,msLocalSize,msLocalSize>
+        virtual ElementStiffnessMatrixType
          CreateElementStiffnessMatrix(const ProcessInfo& rCurrentProcessInfo);
 
         void Calculate(const Variable<Matrix>& rVariable, Matrix& rOutput, const ProcessInfo& rCurrentProcessInfo) override;
@@ -226,7 +229,7 @@ namespace Kratos
         /**
          * @brief This function calculates self-weight forces
          */
-        BoundedVector<double,msLocalSize> CalculateBodyForces();
+        BodyForceVectorType CalculateBodyForces();
 
         /**
          * @brief This function assembles the geometric stiffness part of the total stiffness matrix

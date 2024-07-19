@@ -22,12 +22,12 @@
 namespace Kratos {
 TrussElementLinear3D2N::TrussElementLinear3D2N(IndexType NewId,
         GeometryType::Pointer pGeometry)
-    : TrussElement3D2N(NewId, pGeometry) {}
+    : TrussElement2N<3>(NewId, pGeometry) {}
 
 TrussElementLinear3D2N::TrussElementLinear3D2N(
     IndexType NewId, GeometryType::Pointer pGeometry,
     PropertiesType::Pointer pProperties)
-    : TrussElement3D2N(NewId, pGeometry, pProperties) {}
+    : TrussElement2N<3>(NewId, pGeometry, pProperties) {}
 
 Element::Pointer
 TrussElementLinear3D2N::Create(IndexType NewId,
@@ -50,8 +50,7 @@ TrussElementLinear3D2N::Create(IndexType NewId,
 
 TrussElementLinear3D2N::~TrussElementLinear3D2N() {}
 
-BoundedMatrix<double, TrussElement3D2N::msLocalSize,
-TrussElement3D2N::msLocalSize>
+TrussElement2N<3>::ElementStiffnessMatrixType
 TrussElementLinear3D2N::CreateElementStiffnessMatrix(
     const ProcessInfo& rCurrentProcessInfo)
 {
@@ -186,7 +185,7 @@ void TrussElementLinear3D2N::CalculateOnIntegrationPoints(
 
 
 void TrussElementLinear3D2N::WriteTransformationCoordinates(
-    BoundedVector<double, TrussElement3D2N::msLocalSize>
+    BoundedVector<double, TrussElement2N<3>::msLocalSize>
     & rReferenceCoordinates)
 {
     KRATOS_TRY;
@@ -271,12 +270,12 @@ double TrussElementLinear3D2N::ReturnTangentModulus1D(const ProcessInfo& rCurren
 
 void TrussElementLinear3D2N::save(Serializer& rSerializer) const
 {
-    KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, TrussElement3D2N);
+    KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, TrussElement2N<3>);
     rSerializer.save("mConstitutiveLaw", mpConstitutiveLaw);
 }
 void TrussElementLinear3D2N::load(Serializer& rSerializer)
 {
-    KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, TrussElement3D2N);
+    KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, TrussElement2N<3>);
     rSerializer.load("mConstitutiveLaw", mpConstitutiveLaw);
 }
 

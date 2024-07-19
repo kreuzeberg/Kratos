@@ -22,36 +22,41 @@
 #include "utilities/atomic_utilities.h"
 
 namespace Kratos {
-TrussElement3D2N::TrussElement3D2N(IndexType NewId,
-                                   GeometryType::Pointer pGeometry)
+template<unsigned int TDim>
+TrussElement2N<TDim>::TrussElement2N(IndexType NewId,
+                                     GeometryType::Pointer pGeometry)
     : Element(NewId, pGeometry) {}
 
-TrussElement3D2N::TrussElement3D2N(IndexType NewId,
-                                   GeometryType::Pointer pGeometry,
-                                   PropertiesType::Pointer pProperties)
+template<unsigned int TDim>
+TrussElement2N<TDim>::TrussElement2N(IndexType NewId,
+                                     GeometryType::Pointer pGeometry,
+                                     PropertiesType::Pointer pProperties)
     : Element(NewId, pGeometry, pProperties) {}
 
+template<unsigned int TDim>
 Element::Pointer
-TrussElement3D2N::Create(IndexType NewId, NodesArrayType const& rThisNodes,
-                         PropertiesType::Pointer pProperties) const
+TrussElement2N<TDim>::Create(IndexType NewId, NodesArrayType const& rThisNodes,
+                             PropertiesType::Pointer pProperties) const
 {
     const GeometryType& rGeom = GetGeometry();
-    return Kratos::make_intrusive<TrussElement3D2N>(NewId, rGeom.Create(rThisNodes),
+    return Kratos::make_intrusive<TrussElement2N<TDim>>(NewId, rGeom.Create(rThisNodes),
             pProperties);
 }
 
+template<unsigned int TDim>
 Element::Pointer
-TrussElement3D2N::Create(IndexType NewId, GeometryType::Pointer pGeom,
-                         PropertiesType::Pointer pProperties) const
+TrussElement2N<TDim>::Create(IndexType NewId, GeometryType::Pointer pGeom,
+                             PropertiesType::Pointer pProperties) const
 {
-    return Kratos::make_intrusive<TrussElement3D2N>(NewId, pGeom,
+    return Kratos::make_intrusive<TrussElement2N<TDim>>(NewId, pGeom,
             pProperties);
 }
 
-TrussElement3D2N::~TrussElement3D2N() {}
+template<unsigned int TDim> TrussElement2N<TDim>::~TrussElement2N() {}
 
-void TrussElement3D2N::EquationIdVector(EquationIdVectorType& rResult,
-                                        const ProcessInfo& rCurrentProcessInfo) const
+template<unsigned int TDim>
+void TrussElement2N<TDim>::EquationIdVector(EquationIdVectorType& rResult,
+                                            const ProcessInfo& rCurrentProcessInfo) const
 {
 
     if (rResult.size() != msLocalSize) {
@@ -67,8 +72,10 @@ void TrussElement3D2N::EquationIdVector(EquationIdVectorType& rResult,
             GetGeometry()[i].GetDof(DISPLACEMENT_Z).EquationId();
     }
 }
-void TrussElement3D2N::GetDofList(DofsVectorType& rElementalDofList,
-                                  const ProcessInfo& rCurrentProcessInfo) const
+
+template<unsigned int TDim>
+void TrussElement2N<TDim>::GetDofList(DofsVectorType& rElementalDofList,
+                                      const ProcessInfo& rCurrentProcessInfo) const
 {
 
     if (rElementalDofList.size() != msLocalSize) {
@@ -85,7 +92,8 @@ void TrussElement3D2N::GetDofList(DofsVectorType& rElementalDofList,
     }
 }
 
-void TrussElement3D2N::Initialize(const ProcessInfo& rCurrentProcessInfo)
+template<unsigned int TDim>
+void TrussElement2N<TDim>::Initialize(const ProcessInfo& rCurrentProcessInfo)
 {
     KRATOS_TRY
 
@@ -105,19 +113,19 @@ void TrussElement3D2N::Initialize(const ProcessInfo& rCurrentProcessInfo)
     KRATOS_CATCH("")
 }
 
-BoundedMatrix<double, TrussElement3D2N::msLocalSize,
-TrussElement3D2N::msLocalSize>
-TrussElement3D2N::CreateElementStiffnessMatrix(
+template <unsigned int TDim>
+typename TrussElement2N<TDim>::ElementStiffnessMatrixType
+TrussElement2N<TDim>::CreateElementStiffnessMatrix(
     const ProcessInfo& rCurrentProcessInfo)
 {
 
     KRATOS_TRY
-    BoundedMatrix<double, msLocalSize, msLocalSize> local_stiffness_matrix =
+    ElementStiffnessMatrixType local_stiffness_matrix =
         ZeroMatrix(msLocalSize, msLocalSize);
 
     CalculateElasticStiffnessMatrix(local_stiffness_matrix,
                                     rCurrentProcessInfo);
-    BoundedMatrix<double, msLocalSize, msLocalSize> K_geo =
+    ElementStiffnessMatrixType K_geo =
         ZeroMatrix(msLocalSize, msLocalSize);
     CalculateGeometricStiffnessMatrix(K_geo, rCurrentProcessInfo);
 
@@ -127,7 +135,8 @@ TrussElement3D2N::CreateElementStiffnessMatrix(
     KRATOS_CATCH("")
 }
 
-void TrussElement3D2N::CalculateDampingMatrix(
+template<unsigned int TDim>
+void TrussElement2N<TDim>::CalculateDampingMatrix(
     MatrixType& rDampingMatrix, const ProcessInfo& rCurrentProcessInfo)
 {
     StructuralMechanicsElementUtilities::CalculateRayleighDampingMatrix(
@@ -137,7 +146,8 @@ void TrussElement3D2N::CalculateDampingMatrix(
         msLocalSize);
 }
 
-void TrussElement3D2N::CalculateMassMatrix(
+template<unsigned int TDim>
+void TrussElement2N<TDim>::CalculateMassMatrix(
     MatrixType& rMassMatrix,
     const ProcessInfo& rCurrentProcessInfo
 )
@@ -166,7 +176,8 @@ void TrussElement3D2N::CalculateMassMatrix(
     KRATOS_CATCH("")
 }
 
-void TrussElement3D2N::CalculateConsistentMassMatrix(MatrixType& rMassMatrix,
+template<unsigned int TDim>
+void TrussElement2N<TDim>::CalculateConsistentMassMatrix(MatrixType& rMassMatrix,
     const ProcessInfo& rCurrentProcessInfo) const
 {
     KRATOS_TRY;
@@ -183,8 +194,9 @@ void TrussElement3D2N::CalculateConsistentMassMatrix(MatrixType& rMassMatrix,
     KRATOS_CATCH("");
 }
 
-BoundedVector<double, TrussElement3D2N::msLocalSize>
-TrussElement3D2N::CalculateBodyForces()
+template<unsigned int TDim>
+typename TrussElement2N<TDim>::BodyForceVectorType
+TrussElement2N<TDim>::CalculateBodyForces()
 {
 
     KRATOS_TRY
@@ -219,7 +231,8 @@ TrussElement3D2N::CalculateBodyForces()
     KRATOS_CATCH("")
 }
 
-void TrussElement3D2N::GetValuesVector(Vector& rValues, int Step) const
+template<unsigned int TDim>
+void TrussElement2N<TDim>::GetValuesVector(Vector& rValues, int Step) const
 {
 
     KRATOS_TRY
@@ -239,7 +252,8 @@ void TrussElement3D2N::GetValuesVector(Vector& rValues, int Step) const
     KRATOS_CATCH("")
 }
 
-void TrussElement3D2N::GetFirstDerivativesVector(Vector& rValues, int Step) const
+template<unsigned int TDim>
+void TrussElement2N<TDim>::GetFirstDerivativesVector(Vector& rValues, int Step) const
 {
 
     KRATOS_TRY
@@ -259,7 +273,8 @@ void TrussElement3D2N::GetFirstDerivativesVector(Vector& rValues, int Step) cons
     KRATOS_CATCH("")
 }
 
-void TrussElement3D2N::GetSecondDerivativesVector(Vector& rValues, int Step) const
+template<unsigned int TDim>
+void TrussElement2N<TDim>::GetSecondDerivativesVector(Vector& rValues, int Step) const
 {
 
     KRATOS_TRY
@@ -280,7 +295,8 @@ void TrussElement3D2N::GetSecondDerivativesVector(Vector& rValues, int Step) con
     KRATOS_CATCH("")
 }
 
-void TrussElement3D2N::CalculateLocalSystem(MatrixType& rLeftHandSideMatrix,
+template<unsigned int TDim>
+void TrussElement2N<TDim>::CalculateLocalSystem(MatrixType& rLeftHandSideMatrix,
         VectorType& rRightHandSideVector,
         const ProcessInfo& rCurrentProcessInfo)
 {
@@ -290,7 +306,8 @@ void TrussElement3D2N::CalculateLocalSystem(MatrixType& rLeftHandSideMatrix,
     KRATOS_CATCH("")
 }
 
-void TrussElement3D2N::CalculateRightHandSide(
+template<unsigned int TDim>
+void TrussElement2N<TDim>::CalculateRightHandSide(
     VectorType& rRightHandSideVector, const ProcessInfo& rCurrentProcessInfo)
 {
 
@@ -309,7 +326,8 @@ void TrussElement3D2N::CalculateRightHandSide(
     KRATOS_CATCH("")
 }
 
-void TrussElement3D2N::CalculateLeftHandSide(MatrixType& rLeftHandSideMatrix,
+template<unsigned int TDim>
+void TrussElement2N<TDim>::CalculateLeftHandSide(MatrixType& rLeftHandSideMatrix,
         const ProcessInfo& rCurrentProcessInfo)
 {
 
@@ -322,7 +340,8 @@ void TrussElement3D2N::CalculateLeftHandSide(MatrixType& rLeftHandSideMatrix,
     KRATOS_CATCH("")
 }
 
-void TrussElement3D2N::Calculate(const Variable<Matrix>& rVariable, Matrix& rOutput, const ProcessInfo& rCurrentProcessInfo)
+template<unsigned int TDim>
+void TrussElement2N<TDim>::Calculate(const Variable<Matrix>& rVariable, Matrix& rOutput, const ProcessInfo& rCurrentProcessInfo)
 {
     if (rVariable == LOCAL_ELEMENT_ORIENTATION) {
         BoundedMatrix<double, msLocalSize, msLocalSize> transformation_matrix = ZeroMatrix(msLocalSize, msLocalSize);
@@ -358,7 +377,8 @@ void TrussElement3D2N::Calculate(const Variable<Matrix>& rVariable, Matrix& rOut
     }
 }
 
-void TrussElement3D2N::Calculate(const Variable<double>& rVariable, double& rOutput, const ProcessInfo& rCurrentProcessInfo)
+template<unsigned int TDim>
+void TrussElement2N<TDim>::Calculate(const Variable<double>& rVariable, double& rOutput, const ProcessInfo& rCurrentProcessInfo)
 {
     if (rVariable == STRAIN_ENERGY) {
         const double L0 = StructuralMechanicsElementUtilities::CalculateReferenceLength3D2N(*this);
@@ -407,9 +427,8 @@ void TrussElement3D2N::Calculate(const Variable<double>& rVariable, double& rOut
     }
 }
 
-
-
-void TrussElement3D2N::CalculateOnIntegrationPoints(
+template<unsigned int TDim>
+void TrussElement2N<TDim>::CalculateOnIntegrationPoints(
     const Variable<double>& rVariable, std::vector<double>& rOutput,
     const ProcessInfo& rCurrentProcessInfo)
 {
@@ -435,7 +454,8 @@ void TrussElement3D2N::CalculateOnIntegrationPoints(
     KRATOS_CATCH("")
 }
 
-void TrussElement3D2N::CalculateOnIntegrationPoints(
+template<unsigned int TDim>
+void TrussElement2N<TDim>::CalculateOnIntegrationPoints(
     const Variable<Vector>& rVariable, std::vector<Vector>& rOutput,
     const ProcessInfo& rCurrentProcessInfo)
 {
@@ -488,7 +508,8 @@ void TrussElement3D2N::CalculateOnIntegrationPoints(
     KRATOS_CATCH("")
 }
 
-void TrussElement3D2N::CalculateOnIntegrationPoints(
+template<unsigned int TDim>
+void TrussElement2N<TDim>::CalculateOnIntegrationPoints(
     const Variable<array_1d<double, 3>>& rVariable,
     std::vector<array_1d<double, 3>>& rOutput,
     const ProcessInfo& rCurrentProcessInfo)
@@ -511,7 +532,8 @@ void TrussElement3D2N::CalculateOnIntegrationPoints(
     }
 }
 
-void TrussElement3D2N::CalculateOnIntegrationPoints(
+template<unsigned int TDim>
+void TrussElement2N<TDim>::CalculateOnIntegrationPoints(
     const Variable<ConstitutiveLaw::Pointer>& rVariable,
     std::vector<ConstitutiveLaw::Pointer>& rOutput,
     const ProcessInfo& rCurrentProcessInfo)
@@ -523,7 +545,8 @@ void TrussElement3D2N::CalculateOnIntegrationPoints(
     }
 }
 
-int TrussElement3D2N::Check(const ProcessInfo& rCurrentProcessInfo) const
+template<unsigned int TDim>
+int TrussElement2N<TDim>::Check(const ProcessInfo& rCurrentProcessInfo) const
 {
     KRATOS_TRY
     const double numerical_limit = std::numeric_limits<double>::epsilon();
@@ -568,7 +591,8 @@ int TrussElement3D2N::Check(const ProcessInfo& rCurrentProcessInfo) const
     KRATOS_CATCH("")
 }
 
-double TrussElement3D2N::CalculateGreenLagrangeStrain() const
+template<unsigned int TDim>
+double TrussElement2N<TDim>::CalculateGreenLagrangeStrain() const
 {
 
     KRATOS_TRY
@@ -579,8 +603,9 @@ double TrussElement3D2N::CalculateGreenLagrangeStrain() const
     KRATOS_CATCH("")
 }
 
-void TrussElement3D2N::UpdateInternalForces(
-    BoundedVector<double, TrussElement3D2N::msLocalSize>& rInternalForces,
+template<unsigned int TDim>
+void TrussElement2N<TDim>::UpdateInternalForces(
+    BoundedVector<double, TrussElement2N<TDim>::msLocalSize>& rInternalForces,
     const ProcessInfo& rCurrentProcessInfo)
 {
 
@@ -619,9 +644,10 @@ void TrussElement3D2N::UpdateInternalForces(
     KRATOS_CATCH("");
 }
 
-void TrussElement3D2N::CreateTransformationMatrix(
-    BoundedMatrix<double, TrussElement3D2N::msLocalSize,
-    TrussElement3D2N::msLocalSize>& rRotationMatrix)
+template<unsigned int TDim>
+void TrussElement2N<TDim>::CreateTransformationMatrix(
+    BoundedMatrix<double, TrussElement2N<TDim>::msLocalSize,
+                  TrussElement2N<TDim>::msLocalSize>& rRotationMatrix)
 {
 
     KRATOS_TRY
@@ -691,8 +717,9 @@ void TrussElement3D2N::CreateTransformationMatrix(
     KRATOS_CATCH("")
 }
 
-void TrussElement3D2N::WriteTransformationCoordinates(
-    BoundedVector<double, TrussElement3D2N::msLocalSize>
+template<unsigned int TDim>
+void TrussElement2N<TDim>::WriteTransformationCoordinates(
+    BoundedVector<double, TrussElement2N<TDim>::msLocalSize>
     & rReferenceCoordinates)
 {
     KRATOS_TRY;
@@ -714,7 +741,8 @@ void TrussElement3D2N::WriteTransformationCoordinates(
     KRATOS_CATCH("");
 }
 
-void TrussElement3D2N::AddExplicitContribution(
+template<unsigned int TDim>
+void TrussElement2N<TDim>::AddExplicitContribution(
     const VectorType& rRHSVector,
     const Variable<VectorType>& rRHSVariable,
     const Variable<double >& rDestinationVariable,
@@ -740,7 +768,8 @@ void TrussElement3D2N::AddExplicitContribution(
     KRATOS_CATCH("")
 }
 
-void TrussElement3D2N::AddExplicitContribution(
+template<unsigned int TDim>
+void TrussElement2N<TDim>::AddExplicitContribution(
     const VectorType& rRHSVector, const Variable<VectorType>& rRHSVariable,
     const Variable<array_1d<double, 3>>& rDestinationVariable,
     const ProcessInfo& rCurrentProcessInfo
@@ -782,9 +811,10 @@ void TrussElement3D2N::AddExplicitContribution(
     KRATOS_CATCH("")
 }
 
-void TrussElement3D2N::CalculateGeometricStiffnessMatrix(
-    BoundedMatrix<double, TrussElement3D2N::msLocalSize,
-    TrussElement3D2N::msLocalSize>& rGeometricStiffnessMatrix,
+template<unsigned int TDim>
+void TrussElement2N<TDim>::CalculateGeometricStiffnessMatrix(
+    BoundedMatrix<double, TrussElement2N<TDim>::msLocalSize,
+                  TrussElement2N<TDim>::msLocalSize>& rGeometricStiffnessMatrix,
     const ProcessInfo& rCurrentProcessInfo)
 {
     KRATOS_TRY;
@@ -879,9 +909,10 @@ void TrussElement3D2N::CalculateGeometricStiffnessMatrix(
     KRATOS_CATCH("")
 }
 
-void TrussElement3D2N::CalculateElasticStiffnessMatrix(
-    BoundedMatrix<double, TrussElement3D2N::msLocalSize,
-    TrussElement3D2N::msLocalSize>& rElasticStiffnessMatrix,
+template<unsigned int TDim>
+void TrussElement2N<TDim>::CalculateElasticStiffnessMatrix(
+    BoundedMatrix<double, TrussElement2N<TDim>::msLocalSize,
+                  TrussElement2N<TDim>::msLocalSize>& rElasticStiffnessMatrix,
     const ProcessInfo& rCurrentProcessInfo)
 {
     KRATOS_TRY;
@@ -956,7 +987,8 @@ void TrussElement3D2N::CalculateElasticStiffnessMatrix(
     KRATOS_CATCH("")
 }
 
-void TrussElement3D2N::FinalizeSolutionStep(const ProcessInfo& rCurrentProcessInfo)
+template<unsigned int TDim>
+void TrussElement2N<TDim>::FinalizeSolutionStep(const ProcessInfo& rCurrentProcessInfo)
 {
     KRATOS_TRY;
     ConstitutiveLaw::Parameters Values(GetGeometry(),GetProperties(),rCurrentProcessInfo);
@@ -969,18 +1001,22 @@ void TrussElement3D2N::FinalizeSolutionStep(const ProcessInfo& rCurrentProcessIn
     KRATOS_CATCH("");
 }
 
-void TrussElement3D2N::save(Serializer& rSerializer) const
+template<unsigned int TDim>
+void TrussElement2N<TDim>::save(Serializer& rSerializer) const
 {
     KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, Element);
     rSerializer.save("mpConstitutiveLaw", mpConstitutiveLaw);
 }
-void TrussElement3D2N::load(Serializer& rSerializer)
+
+template<unsigned int TDim>
+void TrussElement2N<TDim>::load(Serializer& rSerializer)
 {
     KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, Element);
     rSerializer.load("mpConstitutiveLaw", mpConstitutiveLaw);
 }
 
-bool TrussElement3D2N::HasSelfWeight() const
+template<unsigned int TDim>
+bool TrussElement2N<TDim>::HasSelfWeight() const
 {
     const double norm_self_weight =
         GetGeometry()[0].FastGetSolutionStepValue(VOLUME_ACCELERATION)[0]*
@@ -997,7 +1033,8 @@ bool TrussElement3D2N::HasSelfWeight() const
     }
 }
 
-const Parameters TrussElement3D2N::GetSpecifications() const
+template<unsigned int TDim>
+const Parameters TrussElement2N<TDim>::GetSpecifications() const
 {
     const Parameters specifications = Parameters(R"({
         "time_integration"           : ["static","implicit","explicit"],
@@ -1027,7 +1064,8 @@ const Parameters TrussElement3D2N::GetSpecifications() const
     return specifications;
 }
 
-void TrussElement3D2N::CalculateLumpedMassVector(
+template<unsigned int TDim>
+void TrussElement2N<TDim>::CalculateLumpedMassVector(
     VectorType& rLumpedMassVector,
     const ProcessInfo& rCurrentProcessInfo) const
 {
@@ -1055,15 +1093,16 @@ void TrussElement3D2N::CalculateLumpedMassVector(
     KRATOS_CATCH("")
 }
 
-
-double TrussElement3D2N::ReturnTangentModulus1D(const ProcessInfo& rCurrentProcessInfo)
+template<unsigned int TDim>
+double TrussElement2N<TDim>::ReturnTangentModulus1D(const ProcessInfo& rCurrentProcessInfo)
 {
     KRATOS_TRY
     return ReturnTangentModulus1D(CalculateGreenLagrangeStrain(), rCurrentProcessInfo);
     KRATOS_CATCH("")
 }
 
-double TrussElement3D2N::ReturnTangentModulus1D(double Strain, const ProcessInfo& rCurrentProcessInfo) const
+template<unsigned int TDim>
+double TrussElement2N<TDim>::ReturnTangentModulus1D(double Strain, const ProcessInfo& rCurrentProcessInfo) const
 {
     KRATOS_TRY
     double tangent_modulus(0.00);
@@ -1078,5 +1117,6 @@ double TrussElement3D2N::ReturnTangentModulus1D(double Strain, const ProcessInfo
     KRATOS_CATCH("")
 }
 
+template class TrussElement2N<3>;
 
 } // namespace Kratos.

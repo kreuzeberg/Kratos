@@ -23,12 +23,12 @@ namespace Kratos
 {
 CableElement3D2N::CableElement3D2N(IndexType NewId,
                                    GeometryType::Pointer pGeometry)
-    : TrussElement3D2N(NewId, pGeometry) {}
+    : TrussElement2N<3>(NewId, pGeometry) {}
 
 CableElement3D2N::CableElement3D2N(IndexType NewId,
                                    GeometryType::Pointer pGeometry,
                                    PropertiesType::Pointer pProperties)
-    : TrussElement3D2N(NewId, pGeometry, pProperties) {}
+    : TrussElement2N<3>(NewId, pGeometry, pProperties) {}
 
 Element::Pointer
 CableElement3D2N::Create(IndexType NewId, NodesArrayType const& rThisNodes,
@@ -49,14 +49,13 @@ CableElement3D2N::Create(IndexType NewId, GeometryType::Pointer pGeom,
 
 CableElement3D2N::~CableElement3D2N() {}
 
-BoundedMatrix<double, TrussElement3D2N::msLocalSize,
-TrussElement3D2N::msLocalSize>
+TrussElement2N<3>::ElementStiffnessMatrixType
 CableElement3D2N::CreateElementStiffnessMatrix(
     const ProcessInfo& rCurrentProcessInfo)
 {
 
     KRATOS_TRY
-    BoundedMatrix<double, msLocalSize, msLocalSize> local_stiffness_matrix =
+    TrussElement2N<3>::ElementStiffnessMatrixType local_stiffness_matrix =
         ZeroMatrix(msLocalSize, msLocalSize);
 
     if (mIsCompressed) {
@@ -98,7 +97,7 @@ void CableElement3D2N::CalculateRightHandSide(
 }
 
 void CableElement3D2N::UpdateInternalForces(
-    BoundedVector<double, TrussElement3D2N::msLocalSize>& rInternalForces,
+    BoundedVector<double, TrussElement2N<3>::msLocalSize>& rInternalForces,
     const ProcessInfo& rCurrentProcessInfo)
 {
 
@@ -151,7 +150,7 @@ void CableElement3D2N::CalculateOnIntegrationPoints(
     const ProcessInfo& rCurrentProcessInfo)
 {
     if (rVariable == FORCE){
-        TrussElement3D2N::CalculateOnIntegrationPoints(rVariable,rOutput,rCurrentProcessInfo);
+      TrussElement2N<3>::CalculateOnIntegrationPoints(rVariable,rOutput,rCurrentProcessInfo);
         if (rOutput[0][0]<0.0){
             rOutput[0]=ZeroVector(msDimension);
         }
@@ -163,7 +162,7 @@ void CableElement3D2N::CalculateOnIntegrationPoints(
     const ProcessInfo& rCurrentProcessInfo)
 {
     if ((rVariable == GREEN_LAGRANGE_STRAIN_VECTOR) || (rVariable == CAUCHY_STRESS_VECTOR) || (rVariable == PK2_STRESS_VECTOR)){
-        TrussElement3D2N::CalculateOnIntegrationPoints(rVariable,rOutput,rCurrentProcessInfo);
+      TrussElement2N<3>::CalculateOnIntegrationPoints(rVariable,rOutput,rCurrentProcessInfo);
         if (rOutput[0][0]<0.0){
             rOutput[0]=ZeroVector(msDimension);
         }
@@ -172,12 +171,12 @@ void CableElement3D2N::CalculateOnIntegrationPoints(
 
 void CableElement3D2N::save(Serializer& rSerializer) const
 {
-    KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, TrussElement3D2N);
+    KRATOS_SERIALIZE_SAVE_BASE_CLASS(rSerializer, TrussElement2N<3>);
     rSerializer.save("mIscompressed", mIsCompressed);
 }
 void CableElement3D2N::load(Serializer& rSerializer)
 {
-    KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, TrussElement3D2N);
+    KRATOS_SERIALIZE_LOAD_BASE_CLASS(rSerializer, TrussElement2N<3>);
     rSerializer.load("mIscompressed", mIsCompressed);
 }
 } // namespace Kratos.

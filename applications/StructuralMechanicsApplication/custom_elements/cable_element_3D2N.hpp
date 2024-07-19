@@ -29,7 +29,7 @@ namespace Kratos
  *
  * @author Klaus B Sautter
  */
-class KRATOS_API(STRUCTURAL_MECHANICS_APPLICATION) CableElement3D2N : public TrussElement3D2N
+class KRATOS_API(STRUCTURAL_MECHANICS_APPLICATION) CableElement3D2N : public TrussElement2N<3>
 {
 
 public:
@@ -73,7 +73,7 @@ public:
         PropertiesType::Pointer pProperties
     ) const override;
 
-    BoundedMatrix<double,msLocalSize,msLocalSize>
+    TrussElement2N<3>::ElementStiffnessMatrixType
     CreateElementStiffnessMatrix(const ProcessInfo& rCurrentProcessInfo) override;
 
     void CalculateRightHandSide(

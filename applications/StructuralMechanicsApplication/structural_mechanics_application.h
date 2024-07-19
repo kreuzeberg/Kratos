@@ -263,7 +263,7 @@ private:
     /* ELEMENTS */
 
     // Adding the truss element
-    const TrussElement3D2N mTrussElement3D2N;
+    const TrussElement2N<3> mTrussElement3D2N;
     const TrussElementLinear3D2N mTrussLinearElement3D2N;
     const CableElement3D2N mCableElement3D2N;
 
@@ -420,7 +420,7 @@ private:
     // Adding adjoint elements
     const AdjointFiniteDifferencingShellElement<ShellThinElement3D3N<ShellKinematics::LINEAR>> mAdjointFiniteDifferencingShellThinElement3D3N;
     const AdjointFiniteDifferenceCrBeamElement<CrBeamElementLinear3D2N> mAdjointFiniteDifferenceCrBeamElementLinear3D2N;
-    const AdjointFiniteDifferenceTrussElement<TrussElement3D2N> mAdjointFiniteDifferenceTrussElement3D2N;
+    const AdjointFiniteDifferenceTrussElement<TrussElement2N<3>> mAdjointFiniteDifferenceTrussElement3D2N;
     const AdjointFiniteDifferenceTrussElementLinear<TrussElementLinear3D2N> mAdjointFiniteDifferenceTrussLinearElement3D2N;
     const AdjointSolidElement<TotalLagrangian> mTotalLagrangianAdjoint2D3N;
     const AdjointSolidElement<TotalLagrangian> mTotalLagrangianAdjoint2D4N;
