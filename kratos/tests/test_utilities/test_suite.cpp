@@ -18,6 +18,8 @@
 
 // Project includes
 #include "tests/test_utilities/test_suite.h"
+#include "includes/kernel.h"
+#include "includes/kratos_application.h"
 
 namespace Kratos::Testing 
 {
@@ -31,10 +33,24 @@ void KratosCoreFastSuite::SetUp() {
     // std::cerr.rdbuf(mStream.rdbuf());   
 }
 
-void KratosCoreFastSuite::TearDown() { 
-    // TODO: Control the log level of the tests
-    // std::cout.rdbuf(mCoutBuffer);
-    // std::cerr.rdbuf(mCerrBuffer); 
+void KratosCoreFastSuite::TearDown() {
+  // TODO: Control the log level of the tests
+  // std::cout.rdbuf(mCoutBuffer);
+  // std::cerr.rdbuf(mCerrBuffer);
+}
+
+KratosCoreFastSuite::KratosCoreFastSuite() : mKernel(std::make_unique<Kernel>()) {
+  for (auto &&appInitializer : mApplicationInitializerList) {
+    appInitializer(mRegisteredApplications, *mKernel);
+  }
+}
+
+KratosCoreFastSuite::~KratosCoreFastSuite() {}
+void KratosCoreFastSuite::ImportApplicationIntoKernel(
+    KratosApplication::Pointer pNewApplication) {
+  if (!mKernel->IsImported(pNewApplication->Name())) {
+    mKernel->ImportApplication(pNewApplication);
+  }
 }
 
 } // namespace Kratos::Testing

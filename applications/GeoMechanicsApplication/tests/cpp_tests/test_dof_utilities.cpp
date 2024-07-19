@@ -19,7 +19,10 @@
 #include "geo_aliases.h"
 #include "geo_mechanics_application_variables.h"
 #include "geo_mechanics_fast_suite.h"
+#include "geometries/tetrahedra_3d_4.h"
+#include "geometries/triangle_2d_3.h"
 #include "includes/element.h"
+#include "includes/model_part.h"
 #include "test_utilities/model_setup_utilities.h"
 
 namespace
@@ -327,7 +330,8 @@ KRATOS_TEST_CASE_IN_SUITE(ExtractingValuesFromDofsYieldsNodalValues, KratosGeoMe
                               expected_values, abs_tolerance)
 }
 
-KRATOS_TEST_CASE_IN_SUITE(ExtractingFirstDerivativeValuesFromDofsYieldsNodalFirstDerivativeValues, KratosGeoMechanicsFastSuiteWithoutKernel)
+KRATOS_TEST_CASE_IN_SUITE(ExtractingFirstDerivativeValuesFromDofsYieldsNodalFirstDerivativeValues,
+                          KratosGeoMechanicsFastSuiteWithoutKernel)
 {
     const auto& r_variable              = DISPLACEMENT_X;
     const auto& r_first_time_derivative = VELOCITY_X;

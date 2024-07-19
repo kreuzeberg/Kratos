@@ -10,8 +10,10 @@
 //  Main authors:    Richard Faasse
 //
 
+#include "containers/model.h"
 #include "custom_strategies/schemes/newmark_quasistatic_Pw_scheme.hpp"
 #include "geo_mechanics_fast_suite.h"
+#include "includes/model_part.h"
 #include "spaces/ublas_space.h"
 
 using namespace Kratos;
@@ -80,7 +82,8 @@ KRATOS_TEST_CASE_IN_SUITE(ForMissingDtWaterPressureSolutionStepVariable_CheckNew
                                       "DT_WATER_PRESSURE variable is not allocated for node 0")
 }
 
-KRATOS_TEST_CASE_IN_SUITE(ForMissingWaterPressureSolutionStepVariable_CheckNewmarkPwScheme_Throws, KratosGeoMechanicsFastSuiteWithoutKernel)
+KRATOS_TEST_CASE_IN_SUITE(ForMissingWaterPressureSolutionStepVariable_CheckNewmarkPwScheme_Throws,
+                          KratosGeoMechanicsFastSuiteWithoutKernel)
 {
     constexpr double theta = 0.75;
 

@@ -16,6 +16,8 @@
 #include "spaces/ublas_space.h"
 #include "test_utilities/spy_condition.h"
 #include "test_utilities/spy_element.h"
+#include "containers/model.h"
+#include "includes/model_part.h"
 
 namespace Kratos::Testing
 {

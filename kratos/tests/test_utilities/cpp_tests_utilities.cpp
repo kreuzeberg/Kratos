@@ -23,6 +23,7 @@
 #include "utilities/reduction_utilities.h"
 
 #include "tests/test_utilities/cpp_tests_utilities.h"
+#include "includes/kratos_application.h"
 
 namespace Kratos
 {

@@ -10,9 +10,13 @@
 //  Main authors:    Aron Noordam
 //
 
+#include "containers/model.h"
 #include "custom_processes/calculate_incremental_displacement_process.h"
 #include "geo_mechanics_application_variables.h"
 #include "geo_mechanics_fast_suite.h"
+#include "includes/checks.h"
+#include "includes/model_part.h"
+#include "includes/variables.h"
 
 namespace Kratos::Testing
 {
@@ -52,8 +56,10 @@ KRATOS_TEST_CASE_IN_SUITE(CalculateIncrementalDisplacementProcess, KratosGeoMech
     const auto expected_incremental_displacement_1 = Kratos::array_1d<double, 3>{-3.0, -3.0, -3.0};
     const auto expected_incremental_displacement_2 = Kratos::array_1d<double, 3>{-4.0, 4.0, -5.0};
 
-    KRATOS_CHECK_VECTOR_NEAR(p_node_1->FastGetSolutionStepValue(INCREMENTAL_DISPLACEMENT), expected_incremental_displacement_1, 1e-12)
-    KRATOS_CHECK_VECTOR_NEAR(p_node_2->FastGetSolutionStepValue(INCREMENTAL_DISPLACEMENT), expected_incremental_displacement_2, 1e-12)
+    KRATOS_CHECK_VECTOR_NEAR(p_node_1->FastGetSolutionStepValue(INCREMENTAL_DISPLACEMENT),
+                             expected_incremental_displacement_1, 1e-12)
+    KRATOS_CHECK_VECTOR_NEAR(p_node_2->FastGetSolutionStepValue(INCREMENTAL_DISPLACEMENT),
+                             expected_incremental_displacement_2, 1e-12)
 }
 
 } // namespace Kratos::Testing

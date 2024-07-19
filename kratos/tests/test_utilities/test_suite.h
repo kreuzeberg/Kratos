@@ -20,12 +20,18 @@
 #include <gtest/gtest.h>
 
 // Project includes
-#include "includes/kernel.h"
+#include "includes/kratos_export_api.h"
+
+
+namespace Kratos {
+class Kernel;
+class KratosApplication;
+}
 
 namespace Kratos::Testing 
 {
 
-KRATOS_API(KRATOS_TEST_UTILS) extern std::vector<std::function<void(std::vector<KratosApplication::Pointer> &, Kratos::Kernel &)>> mApplicationInitializerList;
+KRATOS_API(KRATOS_TEST_UTILS) extern std::vector<std::function<void(std::vector<std::shared_ptr<KratosApplication>> &, Kratos::Kernel &)>> mApplicationInitializerList;
 
 /*
  * This Fixture creates a new kernel instance for kratos, so the test is able to interact with the database.
@@ -38,26 +44,19 @@ class KRATOS_API(KRATOS_TEST_UTILS) KratosCoreFastSuite : public ::testing::Test
         void TearDown() override;
 
     protected:
-        KratosCoreFastSuite(): mKernel() {
-            for (auto && appInitializer: mApplicationInitializerList) {
-                appInitializer(mRegisteredApplications, mKernel);
-            }
-        }
+        KratosCoreFastSuite();
 
-        ~KratosCoreFastSuite() {}
+      ~KratosCoreFastSuite();
 
-        void ImportApplicationIntoKernel(KratosApplication::Pointer pNewApplication){
-            if (!mKernel.IsImported(pNewApplication->Name())) {
-                mKernel.ImportApplication(pNewApplication);
-            }
-        }
+        void
+      ImportApplicationIntoKernel(std::shared_ptr<KratosApplication> pNewApplication);
 
     private:
-        Kratos::Kernel mKernel;
+        std::unique_ptr<Kratos::Kernel> mKernel;
         // std::stringstream mStream;                                       // Stream to store the output of the tests and control visibility
         // std::streambuf * mCoutBuffer;
         // std::streambuf * mCerrBuffer;
-        std::vector<KratosApplication::Pointer> mRegisteredApplications;    // List of applications loaded by the suit. TODO: Remove once every test includes its own suit
+        std::vector<std::shared_ptr<KratosApplication>> mRegisteredApplications;    // List of applications loaded by the suit. TODO: Remove once every test includes its own suit
 };
 
 class KRATOS_API(KRATOS_TEST_UTILS) KratosCoreFastSuiteWithoutKernel : public ::testing::Test

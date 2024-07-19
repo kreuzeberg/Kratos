@@ -10,11 +10,14 @@
 //  Main authors:    Gennady Markelov
 //
 
+#include "containers/model.h"
 #include "custom_utilities/equation_of_motion_utilities.h"
 #include "geo_mechanics_application_variables.h"
 #include "geo_mechanics_fast_suite.h"
+#include "includes/model_part.h"
 #include "tests/cpp_tests/test_utilities/model_setup_utilities.h"
 #include <boost/numeric/ublas/assignment.hpp>
+#include "includes/checks.h"
 
 using namespace Kratos;
 
