@@ -63,8 +63,8 @@ void TrussElement2N<TDim>::EquationIdVector(EquationIdVectorType& rResult,
         rResult.resize(msLocalSize);
     }
 
-    for (int i = 0; i < msNumberOfNodes; ++i) {
-        int index = i * 3;
+    for (unsigned int i = 0; i < msNumberOfNodes; ++i) {
+        auto index = i * 3;
         rResult[index] = GetGeometry()[i].GetDof(DISPLACEMENT_X).EquationId();
         rResult[index + 1] =
             GetGeometry()[i].GetDof(DISPLACEMENT_Y).EquationId();
@@ -82,8 +82,8 @@ void TrussElement2N<TDim>::GetDofList(DofsVectorType& rElementalDofList,
         rElementalDofList.resize(msLocalSize);
     }
 
-    for (int i = 0; i < msNumberOfNodes; ++i) {
-        int index = i * 3;
+    for (unsigned int i = 0; i < msNumberOfNodes; ++i) {
+        auto index = i * 3;
         rElementalDofList[index] = GetGeometry()[i].pGetDof(DISPLACEMENT_X);
         rElementalDofList[index + 1] =
             GetGeometry()[i].pGetDof(DISPLACEMENT_Y);
@@ -216,7 +216,7 @@ TrussElement2N<TDim>::CalculateBodyForces()
         ZeroVector(msLocalSize);
 
     // assemble global Vector
-    for (int i = 0; i < msNumberOfNodes; ++i) {
+    for (unsigned int i = 0; i < msNumberOfNodes; ++i) {
         body_forces_node =
             total_mass *
             GetGeometry()[i].FastGetSolutionStepValue(VOLUME_ACCELERATION) *
@@ -240,8 +240,8 @@ void TrussElement2N<TDim>::GetValuesVector(Vector& rValues, int Step) const
         rValues.resize(msLocalSize, false);
     }
 
-    for (int i = 0; i < msNumberOfNodes; ++i) {
-        int index = i * msDimension;
+    for (unsigned int i = 0; i < msNumberOfNodes; ++i) {
+        auto index = i * msDimension;
         const auto& disp =
             GetGeometry()[i].FastGetSolutionStepValue(DISPLACEMENT, Step);
 
@@ -261,8 +261,8 @@ void TrussElement2N<TDim>::GetFirstDerivativesVector(Vector& rValues, int Step) 
         rValues.resize(msLocalSize, false);
     }
 
-    for (int i = 0; i < msNumberOfNodes; ++i) {
-        int index = i * msDimension;
+    for (unsigned int i = 0; i < msNumberOfNodes; ++i) {
+        auto index = i * msDimension;
         const auto& vel =
             GetGeometry()[i].FastGetSolutionStepValue(VELOCITY, Step);
 
@@ -282,8 +282,8 @@ void TrussElement2N<TDim>::GetSecondDerivativesVector(Vector& rValues, int Step)
         rValues.resize(msLocalSize, false);
     }
 
-    for (int i = 0; i < msNumberOfNodes; ++i) {
-        int index = i * msDimension;
+    for (unsigned int i = 0; i < msNumberOfNodes; ++i) {
+        auto index = i * msDimension;
         const auto& acc =
             GetGeometry()[i].FastGetSolutionStepValue(ACCELERATION, Step);
 
@@ -800,9 +800,9 @@ void TrussElement2N<TDim>::AddExplicitContribution(
         VectorType mass_vector(msLocalSize);
         CalculateLumpedMassVector(mass_vector, rCurrentProcessInfo);
 
-        for (int i = 0; i < msNumberOfNodes; ++i) {
+        for (unsigned int i = 0; i < msNumberOfNodes; ++i) {
             double& r_nodal_mass = GetGeometry()[i].GetValue(NODAL_MASS);
-            int index = i * msDimension;
+            auto index = i * msDimension;
 
             AtomicAdd(r_nodal_mass, mass_vector[index]);
         }
@@ -1082,9 +1082,9 @@ void TrussElement2N<TDim>::CalculateLumpedMassVector(
 
     const double total_mass = A * L * rho;
 
-    for (int i = 0; i < msNumberOfNodes; ++i) {
-        for (int j = 0; j < msDimension; ++j) {
-            int index = i * msDimension + j;
+    for (unsigned int i = 0; i < msNumberOfNodes; ++i) {
+        for (unsigned int j = 0; j < msDimension; ++j) {
+            auto index = i * msDimension + j;
 
             rLumpedMassVector[index] = total_mass * 0.50;
         }
