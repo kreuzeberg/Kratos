@@ -47,6 +47,12 @@ add_library(KratosGeoMechanicsCore SHARED ${KRATOS_GEO_MECHANICS_APPLICATION_COR
 target_link_libraries(KratosGeoMechanicsCore PUBLIC KratosCore KratosStructuralMechanicsCore KratosLinearSolversCore ${CMAKE_DL_LIBS})
 set_target_properties(KratosGeoMechanicsCore PROPERTIES COMPILE_DEFINITIONS "GEO_MECHANICS_APPLICATION=EXPORT,API")
 
+## GeoMechanics coverage
+if(${KRATOS_BUILD_TESTING} MATCHES ON)
+    MESSAGE(STATUS "Adding coverage configuration to project.")
+    target_code_coverage(KratosGeoMechanicsCore)
+    target_code_coverage(KratosGeoMechanicsCoreTest WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
+endif(${KRATOS_BUILD_TESTING} MATCHES ON)
 
 ###############################################################
 ## define library Kratos which defines the basic python interface

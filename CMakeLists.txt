@@ -93,6 +93,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Include cmake modules
 include(DownloadLib)
 include(ExternalProject)
+include(CodeCoverage)
 
 # Define custom compiler build types
 SET( CMAKE_CONFIGURATION_TYPES Release RelWithDebInfo Debug FullDebug Custom)
