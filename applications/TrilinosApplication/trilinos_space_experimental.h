@@ -17,6 +17,10 @@
 // External includes
 
 /* Trilinos includes */
+#include <Tpetra_Core.hpp>
+#include <Tpetra_Vector.hpp>
+#include <Tpetra_FECrsMatrix.hpp>
+#include <Tpetra_Map.hpp>
 
 // Project includes
 #include "includes/ublas_interface.h"
@@ -1425,3 +1429,7 @@ private:
     TrilinosSpaceExperimental(TrilinosSpaceExperimental const& rOther);
 
 }; // Class TrilinosSpaceExperimental
+
+///@}
+
+} // namespace Kratos.
