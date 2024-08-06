@@ -51,7 +51,7 @@ set_target_properties(KratosGeoMechanicsCore PROPERTIES COMPILE_DEFINITIONS "GEO
 if(${KRATOS_BUILD_TESTING} MATCHES ON)
     MESSAGE(STATUS "Adding coverage configuration to project.")
     target_code_coverage(KratosGeoMechanicsCore)
-    target_code_coverage(KratosGeoMechanicsCoreTest WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
+    target_code_coverage(KratosGeoMechanicsCoreTest WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX} PLAIN)
 endif(${KRATOS_BUILD_TESTING} MATCHES ON)
 
 ###############################################################
