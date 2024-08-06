@@ -335,7 +335,7 @@ function(target_code_coverage TARGET_NAME)
             ${CMAKE_COVERAGE_OUTPUT_DIRECTORY}/binaries.list
           COMMAND
             ${CMAKE_COMMAND} -E echo
-            "${CMAKE_CURRENT_BINARY_DIR}/${target_code_coverage_COVERAGE_TARGET_NAME}.profraw"
+            "${target_code_coverage_COVERAGE_TARGET_NAME}.profraw"
             >> ${CMAKE_COVERAGE_OUTPUT_DIRECTORY}/profraw.list
           JOB_POOL ccov_serial_pool
           DEPENDS ccov-libs ${TARGET_NAME}
@@ -348,7 +348,8 @@ function(target_code_coverage TARGET_NAME)
             ${LLVM_PROFDATA_PATH} merge -sparse
             ${target_code_coverage_COVERAGE_TARGET_NAME}.profraw -o
             ${target_code_coverage_COVERAGE_TARGET_NAME}.profdata
-          DEPENDS ccov-run-${target_code_coverage_COVERAGE_TARGET_NAME})
+          DEPENDS ccov-run-${target_code_coverage_COVERAGE_TARGET_NAME}
+          WORKING_DIRECTORY ${target_code_coverage_WORKING_DIRECTORY})
 
         # Ignore regex only works on LLVM >= 7
         if(LLVM_COV_VERSION VERSION_GREATER_EQUAL "7.0.0")
@@ -375,7 +376,8 @@ function(target_code_coverage TARGET_NAME)
             -instr-profile=${target_code_coverage_COVERAGE_TARGET_NAME}.profdata
             -show-line-counts-or-regions ${LINKED_OBJECTS} ${EXCLUDE_REGEX}
             > ${target_code_coverage_COVERAGE_TARGET_NAME}.txt
-          DEPENDS ccov-processing-${target_code_coverage_COVERAGE_TARGET_NAME})
+          DEPENDS ccov-processing-${target_code_coverage_COVERAGE_TARGET_NAME}
+          WORKING_DIRECTORY ${target_code_coverage_WORKING_DIRECTORY})
 
         # Print out a summary of the coverage information to the command line
         add_custom_target(
