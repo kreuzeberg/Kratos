@@ -21,6 +21,7 @@
 #include <Tpetra_Vector.hpp>
 #include <Tpetra_FECrsMatrix.hpp>
 #include <Tpetra_Map.hpp>
+#include <Tpetra_MultiVector.hpp>
 
 // Project includes
 #include "includes/ublas_interface.h"
