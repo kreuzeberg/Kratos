@@ -48,11 +48,11 @@ TrilinosCPPTestExperimentalUtilities::TrilinosSparseMatrixSmartReferenceType Tri
 
     // Create a map
     Tpetra::global_size_t numGlobalElements = static_cast<Tpetra::global_size_t>(NumGlobalElements);
-    Teuchos::RCP<const Tpetra::Map<>> map = Teuchos::rcp(new Tpetra::Map<>(numGlobalElements, 0, tpetra_comm));
+    Teuchos::RCP<const MapType> map = Teuchos::rcp(new MapType(numGlobalElements, 0, tpetra_comm));
     KRATOS_ERROR_IF_NOT(map->getGlobalNumElements() == static_cast<std::size_t>(NumGlobalElements)) << "Inconsistent number of rows" << std::endl;
 
     // Create a graph
-    const size_t maxNodeEntriesPerRow = AddNoDiagonalValues ? 3 : 1;
+    const std::size_t maxNodeEntriesPerRow = AddNoDiagonalValues ? 3 : 1;
     Teuchos::RCP<GraphType> graph = Teuchos::rcp(new GraphType(map, map, maxNodeEntriesPerRow));
 
     // Begin graph assembly
@@ -86,7 +86,7 @@ TrilinosCPPTestExperimentalUtilities::TrilinosSparseMatrixSmartReferenceType Tri
     graph->fillComplete();
 
     // Create a Tpetra::FECrsMatrix using the graph
-    Teuchos::RCP<Tpetra::FECrsMatrix<>> A = Teuchos::rcp(new Tpetra::FECrsMatrix<>(graph));
+    TrilinosSparseMatrixSmartReferenceType A = Teuchos::rcp(new TrilinosSparseMatrixType(graph));
 
     // Define non-diagonal values and other necessary variables
     std::vector<double> nonDiagonalValues(2, -1.0);
@@ -132,333 +132,344 @@ TrilinosCPPTestExperimentalUtilities::TrilinosLocalVectorType TrilinosCPPTestExp
     return TrilinosCPPTestUtilities::GenerateDummyLocalVector(NumGlobalElements, Offset);
 }
 
-// /***********************************************************************************/
-// /***********************************************************************************/
+/***********************************************************************************/
+/***********************************************************************************/
 
-// TrilinosCPPTestExperimentalUtilities::TrilinosVectorType TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(
-//     const DataCommunicator& rDataCommunicator,
-//     const int NumGlobalElements,
-//     const double Offset
-//     )
-// {
-//     // Generate Epetra communicator
-//     KRATOS_ERROR_IF_NOT(rDataCommunicator.IsDistributed()) << "Only distributed DataCommunicators can be used!" << std::endl;
-//     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(rDataCommunicator);
-//     Epetra_MpiComm epetra_comm(raw_mpi_comm);
+TrilinosCPPTestExperimentalUtilities::TrilinosVectorSmartReferenceType TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(
+    const DataCommunicator& rDataCommunicator,
+    const int NumGlobalElements,
+    const double Offset
+    )
+{
+    // Generate Tpetra communicator
+    KRATOS_ERROR_IF_NOT(rDataCommunicator.IsDistributed()) << "Only distributed DataCommunicators can be used!" << std::endl;
+    auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(rDataCommunicator);
+    Teuchos::RCP<const Teuchos::Comm<int>> tpetra_comm = Teuchos::rcp(new Teuchos::MpiComm<int>(Teuchos::opaqueWrapper(raw_mpi_comm)));
 
-//     // Create a map
-//     const Epetra_Map map(NumGlobalElements,0,epetra_comm);
+    // Create a map
+    Teuchos::RCP<const MapType> map = Teuchos::rcp(new MapType(NumGlobalElements, 0, tpetra_comm));
 
-//     // Local number of rows
-//     const int NumMyElements = map.NumMyElements();
+    // Local number of rows
+    const std::size_t NumMyElements = map->getNodeNumElements();
 
-//     // Get update list
-//     int* MyGlobalElements = map.MyGlobalElements( );
+    // Get update list
+    Teuchos::ArrayView<const MapType::global_ordinal_type> MyGlobalElements = map->getNodeElementList();
 
-//     // Create an Epetra_Vector
-//     TrilinosVectorType b(map);
+    // Create a Tpetra_Vector
+    Teuchos::RCP<Tpetra::Vector<>> b = Teuchos::rcp(new Tpetra::Vector<>(map));
 
-//     double value;
-//     for( int i=0 ; i<NumMyElements; ++i ) {
-//         value = Offset + static_cast<double>(MyGlobalElements[i]);
-//         b[0][i]= value;
-//     }
+    // Fill the vector with values
+    double value;
+    for (std::size_t i = 0; i < NumMyElements; ++i) {
+        value = Offset + static_cast<double>(MyGlobalElements[i]);
+        b->replaceLocalValue(i, value);
+    }
 
-//     b.GlobalAssemble();
+    return b;
+}
 
-//     return b;
-// }
+/***********************************************************************************/
+/***********************************************************************************/
 
-// /***********************************************************************************/
-// /***********************************************************************************/
+void TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(
+    const TrilinosVectorType& rA,
+    const TrilinosLocalVectorType& rB,
+    const double NegligibleValueThreshold
+    )
+{
+    const std::size_t total_size = rB.size();
+    std::vector<int> indexes;
+    indexes.reserve(total_size);
+    std::vector<double> values;
+    values.reserve(total_size);
+    for (std::size_t i = 0; i < rB.size(); ++i) {
+        indexes.push_back(i);
+        values.push_back(rB[i]);
+    }
+    CheckSparseVector(rA, indexes, values);
+}
 
-// void TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(
-//     const TrilinosVectorType& rA,
-//     const TrilinosLocalVectorType& rB,
-//     const double NegligibleValueThreshold
-//     )
-// {
-//     const std::size_t total_size = rB.size();
-//     std::vector<int> indexes;
-//     indexes.reserve(total_size);
-//     std::vector<double> values;
-//     values.reserve(total_size);
-//     for (std::size_t i = 0; i < rB.size(); ++i) {
-//         indexes.push_back(i);
-//         values.push_back(rB[i]);
-//     }
-//     CheckSparseVector(rA, indexes, values);
-// }
+/***********************************************************************************/
+/***********************************************************************************/
 
-// /***********************************************************************************/
-// /***********************************************************************************/
+void TrilinosCPPTestExperimentalUtilities::CheckSparseVector(
+    const TrilinosVectorType& rb,
+    const std::vector<int>& rIndexes,
+    const std::vector<double>& rValues,
+    const double NegligibleValueThreshold
+    )
+{
+    int index;
+    double value;
+    const auto& r_map = rb.getMap(); // Direct access to the map associated with rb
+    auto r_local_map = r_map->getLocalMap(); // Get the local map for local index operations
+    for (std::size_t counter = 0; counter < rIndexes.size(); ++counter) {
+        index = rIndexes[counter];
+        value = rValues[counter];
 
-// void TrilinosCPPTestExperimentalUtilities::CheckSparseVector(
-//     const TrilinosVectorType& rb,
-//     const std::vector<int>& rIndexes,
-//     const std::vector<double>& rValues,
-//     const double NegligibleValueThreshold
-//     )
-// {
-//     int index;
-//     double value;
-//     const auto& r_map = rb.Map();
-//     for (std::size_t counter = 0; counter < rIndexes.size(); ++counter) {
-//         index = rIndexes[counter];
-//         value = rValues[counter];
-//         if (r_map.MyGID(index)) {
-//             const double ref_value = rb[0][r_map.LID(index)];
-//             KRATOS_EXPECT_RELATIVE_NEAR(value, ref_value, NegligibleValueThreshold);
-//         }
-//     }
-// }
+        if (r_map->isNodeGlobalElement(index)) {
+            auto lid = r_map->getLocalElement(index);
+            const double ref_value = rb.getData(0)[lid];
+            KRATOS_EXPECT_RELATIVE_NEAR(value, ref_value, NegligibleValueThreshold);
+        }
+    }
+}
 
-// /***********************************************************************************/
-// /***********************************************************************************/
+/***********************************************************************************/
+/***********************************************************************************/
 
-// void TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(
-//     const TrilinosSparseMatrixType& rA,
-//     const TrilinosLocalMatrixType& rB,
-//     const double NegligibleValueThreshold
-//     )
-// {
-//     const std::size_t total_size = rB.size1() * rB.size2();
-//     std::vector<int> row_indexes;
-//     row_indexes.reserve(total_size);
-//     std::vector<int> column_indexes;
-//     column_indexes.reserve(total_size);
-//     std::vector<double> values;
-//     values.reserve(total_size);
-//     for (std::size_t i = 0; i < rB.size1(); ++i) {
-//         for (std::size_t j = 0; j < rB.size2(); ++j) {
-//             const double value = rB(i, j);
-//             if (std::abs(value) > std::numeric_limits<double>::epsilon()) {
-//                 row_indexes.push_back(i);
-//                 column_indexes.push_back(j);
-//                 values.push_back(value);
-//             }
-//         }
-//     }
-//     CheckSparseMatrix(rA, row_indexes, column_indexes, values);
-// }
+void TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(
+    const TrilinosSparseMatrixType& rA,
+    const TrilinosLocalMatrixType& rB,
+    const double NegligibleValueThreshold
+    )
+{
+    const std::size_t total_size = rB.size1() * rB.size2();
+    std::vector<int> row_indexes;
+    row_indexes.reserve(total_size);
+    std::vector<int> column_indexes;
+    column_indexes.reserve(total_size);
+    std::vector<double> values;
+    values.reserve(total_size);
+    for (std::size_t i = 0; i < rB.size1(); ++i) {
+        for (std::size_t j = 0; j < rB.size2(); ++j) {
+            const double value = rB(i, j);
+            if (std::abs(value) > std::numeric_limits<double>::epsilon()) {
+                row_indexes.push_back(i);
+                column_indexes.push_back(j);
+                values.push_back(value);
+            }
+        }
+    }
+    CheckSparseMatrix(rA, row_indexes, column_indexes, values);
+}
 
-// /***********************************************************************************/
-// /***********************************************************************************/
+/***********************************************************************************/
+/***********************************************************************************/
 
-// void TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(
-//     const TrilinosSparseMatrixType& rA,
-//     const std::vector<int>& rRowIndexes,
-//     const std::vector<int>& rColumnIndexes,
-//     const TrilinosLocalMatrixType& rB,
-//     const double NegligibleValueThreshold
-//     )
-// {
+void TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(
+    const TrilinosSparseMatrixType& rA,
+    const std::vector<int>& rRowIndexes,
+    const std::vector<int>& rColumnIndexes,
+    const TrilinosLocalMatrixType& rB,
+    const double NegligibleValueThreshold
+    )
+{
 
-//     int row, column;
-//     std::vector<double> values(rRowIndexes.size());
-//     for (std::size_t counter = 0; counter < rRowIndexes.size(); ++counter) {
-//         row = rRowIndexes[counter];
-//         column = rColumnIndexes[counter];
-//         values[counter] = rB(row, column);
-//     }
-//     CheckSparseMatrix(rA, rRowIndexes, rColumnIndexes, values, NegligibleValueThreshold);
-// }
+    int row, column;
+    std::vector<double> values(rRowIndexes.size());
+    for (std::size_t counter = 0; counter < rRowIndexes.size(); ++counter) {
+        row = rRowIndexes[counter];
+        column = rColumnIndexes[counter];
+        values[counter] = rB(row, column);
+    }
+    CheckSparseMatrix(rA, rRowIndexes, rColumnIndexes, values, NegligibleValueThreshold);
+}
 
+/***********************************************************************************/
+/***********************************************************************************/
 
-// /***********************************************************************************/
-// /***********************************************************************************/
+void TrilinosCPPTestExperimentalUtilities::CheckSparseMatrix(
+    const TrilinosSparseMatrixType& rA,
+    const std::vector<int>& rRowIndexes,
+    const std::vector<int>& rColumnIndexes,
+    const std::vector<double>& rValues,
+    const double NegligibleValueThreshold
+    )
+{
+    int local_validated_values = 0;
+    int row, column;
+    double value;
 
-// void TrilinosCPPTestExperimentalUtilities::CheckSparseMatrix(
-//     const TrilinosSparseMatrixType& rA,
-//     const std::vector<int>& rRowIndexes,
-//     const std::vector<int>& rColumnIndexes,
-//     const std::vector<double>& rValues,
-//     const double NegligibleValueThreshold
-//     )
-// {
-//     int local_validated_values = 0;
-//     int row, column;
-//     double value;
-//     for (std::size_t counter = 0; counter < rRowIndexes.size(); ++counter) {
-//         row = rRowIndexes[counter];
-//         column = rColumnIndexes[counter];
-//         value = rValues[counter];
-//         for (int i = 0; i < rA.NumMyRows(); i++) {
-//             int numEntries; // Number of non-zero entries
-//             double* vals;   // Row non-zero values
-//             int* cols;      // Column indices of row non-zero values
-//             rA.ExtractMyRowView(i, numEntries, vals, cols);
-//             const int row_gid = rA.RowMap().GID(i);
-//             if (row == row_gid) {
-//                 int j;
-//                 for (j = 0; j < numEntries; j++) {
-//                     const int col_gid = rA.ColMap().GID(cols[j]);
-//                     if (col_gid == column) {
-//                         KRATOS_EXPECT_RELATIVE_NEAR(value, vals[j], NegligibleValueThreshold)
-//                         ++local_validated_values;
-//                         break;
-//                     }
-//                 }
-//                 break;
-//             }
-//         }
-//     }
+    // Get necessary maps and communicator
+    auto rowMap = rA.getRowMap();  // rowMap is an RCP<const MapType>
+    auto colMap = rA.getColMap();  // colMap is an RCP<const MapType>
+    auto comm = rA.getComm();      // comm is an RCP<const Teuchos::Comm<int>>
 
-//     // Checking that all the values has been validated
-//     const auto& r_comm = rA.Comm();
-//     int global_validated_values;
-//     r_comm.SumAll(&local_validated_values, &global_validated_values, 1);
-//     KRATOS_EXPECT_EQ(global_validated_values, static_cast<int>(rValues.size()));
-// }
+    for (std::size_t counter = 0; counter < rRowIndexes.size(); ++counter) {
+        row = rRowIndexes[counter];
+        column = rColumnIndexes[counter];
+        value = rValues[counter];
 
-// /***********************************************************************************/
-// /***********************************************************************************/
+        // Convert global row index to local index
+        const auto localRowIndex = rowMap->getLocalElement(row);
 
-// void TrilinosCPPTestExperimentalUtilities::GenerateSparseMatrixIndexAndValuesVectors(
-//     const TrilinosSparseSpaceType::MatrixType& rA,
-//     std::vector<int>& rRowIndexes,
-//     std::vector<int>& rColumnIndexes,
-//     std::vector<double>& rValues,
-//     const bool PrintValues,
-//     const double ThresholdIncludeHardZeros
-//     )
-// {
-//     KRATOS_ERROR_IF_NOT(rA.Comm().NumProc() == 1) << "Debug must be done with one MPI core" << std::endl;
+        if (localRowIndex != Teuchos::OrdinalTraits<MapType::local_ordinal_type>::invalid()) {
+            Teuchos::ArrayView<const double> vals;   // Row non-zero values
+            Teuchos::ArrayView<const MapType::local_ordinal_type> cols; // Column indices of row non-zero values
+            rA.getLocalRowView(localRowIndex, cols, vals);
+            const std::size_t numEntries = cols.size(); // Number of non-zero entries
+            for (std::size_t j = 0; j < numEntries; j++) {
+                // Convert local column index to global index
+                const int col_gid = colMap->getGlobalElement(cols[j]);
+                if (col_gid == column) {
+                    KRATOS_EXPECT_RELATIVE_NEAR(value, vals[j], NegligibleValueThreshold);
+                    ++local_validated_values;
+                    break;
+                }
+            }
+        }
+    }
 
-//     // If print values
-//     if (PrintValues) {
-//         std::cout << "\n        KRATOS_EXPECT_EQ(rA.NumGlobalRows(), " << rA.NumGlobalRows() << ");\n";
-//         std::cout << "        KRATOS_EXPECT_EQ(rA.NumGlobalCols(), " << rA.NumGlobalCols() << ");\n";
-//         std::cout << "        KRATOS_EXPECT_EQ(rA.NumGlobalNonzeros(), " << rA.NumGlobalNonzeros() << ");\n";
-//     }
+    // Checking that all the values have been validated
+    int global_validated_values;
+    comm->barrier();  // Ensure synchronization across processes
+    Teuchos::reduceAll(*comm, Teuchos::REDUCE_SUM, 1, &local_validated_values, &global_validated_values);
+    KRATOS_EXPECT_EQ(global_validated_values, static_cast<int>(rValues.size()));
+}
 
-//     std::vector<double> values;
-//     for (int i = 0; i < rA.NumMyRows(); i++) {
-//         int numEntries; // Number of non-zero entries
-//         double* vals;   // Row non-zero values
-//         int* cols;      // Column indices of row non-zero values
-//         rA.ExtractMyRowView(i, numEntries, vals, cols);
-//         const int row_gid = rA.RowMap().GID(i);
-//         int j;
-//         for (j = 0; j < numEntries; j++) {
-//             const int col_gid = rA.ColMap().GID(cols[j]);
-//             if (std::abs(vals[j]) > ThresholdIncludeHardZeros) {
-//                 rRowIndexes.push_back(row_gid);
-//                 rColumnIndexes.push_back(col_gid);
-//                 rValues.push_back(vals[j]);
-//             }
-//         }
-//     }
-//     // If print values
-//     if (PrintValues) {
-//         std::cout << "\n        // Values to check\n";
-//         std::cout << "        std::vector<int> row_indexes = {";
-//         for(std::size_t i = 0; i < rRowIndexes.size() - 1; ++i) {
-//             std::cout << rRowIndexes[i] << ", ";
-//         }
-//         std::cout << rRowIndexes[rRowIndexes.size() - 1] << "};";
-//         std::cout << "\n        std::vector<int> column_indexes = {";
-//         for(std::size_t i = 0; i < rColumnIndexes.size() - 1; ++i) {
-//             std::cout << rColumnIndexes[i] << ", ";
-//         }
-//         std::cout << rColumnIndexes[rColumnIndexes.size() - 1] << "};";
-//         std::cout << "\n        std::vector<double> values = {";
-//         for(std::size_t i = 0; i < rValues.size() - 1; ++i) {
-//             std::cout << std::fixed;
-//             std::cout << std::setprecision(16);
-//             std::cout << rValues[i] << ", ";
-//         }
-//         std::cout << std::fixed;
-//         std::cout << std::setprecision(16);
-//         std::cout << rValues[rValues.size() - 1] << "};" << std::endl;
-//     }
-// }
+/***********************************************************************************/
+/***********************************************************************************/
 
-// /***********************************************************************************/
-// /***********************************************************************************/
+void TrilinosCPPTestExperimentalUtilities::GenerateSparseMatrixIndexAndValuesVectors(
+    const TrilinosSparseSpaceType::MatrixType& rA,
+    std::vector<int>& rRowIndexes,
+    std::vector<int>& rColumnIndexes,
+    std::vector<double>& rValues,
+    const bool PrintValues,
+    const double ThresholdIncludeHardZeros
+    )
+{
+    KRATOS_ERROR_IF_NOT(rA.getComm()->getSize() == 1) << "Debug must be done with one MPI core" << std::endl;
 
-// TrilinosCPPTestExperimentalUtilities::TrilinosSparseMatrixType TrilinosCPPTestExperimentalUtilities::GenerateSparseMatrix(
-//     const DataCommunicator& rDataCommunicator,
-//     const int NumGlobalElements,
-//     const std::vector<int>& rRowIndexes,
-//     const std::vector<int>& rColumnIndexes,
-//     const std::vector<double>& rValues,
-//     const Epetra_Map* pMap
-//     )
-// {
-//     // Generate Epetra communicator
-//     KRATOS_ERROR_IF_NOT(rDataCommunicator.IsDistributed()) << "Only distributed DataCommunicators can be used!" << std::endl;
-//     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(rDataCommunicator);
-//     Epetra_MpiComm epetra_comm(raw_mpi_comm);
+    // If print values
+    if (PrintValues) {
+        std::cout << "\n        KRATOS_EXPECT_EQ(rA.getGlobalNumRows(), " << rA.getGlobalNumRows() << ");\n";
+        std::cout << "        KRATOS_EXPECT_EQ(rA.getGlobalNumCols(), " << rA.getGlobalNumCols() << ");\n";
+        std::cout << "        KRATOS_EXPECT_EQ(rA.getGlobalNumEntries(), " << rA.getGlobalNumEntries() << ");\n";
+    }
 
-//     // Create a map
-//     Epetra_Map map = (pMap == nullptr) ? Epetra_Map(NumGlobalElements,0,epetra_comm) : *pMap;
+    std::vector<double> values;
+    for (std::size_t i = 0; i < rA.getNodeNumRows(); i++) {
+        Teuchos::ArrayView<const double> vals;   // Row non-zero values
+        Teuchos::ArrayView<const int> cols;      // Column indices of row non-zero values
+        rA.getLocalRowView(i, cols, vals);
+        const std::size_t numEntries = cols.size(); // Number of non-zero entries
+        const int row_gid = rA.getRowMap()->getGlobalElement(i);
+        for (std::size_t j = 0; j < numEntries; j++) {
+            const int col_gid = rA.getColMap()->getGlobalElement(cols[j]);
+            if (std::abs(vals[j]) > ThresholdIncludeHardZeros) {
+                rRowIndexes.push_back(row_gid);
+                rColumnIndexes.push_back(col_gid);
+                rValues.push_back(vals[j]);
+            }
+        }
+    }
 
-//     // Local number of rows
-//     const int NumMyElements = map.NumMyElements();
+    // If print values
+    if (PrintValues) {
+        std::cout << "\n        // Values to check\n";
+        std::cout << "        std::vector<int> row_indexes = {";
+        for (std::size_t i = 0; i < rRowIndexes.size() - 1; ++i) {
+            std::cout << rRowIndexes[i] << ", ";
+        }
+        std::cout << rRowIndexes.back() << "};";
+        std::cout << "\n        std::vector<int> column_indexes = {";
+        for (std::size_t i = 0; i < rColumnIndexes.size() - 1; ++i) {
+            std::cout << rColumnIndexes[i] << ", ";
+        }
+        std::cout << rColumnIndexes.back() << "};";
+        std::cout << "\n        std::vector<double> values = {";
+        for (std::size_t i = 0; i < rValues.size() - 1; ++i) {
+            std::cout << std::fixed;
+            std::cout << std::setprecision(16);
+            std::cout << rValues[i] << ", ";
+        }
+        std::cout << std::fixed;
+        std::cout << std::setprecision(16);
+        std::cout << rValues.back() << "};" << std::endl;
+    }
+}
 
-//     // Get update list
-//     int* MyGlobalElements = map.MyGlobalElements();
+/***********************************************************************************/
+/***********************************************************************************/
 
-//     // Create an integer vector NumNz that is used to build the EPetra Matrix.
-//     const int size_global_vector = rRowIndexes.size();
-//     std::vector<int> NumNz(NumMyElements, 0);
-//     int current_row_index;
-//     for (current_row_index=0; current_row_index<size_global_vector; ++current_row_index) {
-//         if (MyGlobalElements[0] == rRowIndexes[current_row_index]) {
-//             break;
-//         }
-//     }
-//     int current_id = rRowIndexes[current_row_index];
-//     int nnz = 0;
-//     int initial_index, end_index;
-//     std::unordered_map<int, std::pair<int, int>> initial_and_end_index;
-//     for (int i=0; i<NumMyElements; i++) {
-//         if (MyGlobalElements[i] == rRowIndexes[current_row_index]) {
-//             initial_index = current_row_index;
-//             const int start_index = current_row_index;
-//             for (current_row_index = start_index; current_row_index < size_global_vector; ++current_row_index) {
-//                 if (current_id == rRowIndexes[current_row_index]) {
-//                     ++nnz;
-//                 } else {
-//                     current_id = rRowIndexes[current_row_index];
-//                     break;
-//                 }
-//             }
-//             end_index = current_row_index;
-//             initial_and_end_index.insert({i, std::make_pair(initial_index, end_index)});
-//             NumNz[i] = nnz;
-//             nnz = 0;
-//         }
-//     }
+TrilinosCPPTestExperimentalUtilities::TrilinosSparseMatrixSmartReferenceType TrilinosCPPTestExperimentalUtilities::GenerateSparseMatrix(
+    const DataCommunicator& rDataCommunicator,
+    const int NumGlobalElements,
+    const std::vector<int>& rRowIndexes,
+    const std::vector<int>& rColumnIndexes,
+    const std::vector<double>& rValues,
+    const MapType* pMap
+    )
+{
+    // Generate Tpetra communicator
+    KRATOS_ERROR_IF_NOT(rDataCommunicator.IsDistributed()) << "Only distributed DataCommunicators can be used!" << std::endl;
+    auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(rDataCommunicator);
+    auto comm = Teuchos::rcp(new Teuchos::MpiComm<int>(raw_mpi_comm));
 
-//     // Create an Epetra_Matrix
-//     TrilinosSparseMatrixType A(Copy, map, NumNz.data());
+    // Create a map
+    Teuchos::RCP<const MapType> map;
+    if (pMap == nullptr) {
+        map = Teuchos::rcp(new MapType(NumGlobalElements, 0, comm));
+    } else {
+        map = Teuchos::rcp(new MapType(*pMap));
+    }
 
-//     // Fill matrix
-//     int ierr;
-//     auto it_end = initial_and_end_index.end();
-//     auto it_index_begin = rColumnIndexes.begin();
-//     auto it_values_begin = rValues.begin();
-//     for( int i=0 ; i<NumMyElements; ++i ) {
-//         auto it_find = initial_and_end_index.find(i);
-//         if (it_find != it_end) {
-//             const auto& r_pair = it_find->second;
-//             initial_index = r_pair.first;
-//             end_index = r_pair.second;
-//             std::vector<int> indexes(it_index_begin + initial_index, it_index_begin + end_index);
-//             std::vector<double> values(it_values_begin + initial_index, it_values_begin + end_index);
-//             ierr = A.InsertGlobalValues(MyGlobalElements[i], end_index - initial_index, values.data(), indexes.data());
-//             KRATOS_ERROR_IF_NOT(ierr == 0) << "Error in inserting values " << ierr << std::endl;
-//         }
-//     }
+    // Local number of rows
+    const int NumMyElements = map->getNodeNumElements();
 
-//     // Finish up, trasforming the matrix entries into local numbering,
-//     // to optimize data transfert during matrix-vector products
-//     ierr = A.FillComplete();
-//     KRATOS_ERROR_IF_NOT(ierr == 0) << "Error in global assembling " << ierr << std::endl;
+    // Get update list
+    auto MyGlobalElements = map->getNodeElementList();
 
-//     return A;
-// }
+    // Create an integer vector NumNz that is used to build the Tpetra Matrix.
+    const int size_global_vector = rRowIndexes.size();
+    std::vector<size_t> NumNz(NumMyElements, 0);
+    int current_row_index;
+    for (current_row_index = 0; current_row_index < size_global_vector; ++current_row_index) {
+        if (MyGlobalElements[0] == rRowIndexes[current_row_index]) {
+            break;
+        }
+    }
+    int current_id = rRowIndexes[current_row_index];
+    size_t nnz = 0;
+    int initial_index, end_index;
+    std::unordered_map<int, std::pair<int, int>> initial_and_end_index;
+    for (int i = 0; i < NumMyElements; i++) {
+        if (MyGlobalElements[i] == rRowIndexes[current_row_index]) {
+            initial_index = current_row_index;
+            const int start_index = current_row_index;
+            for (current_row_index = start_index; current_row_index < size_global_vector; ++current_row_index) {
+                if (current_id == rRowIndexes[current_row_index]) {
+                    ++nnz;
+                } else {
+                    current_id = rRowIndexes[current_row_index];
+                    break;
+                }
+            }
+            end_index = current_row_index;
+            initial_and_end_index.insert({i, std::make_pair(initial_index, end_index)});
+            NumNz[i] = nnz;
+            nnz = 0;
+        }
+    }
+
+    // Create a Tpetra_CrsMatrix
+    const int NumNzMax = *std::max_element(NumNz.begin(), NumNz.end());
+    Teuchos::RCP<GraphType> graph = Teuchos::rcp(new GraphType(map, map, NumNzMax));
+    TrilinosSparseMatrixSmartReferenceType A = Teuchos::rcp(new TrilinosSparseMatrixType(graph));
+
+    // Fill matrix
+    auto it_end = initial_and_end_index.end();
+    auto it_index_begin = rColumnIndexes.begin();
+    auto it_values_begin = rValues.begin();
+    for (int i = 0; i < NumMyElements; ++i) {
+        auto it_find = initial_and_end_index.find(i);
+        if (it_find != it_end) {
+            const auto& r_pair = it_find->second;
+            initial_index = r_pair.first;
+            end_index = r_pair.second;
+            std::vector<int> indexes(it_index_begin + initial_index, it_index_begin + end_index);
+            std::vector<double> values(it_values_begin + initial_index, it_values_begin + end_index);
+            //A->insertGlobalValues(static_cast<GO>(MyGlobalElements[i]), Teuchos::ArrayView<const int>(indexes), Teuchos::ArrayView<const double>(values));
+        }
+    }
+
+    // Finish up, transforming the matrix entries into local numbering,
+    // to optimize data transfer during matrix-vector products
+    A->fillComplete();
+
+    return A;
+}
 
 } /// namespace Kratos
