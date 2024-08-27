@@ -422,8 +422,8 @@ TrilinosCPPTestExperimentalUtilities::TrilinosSparseMatrixSmartReferenceType Tri
         }
     }
     int current_id = rRowIndexes[current_row_index];
-    size_t nnz = 0;
-    int initial_index, end_index;
+    std::size_t nnz = 0;
+    GO initial_index, end_index;
     std::unordered_map<int, std::pair<int, int>> initial_and_end_index;
     for (int i = 0; i < NumMyElements; i++) {
         if (MyGlobalElements[i] == rRowIndexes[current_row_index]) {
@@ -444,24 +444,35 @@ TrilinosCPPTestExperimentalUtilities::TrilinosSparseMatrixSmartReferenceType Tri
         }
     }
 
-    // Create a Tpetra_CrsMatrix
+    // Create a Tpetra_CrsMatrix graph
     const int NumNzMax = *std::max_element(NumNz.begin(), NumNz.end());
     Teuchos::RCP<GraphType> graph = Teuchos::rcp(new GraphType(map, map, NumNzMax));
-    TrilinosSparseMatrixSmartReferenceType A = Teuchos::rcp(new TrilinosSparseMatrixType(graph));
 
-    // Fill matrix
-    auto it_end = initial_and_end_index.end();
-    auto it_index_begin = rColumnIndexes.begin();
-    auto it_values_begin = rValues.begin();
+    // Build the graph
     for (int i = 0; i < NumMyElements; ++i) {
         auto it_find = initial_and_end_index.find(i);
-        if (it_find != it_end) {
+        if (it_find != initial_and_end_index.end()) {
             const auto& r_pair = it_find->second;
             initial_index = r_pair.first;
             end_index = r_pair.second;
-            std::vector<int> indexes(it_index_begin + initial_index, it_index_begin + end_index);
-            std::vector<double> values(it_values_begin + initial_index, it_values_begin + end_index);
-            //A->insertGlobalValues(static_cast<GO>(MyGlobalElements[i]), Teuchos::ArrayView<const int>(indexes), Teuchos::ArrayView<const double>(values));
+            std::vector<GO> indexes(rColumnIndexes.begin() + initial_index, rColumnIndexes.begin() + end_index);
+            // Insert global indices into the graph
+            graph->insertGlobalIndices(MyGlobalElements[i], Teuchos::ArrayView<const GO>(indexes));
+        }
+    }
+
+    // Create the matrix and set values
+    TrilinosSparseMatrixSmartReferenceType A = Teuchos::rcp(new TrilinosSparseMatrixType(graph));
+    // Set the matrix values
+    for (int i = 0; i < NumMyElements; ++i) {
+        auto it_find = initial_and_end_index.find(i);
+        if (it_find != initial_and_end_index.end()) {
+            const auto& r_pair = it_find->second;
+            initial_index = r_pair.first;
+            end_index = r_pair.second;
+            std::vector<GO> indexes(rColumnIndexes.begin() + initial_index, rColumnIndexes.begin() + end_index);
+            std::vector<double> values(rValues.begin() + initial_index, rValues.begin() + end_index);
+            A->replaceGlobalValues(MyGlobalElements[i], Teuchos::ArrayView<const GO>(indexes), Teuchos::ArrayView<const double>(values));
         }
     }
 
