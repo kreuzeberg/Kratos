@@ -19,7 +19,7 @@
 #include "trilinos_space_experimental.h"
 #include "containers/model.h"
 #include "mpi/includes/mpi_data_communicator.h"
-#include "trilinos_cpp_test_utilities.h"
+#include "trilinos_cpp_test_experimental_utilities.h"
 #include "utilities/math_utils.h"
 
 namespace Kratos::Testing

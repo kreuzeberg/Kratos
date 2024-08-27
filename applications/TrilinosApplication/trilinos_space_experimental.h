@@ -22,6 +22,9 @@
 #include <Tpetra_FECrsMatrix.hpp>
 #include <Tpetra_Map.hpp>
 #include <Tpetra_MultiVector.hpp>
+#include <Teuchos_RCP.hpp>
+#include <Teuchos_ArrayView.hpp>
+#include <Teuchos_GlobalMPISession.hpp>
 
 // Project includes
 #include "includes/ublas_interface.h"
