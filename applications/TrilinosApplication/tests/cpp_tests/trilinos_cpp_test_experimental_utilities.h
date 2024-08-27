@@ -58,6 +58,9 @@ public:
     using TrilinosLocalMatrixType = TrilinosLocalSpaceType::MatrixType;
     using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
+    /// Define the graph type
+    using GraphType = Tpetra::FECrsGraph<>;
+
     /// Tpetra definitions
     using LO = Tpetra::Map<>::local_ordinal_type;
     using GO = Tpetra::Map<>::global_ordinal_type;

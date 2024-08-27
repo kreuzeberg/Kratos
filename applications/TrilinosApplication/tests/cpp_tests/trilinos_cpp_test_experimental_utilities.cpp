@@ -41,9 +41,6 @@ TrilinosCPPTestExperimentalUtilities::TrilinosSparseMatrixSmartReferenceType Tri
     const bool AddNoDiagonalValues
     )
 {
-    // Define the graph type
-    using graph_type = Tpetra::FECrsGraph<>;  // Define the graph type
-
     // Generate Tpetra communicator
     KRATOS_ERROR_IF_NOT(rDataCommunicator.IsDistributed()) << "Only distributed DataCommunicators can be used!" << std::endl;
     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(rDataCommunicator);
@@ -56,7 +53,7 @@ TrilinosCPPTestExperimentalUtilities::TrilinosSparseMatrixSmartReferenceType Tri
 
     // Create a graph
     const size_t maxNodeEntriesPerRow = AddNoDiagonalValues ? 3 : 1;
-    Teuchos::RCP<graph_type> graph = Teuchos::rcp(new graph_type(map, map, maxNodeEntriesPerRow));
+    Teuchos::RCP<GraphType> graph = Teuchos::rcp(new GraphType(map, map, maxNodeEntriesPerRow));
 
     // Begin graph assembly
     graph->resumeFill();
