@@ -268,17 +268,17 @@ std::mutex ProfilerSingleton<T>::mMutex;
 
 
 template class Profiler<std::chrono::milliseconds>;
-template class ProfilerSingleton<std::chrono::milliseconds>;
+//template class ProfilerSingleton<std::chrono::milliseconds>;
 template std::ostream& operator<<(std::ostream&, const Profiler<std::chrono::milliseconds>&);
 
 
 template class Profiler<std::chrono::microseconds>;
-template class ProfilerSingleton<std::chrono::microseconds>;
+//template class ProfilerSingleton<std::chrono::microseconds>;
 template std::ostream& operator<<(std::ostream&, const Profiler<std::chrono::microseconds>&);
 
 
 template class Profiler<std::chrono::nanoseconds>;
-template class ProfilerSingleton<std::chrono::nanoseconds>;
+//template class ProfilerSingleton<std::chrono::nanoseconds>;
 template std::ostream& operator<<(std::ostream&, const Profiler<std::chrono::nanoseconds>&);
 
 

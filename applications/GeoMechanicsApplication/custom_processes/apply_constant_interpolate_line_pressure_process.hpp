@@ -387,7 +387,6 @@ private:
 
         int MaxNodeID = -1;
         block_for_each(mrModelPart.Nodes(), [&MaxNodeID](const Node& rNode) {
-#pragma omp critical
             MaxNodeID = std::max<int>(MaxNodeID, rNode.Id());
         });
 

@@ -152,6 +152,10 @@ endif()
 pybind11_add_module(Kratos MODULE THIN_LTO ${KRATOS_PYTHON_SOURCES})
 target_link_libraries(Kratos PRIVATE KratosCore)
 
+if (KRATOS_SHARED_MEMORY_PARALLELIZATION STREQUAL "OpenMP")
+    target_link_libraries(KratosCore PUBLIC ${OpenMP_CXX_LIBRARIES})
+endif()
+
 # Precompile most demanding / widely included headers
 if(KRATOS_USE_PCH MATCHES ON)
     target_precompile_headers(KratosCore PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/includes/model_part.h>")

@@ -366,7 +366,8 @@ function(target_code_coverage TARGET_NAME)
             ${LLVM_COV_PATH} show $<TARGET_FILE:${TARGET_NAME}>
             -instr-profile=${target_code_coverage_COVERAGE_TARGET_NAME}.profdata
             -show-line-counts-or-regions ${LINKED_OBJECTS} ${EXCLUDE_REGEX}
-          DEPENDS ccov-processing-${target_code_coverage_COVERAGE_TARGET_NAME})
+          DEPENDS ccov-processing-${target_code_coverage_COVERAGE_TARGET_NAME}
+          WORKING_DIRECTORY ${target_code_coverage_WORKING_DIRECTORY})
 
         # Print out details of the coverage information to the command line
         add_custom_target(
