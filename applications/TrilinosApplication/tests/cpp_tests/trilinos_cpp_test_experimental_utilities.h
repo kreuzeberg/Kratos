@@ -65,9 +65,18 @@ public:
     using MapType = Tpetra::Map<>;
 
     /// Tpetra definitions
-    using LO = Tpetra::Map<>::local_ordinal_type;
-    using GO = Tpetra::Map<>::global_ordinal_type;
-    using NT = Tpetra::Map<>::node_type;
+    // Your scalar type; the type of sparse matrix entries. e.g., double.
+    using ST = Tpetra::FECrsMatrix<>::scalar_type;
+    // Your local ordinal type; the signed integer type 
+    // used to store local sparse matrix indices.  e.g., int.
+    using LO = MapType::local_ordinal_type;
+    // Your global ordinal type; the signed integer type 
+    // used to index the matrix globally, over all processes.
+    // e.g., int, long, ptrdif_t, int64_t, ...
+    using GO = MapType::global_ordinal_type;
+    // The Node type.  e.g., Kokkos::DefaultNode::DefaultNodeType, 
+    // defined in KokkosCompat_DefaultNode.hpp.
+    using NT = MapType::node_type;
 
     ///@}
     ///@name Life Cycle
