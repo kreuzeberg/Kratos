@@ -52,31 +52,28 @@ public:
     using TrilinosSparseMatrixType = TrilinosSparseSpaceType::MatrixType;
     using TrilinosVectorType = TrilinosSparseSpaceType::VectorType;
 
-    using TrilinosSparseMatrixSmartReferenceType = Teuchos::RCP<TrilinosSparseMatrix>;
-    using TrilinosVectorSmartReferenceType = Teuchos::RCP<TrilinosVectorType>;
-
     using TrilinosLocalMatrixType = TrilinosLocalSpaceType::MatrixType;
     using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
-    /// Define the graph type
-    using GraphType = Tpetra::FECrsGraph<>;
-
-    /// Define the map type
-    using MapType = Tpetra::Map<>;
+    /// Definition of the pointer types
+    using MatrixPointerType = TrilinosSparseSpaceType::MatrixPointerType;
+    using VectorPointerType = TrilinosSparseSpaceType::VectorPointerType;
 
     /// Tpetra definitions
     // Your scalar type; the type of sparse matrix entries. e.g., double.
-    using ST = Tpetra::FECrsMatrix<>::scalar_type;
-    // Your local ordinal type; the signed integer type 
-    // used to store local sparse matrix indices.  e.g., int.
-    using LO = MapType::local_ordinal_type;
-    // Your global ordinal type; the signed integer type 
-    // used to index the matrix globally, over all processes.
-    // e.g., int, long, ptrdif_t, int64_t, ...
-    using GO = MapType::global_ordinal_type;
-    // The Node type.  e.g., Kokkos::DefaultNode::DefaultNodeType, 
-    // defined in KokkosCompat_DefaultNode.hpp.
-    using NT = MapType::node_type;
+    using ST = TrilinosSpaceExperimental<TrilinosSparseMatrix, TrilinosSparseVector>::ST;
+    // Your local ordinal type; the signed integer type used to store local sparse matrix indices.  e.g., int.
+    using LO = TrilinosSpaceExperimental<TrilinosSparseMatrix, TrilinosSparseVector>::LO;
+    // Your global ordinal type; the signed integer type used to index the matrix globally, over all processes. e.g., int, long, ptrdif_t, int64_t, ...
+    using GO = TrilinosSpaceExperimental<TrilinosSparseMatrix, TrilinosSparseVector>::GO;
+    // The Node type.  e.g., Kokkos::DefaultNode::DefaultNodeType, defined in KokkosCompat_DefaultNode.hpp.
+    using NT = TrilinosSpaceExperimental<TrilinosSparseMatrix, TrilinosSparseVector>::NT;
+
+    /// Define the graph type
+    using GraphType = TrilinosSpaceExperimental<TrilinosSparseMatrix, TrilinosSparseVector>::GraphType;
+
+    /// Define the map type
+    using MapType = TrilinosSpaceExperimental<TrilinosSparseMatrix, TrilinosSparseVector>::MapType;
 
     ///@}
     ///@name Life Cycle
@@ -106,7 +103,7 @@ public:
     * @param Offset The offset considered
     * @param AddNoDiagonalValues If adding non diagonal values
     */
-    static TrilinosSparseMatrixSmartReferenceType GenerateDummySparseMatrix(
+    static MatrixPointerType GenerateDummySparseMatrix(
         const DataCommunicator& rDataCommunicator,
         const int NumGlobalElements = 12,
         const double Offset = 0.0,
@@ -130,7 +127,7 @@ public:
     * @param NumGlobalElements The global dimension of the matrix
     * @param Offset The offset considered
     */
-    static TrilinosVectorSmartReferenceType GenerateDummySparseVector(
+    static VectorPointerType GenerateDummySparseVector(
         const DataCommunicator& rDataCommunicator,
         const int NumGlobalElements = 12,
         const double Offset = 0.0
@@ -234,7 +231,7 @@ public:
     * @param pMap Map pointer
     * @return The matrix generated
     */
-    static TrilinosSparseMatrixSmartReferenceType GenerateSparseMatrix(
+    static MatrixPointerType GenerateSparseMatrix(
         const DataCommunicator& rDataCommunicator,
         const int NumGlobalElements,
         const std::vector<int>& rRowIndexes,

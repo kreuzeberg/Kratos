@@ -74,7 +74,7 @@ public:
     KRATOS_CLASS_POINTER_DEFINITION(TrilinosSpaceExperimental);
 
     /// Definition of the data type
-    using DataType = double;
+    using DataType = typename TMatrixType::scalar_type;
 
     /// Definition of the matrix type
     using MatrixType = TMatrixType;
@@ -88,9 +88,25 @@ public:
     /// Definition of the size type
     using SizeType = std::size_t;
 
+    /// Tpetra definitions
+    // Your scalar type; the type of sparse matrix entries. e.g., double.
+    using ST = typename TMatrixType::scalar_type;
+    // Your local ordinal type; the signed integer type used to store local sparse matrix indices.  e.g., int.
+    using LO = typename TMatrixType::local_ordinal_type;
+    // Your global ordinal type; the signed integer type used to index the matrix globally, over all processes. e.g., int, long, ptrdif_t, int64_t, ...
+    using GO = typename TMatrixType::global_ordinal_type;
+    // The Node type.  e.g., Kokkos::DefaultNode::DefaultNodeType, defined in KokkosCompat_DefaultNode.hpp.
+    using NT = typename TMatrixType::node_type;
+
+    /// Define the map type
+    using MapType = Tpetra::Map<LO, GO, NT>;
+
+    /// Define the graph type
+    using GraphType = Tpetra::FECrsGraph<LO, GO, NT>;
+
     /// Definition of the pointer types
-    using MatrixPointerType = typename Kratos::shared_ptr<TMatrixType>;
-    using VectorPointerType = typename Kratos::shared_ptr<TVectorType>;
+    using MatrixPointerType = Teuchos::RCP<TMatrixType>;
+    using VectorPointerType = Teuchos::RCP<TVectorType>;
 
     // /// Some other definitions
     // using DofUpdaterType = TrilinosDofUpdater< TrilinosSpaceExperimental<TMatrixType,TVectorType>>;

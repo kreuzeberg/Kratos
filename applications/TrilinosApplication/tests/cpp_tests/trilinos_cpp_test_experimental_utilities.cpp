@@ -34,7 +34,7 @@ TrilinosCPPTestExperimentalUtilities::TrilinosLocalMatrixType TrilinosCPPTestExp
 /***********************************************************************************/
 /***********************************************************************************/
 
-TrilinosCPPTestExperimentalUtilities::TrilinosSparseMatrixSmartReferenceType TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(
+TrilinosCPPTestExperimentalUtilities::MatrixPointerType TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(
     const DataCommunicator& rDataCommunicator,
     const int NumGlobalElements,
     const double Offset,
@@ -86,7 +86,7 @@ TrilinosCPPTestExperimentalUtilities::TrilinosSparseMatrixSmartReferenceType Tri
     graph->fillComplete();
 
     // Create a Tpetra::FECrsMatrix using the graph
-    TrilinosSparseMatrixSmartReferenceType A = Teuchos::rcp(new TrilinosSparseMatrixType(graph));
+    MatrixPointerType A = Teuchos::rcp(new TrilinosSparseMatrixType(graph));
 
     // Define non-diagonal values and other necessary variables
     std::vector<double> nonDiagonalValues(2, -1.0);
@@ -135,7 +135,7 @@ TrilinosCPPTestExperimentalUtilities::TrilinosLocalVectorType TrilinosCPPTestExp
 /***********************************************************************************/
 /***********************************************************************************/
 
-TrilinosCPPTestExperimentalUtilities::TrilinosVectorSmartReferenceType TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(
+TrilinosCPPTestExperimentalUtilities::VectorPointerType TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(
     const DataCommunicator& rDataCommunicator,
     const int NumGlobalElements,
     const double Offset
@@ -384,7 +384,7 @@ void TrilinosCPPTestExperimentalUtilities::GenerateSparseMatrixIndexAndValuesVec
 /***********************************************************************************/
 /***********************************************************************************/
 
-TrilinosCPPTestExperimentalUtilities::TrilinosSparseMatrixSmartReferenceType TrilinosCPPTestExperimentalUtilities::GenerateSparseMatrix(
+TrilinosCPPTestExperimentalUtilities::MatrixPointerType TrilinosCPPTestExperimentalUtilities::GenerateSparseMatrix(
     const DataCommunicator& rDataCommunicator,
     const int NumGlobalElements,
     const std::vector<int>& rRowIndexes,
@@ -462,7 +462,7 @@ TrilinosCPPTestExperimentalUtilities::TrilinosSparseMatrixSmartReferenceType Tri
     }
 
     // Create the matrix and set values
-    TrilinosSparseMatrixSmartReferenceType A = Teuchos::rcp(new TrilinosSparseMatrixType(graph));
+    MatrixPointerType A = Teuchos::rcp(new TrilinosSparseMatrixType(graph));
     // Set the matrix values
     for (int i = 0; i < NumMyElements; ++i) {
         auto it_find = initial_and_end_index.find(i);
