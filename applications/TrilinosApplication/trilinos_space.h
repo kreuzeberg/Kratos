@@ -302,10 +302,10 @@ public:
     }
 
     /**
-     * @brief Returns the Frobenius norm of the matrix rX
+     * @brief Returns the Frobenius norm of the matrix rA
      * @details ||rA||2
      * @param rA The matrix considered
-     * @return The Frobenius norm of the matrix rX
+     * @return The Frobenius norm of the matrix rA
      */
     static double TwoNorm(const MatrixType& rA)
     {
