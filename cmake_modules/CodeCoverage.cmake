@@ -375,7 +375,7 @@ function(target_code_coverage TARGET_NAME)
           COMMAND
             ${LLVM_COV_PATH} show $<TARGET_FILE:${TARGET_NAME}>
             -instr-profile=${target_code_coverage_COVERAGE_TARGET_NAME}.profdata
-            -show-line-counts-or-regions ${LINKED_OBJECTS} ${EXCLUDE_REGEX}
+            -show-branches=count ${LINKED_OBJECTS} ${EXCLUDE_REGEX}
             > ${target_code_coverage_COVERAGE_TARGET_NAME}.txt
           DEPENDS ccov-processing-${target_code_coverage_COVERAGE_TARGET_NAME}
           WORKING_DIRECTORY ${target_code_coverage_WORKING_DIRECTORY})
