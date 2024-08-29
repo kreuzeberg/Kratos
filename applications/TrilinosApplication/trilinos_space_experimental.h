@@ -213,67 +213,64 @@ public:
         return size1;
     }
 
-//     /**
-//      * @brief Returns the column of the matrix in the given position
-//      * @details rXi = rMij
-//      * @param j The position of the column
-//      * @param rM The matrix considered
-//      * @param rX The column considered
-//      * @todo Implement this method
-//      */
-//     static void GetColumn(
-//         const unsigned int j,
-//         const MatrixType& rM,
-//         VectorType& rX
-//         )
-//     {
-//         KRATOS_ERROR << "GetColumn method is not currently implemented" << std::endl;
-//     }
+    /**
+     * @brief Returns the column of the matrix in the given position
+     * @details rXi = rMij
+     * @param j The position of the column
+     * @param rM The matrix considered
+     * @param rX The column considered
+     * @todo Implement this method
+     */
+    static void GetColumn(
+        const unsigned int j,
+        const MatrixType& rM,
+        VectorType& rX
+        )
+    {
+        KRATOS_ERROR << "GetColumn method is not currently implemented" << std::endl;
+    }
 
-//     /**
-//      * @brief Returns a copy of the matrix rX
-//      * @details rY = rX
-//      * @param rX The matrix considered
-//      * @param rY The copy of the matrix rX
-//      */
-//     static void Copy(
-//         const MatrixType& rX,
-//         MatrixType& rY
-//         )
-//     {
-//         rY = rX;
-//     }
+    /**
+     * @brief Returns a copy of the matrix rX
+     * @details rY = rX
+     * @param rX The matrix considered
+     * @param rY The copy of the matrix rX
+     */
+    static void Copy(
+        const MatrixType& rX,
+        MatrixType& rY
+        )
+    {
+        rY = rX;
+    }
 
-//     /**
-//      * @brief Returns a copy of the vector rX
-//      * @details rY = rX
-//      * @param rX The vector considered
-//      * @param rY The copy of the vector rX
-//      */
-//     static void Copy(
-//         const VectorType& rX,
-//         VectorType& rY
-//         )
-//     {
-//         rY = rX;
-//     }
+    /**
+     * @brief Returns a copy of the vector rX
+     * @details rY = rX
+     * @param rX The vector considered
+     * @param rY The copy of the vector rX
+     */
+    static void Copy(
+        const VectorType& rX,
+        VectorType& rY
+        )
+    {
+        rY = rX;
+    }
 
-//     /**
-//      * @brief Returns the product of two vectors
-//      * @details rX * rY
-//      * @param rX The first vector considered
-//      * @param rY The second vector considered
-//      */
-//     static double Dot(
-//         const VectorType& rX,
-//         const VectorType& rY
-//         )
-//     {
-//         double value;
-//         const int sucess = rY.Dot(rX, &value); //it is prepared to handle vectors with multiple components
-//         KRATOS_ERROR_IF_NOT(sucess == 0) << "Error computing dot product" <<  std::endl;
-//         return value;
-//     }
+    /**
+     * @brief Returns the product of two vectors
+     * @details rX * rY
+     * @param rX The first vector considered
+     * @param rY The second vector considered
+     */
+    static double Dot(
+        const VectorType& rX,
+        const VectorType& rY
+        )
+    {
+        return rX.dot(rY);
+    }
 
 //     /**
 //      * @brief Returns the maximum value of the vector rX
