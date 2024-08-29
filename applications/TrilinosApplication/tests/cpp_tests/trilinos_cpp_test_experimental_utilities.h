@@ -75,6 +75,9 @@ public:
     /// Define the map type
     using MapType = TrilinosSpaceExperimental<TrilinosSparseMatrix, TrilinosSparseVector>::MapType;
 
+    // Define TPetra communicator
+    using CommunicatorType = TrilinosSpaceExperimental<TrilinosSparseMatrix, TrilinosSparseVector>::CommunicatorType;
+
     ///@}
     ///@name Life Cycle
     ///@{

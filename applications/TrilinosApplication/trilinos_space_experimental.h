@@ -104,6 +104,9 @@ public:
     /// Define the graph type
     using GraphType = Tpetra::FECrsGraph<LO, GO, NT>;
 
+    // Define TPetra communicator
+    using CommunicatorType = Teuchos::MpiComm<int>;
+
     /// Definition of the pointer types
     using MatrixPointerType = Teuchos::RCP<TMatrixType>;
     using VectorPointerType = Teuchos::RCP<TVectorType>;
@@ -153,26 +156,26 @@ public:
     }
 
 //     /**
-//      * @brief This method creates an empty pointer to a matrix using epetra communicator
-//      * @param rComm The epetra communicator
+//      * @brief This method creates an empty pointer to a matrix using TPetra communicator
+//      * @param rComm The Tpetra communicator
 //      * @return The pointer to the matrix
 //      */
-//     static MatrixPointerType CreateEmptyMatrixPointer(Epetra_MpiComm& rComm)
+//     static MatrixPointerType CreateEmptyMatrixPointer(CommunicatorType& rComm)
 //     {
 //         const int global_elems = 0;
-//         Epetra_Map Map(global_elems, 0, rComm);
+//         MapType Map(global_elems, 0, rComm);
 //         return MatrixPointerType(new TMatrixType(::Copy, Map, 0));
 //     }
 
 //     /**
-//      * @brief This method creates an empty pointer to a vector using epetra communicator
-//      * @param rComm The epetra communicator
+//      * @brief This method creates an empty pointer to a vector using Tpetra communicator
+//      * @param rComm The Tpetra communicator
 //      * @return The pointer to the vector
 //      */
-//     static VectorPointerType CreateEmptyVectorPointer(Epetra_MpiComm& rComm)
+//     static VectorPointerType CreateEmptyVectorPointer(CommunicatorType& rComm)
 //     {
 //         const int global_elems = 0;
-//         Epetra_Map Map(global_elems, 0, rComm);
+//         MapType Map(global_elems, 0, rComm);
 //         return VectorPointerType(new TVectorType(Map));
 //     }
 
@@ -716,7 +719,7 @@ public:
 //     {
 //         //KRATOS_ERROR_IF(pX != NULL) << "Trying to resize a null pointer" << std::endl;
 //         int global_elems = n;
-//         Epetra_Map Map(global_elems, 0, pX->Comm());
+//         MapType Map(global_elems, 0, pX->Comm());
 //         VectorPointerType pNewEmptyX = Kratos::make_shared<VectorType>(Map);
 //         pX.swap(pNewEmptyX);
 //     }
@@ -729,7 +732,7 @@ public:
 //     {
 //         if(pA != NULL) {
 //             int global_elems = 0;
-//             Epetra_Map Map(global_elems, 0, pA->Comm());
+//             MapType Map(global_elems, 0, pA->Comm());
 //             MatrixPointerType pNewEmptyA = MatrixPointerType(new TMatrixType(::Copy, Map, 0));
 //             pA.swap(pNewEmptyA);
 //         }
@@ -743,7 +746,7 @@ public:
 //     {
 //         if(pX != NULL) {
 //             int global_elems = 0;
-//             Epetra_Map Map(global_elems, 0, pX->Comm());
+//             MapType Map(global_elems, 0, pX->Comm());
 //             VectorPointerType pNewEmptyX = VectorPointerType(new VectorType(Map));
 //             pX.swap(pNewEmptyX);
 //         }
@@ -928,7 +931,7 @@ public:
 //         double tot_size = IndexArray.size();
 
 //         //defining a map as needed
-//         Epetra_Map dof_update_map(-1, tot_size, &(*(IndexArray.begin())), 0, rX.Comm());
+//         MapType dof_update_map(-1, tot_size, &(*(IndexArray.begin())), 0, rX.Comm());
 
 //         //defining the importer class
 //         Epetra_Import importer(dof_update_map, rX.Map());
@@ -954,7 +957,7 @@ public:
 //      */
 //     MatrixPointerType ReadMatrixMarket(
 //         const std::string FileName,
-//         Epetra_MpiComm& rComm
+//         CommunicatorType& rComm
 //         )
 //     {
 //         KRATOS_TRY
@@ -1014,13 +1017,13 @@ public:
 //      */
 //     VectorPointerType ReadMatrixMarketVector(
 //         const std::string& rFileName,
-//         Epetra_MpiComm& rComm,
+//         CommunicatorType& rComm,
 //         const int N
 //         )
 //     {
 //         KRATOS_TRY
 
-//         Epetra_Map my_map(N, 0, rComm);
+//         MapType my_map(N, 0, rComm);
 //         Epetra_Vector* pv = nullptr;
 
 //         int error_code = EpetraExt::MatrixMarketFileToVector(rFileName.c_str(), my_map, pv);

@@ -44,7 +44,7 @@ TrilinosCPPTestExperimentalUtilities::MatrixPointerType TrilinosCPPTestExperimen
     // Generate Tpetra communicator
     KRATOS_ERROR_IF_NOT(rDataCommunicator.IsDistributed()) << "Only distributed DataCommunicators can be used!" << std::endl;
     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(rDataCommunicator);
-    Teuchos::RCP<const Teuchos::Comm<int>> tpetra_comm = Teuchos::rcp(new Teuchos::MpiComm<int>(raw_mpi_comm));
+    Teuchos::RCP<const Teuchos::Comm<int>> tpetra_comm = Teuchos::rcp(new CommunicatorType(raw_mpi_comm));
 
     // Create a map
     Tpetra::global_size_t numGlobalElements = static_cast<Tpetra::global_size_t>(NumGlobalElements);
@@ -144,7 +144,7 @@ TrilinosCPPTestExperimentalUtilities::VectorPointerType TrilinosCPPTestExperimen
     // Generate Tpetra communicator
     KRATOS_ERROR_IF_NOT(rDataCommunicator.IsDistributed()) << "Only distributed DataCommunicators can be used!" << std::endl;
     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(rDataCommunicator);
-    Teuchos::RCP<const Teuchos::Comm<int>> tpetra_comm = Teuchos::rcp(new Teuchos::MpiComm<int>(Teuchos::opaqueWrapper(raw_mpi_comm)));
+    Teuchos::RCP<const Teuchos::Comm<int>> tpetra_comm = Teuchos::rcp(new CommunicatorType(Teuchos::opaqueWrapper(raw_mpi_comm)));
 
     // Create a map
     Teuchos::RCP<const MapType> map = Teuchos::rcp(new MapType(NumGlobalElements, 0, tpetra_comm));
@@ -396,7 +396,7 @@ TrilinosCPPTestExperimentalUtilities::MatrixPointerType TrilinosCPPTestExperimen
     // Generate Tpetra communicator
     KRATOS_ERROR_IF_NOT(rDataCommunicator.IsDistributed()) << "Only distributed DataCommunicators can be used!" << std::endl;
     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(rDataCommunicator);
-    auto comm = Teuchos::rcp(new Teuchos::MpiComm<int>(raw_mpi_comm));
+    auto comm = Teuchos::rcp(new CommunicatorType(raw_mpi_comm));
 
     // Create a map
     Teuchos::RCP<const MapType> map;
