@@ -155,62 +155,63 @@ public:
         return VectorPointerType(nullptr);
     }
 
-//     /**
-//      * @brief This method creates an empty pointer to a matrix using TPetra communicator
-//      * @param rComm The Tpetra communicator
-//      * @return The pointer to the matrix
-//      */
-//     static MatrixPointerType CreateEmptyMatrixPointer(CommunicatorType& rComm)
-//     {
-//         const int global_elems = 0;
-//         MapType Map(global_elems, 0, rComm);
-//         return MatrixPointerType(new TMatrixType(::Copy, Map, 0));
-//     }
+    /**
+     * @brief This method creates an empty pointer to a matrix using TPetra communicator
+     * @param rComm The Tpetra communicator
+     * @return The pointer to the matrix
+     */
+    static MatrixPointerType CreateEmptyMatrixPointer(Teuchos::RCP<CommunicatorType> pComm)
+    {
+        const int global_elems = 0;
+        Teuchos::RCP<const MapType> map = Teuchos::rcp(new MapType(global_elems, 0, pComm));
+        Teuchos::RCP<GraphType> graph = Teuchos::rcp(new GraphType(map, map, 0));
+        return Teuchos::rcp(new MatrixType(graph));
+    }
 
-//     /**
-//      * @brief This method creates an empty pointer to a vector using Tpetra communicator
-//      * @param rComm The Tpetra communicator
-//      * @return The pointer to the vector
-//      */
-//     static VectorPointerType CreateEmptyVectorPointer(CommunicatorType& rComm)
-//     {
-//         const int global_elems = 0;
-//         MapType Map(global_elems, 0, rComm);
-//         return VectorPointerType(new TVectorType(Map));
-//     }
+    /**
+     * @brief This method creates an empty pointer to a vector using Tpetra communicator
+     * @param pComm The Tpetra communicator
+     * @return The pointer to the vector
+     */
+    static VectorPointerType CreateEmptyVectorPointer(Teuchos::RCP<CommunicatorType> pComm)
+    {
+        const int global_elems = 0;
+        Teuchos::RCP<const MapType> map = Teuchos::rcp(new MapType(global_elems, 0, pComm));
+        return Teuchos::rcp(new VectorType(map));
+    }
 
-//     /**
-//      * @brief Returns size of vector rV
-//      * @param rV The vector considered
-//      * @return The size of the vector
-//      */
-//     static IndexType Size(const VectorType& rV)
-//     {
-//         const int size = rV.GlobalLength();
-//         return size;
-//     }
+    /**
+     * @brief Returns size of vector rV
+     * @param rV The vector considered
+     * @return The size of the vector
+     */
+    static IndexType Size(const VectorType& rV)
+    {
+        const int size = rV.GlobalLength();
+        return size;
+    }
 
-//     /**
-//      * @brief Returns number of rows of rM
-//      * @param rM The matrix considered
-//      * @return The number of rows of rM
-//      */
-//     static IndexType Size1(MatrixType const& rM)
-//     {
-//         const int size1 = rM.NumGlobalRows();
-//         return size1;
-//     }
+    /**
+     * @brief Returns number of rows of rM
+     * @param rM The matrix considered
+     * @return The number of rows of rM
+     */
+    static IndexType Size1(MatrixType const& rM)
+    {
+        const int size1 = rM.NumGlobalRows();
+        return size1;
+    }
 
-//     /**
-//      * @brief Returns number of columns of rM
-//      * @param rM The matrix considered
-//      * @return The number of columns of rM
-//      */
-//     static IndexType Size2(MatrixType const& rM)
-//     {
-//         const int size1 = rM.NumGlobalCols();
-//         return size1;
-//     }
+    /**
+     * @brief Returns number of columns of rM
+     * @param rM The matrix considered
+     * @return The number of columns of rM
+     */
+    static IndexType Size2(MatrixType const& rM)
+    {
+        const int size1 = rM.NumGlobalCols();
+        return size1;
+    }
 
 //     /**
 //      * @brief Returns the column of the matrix in the given position
