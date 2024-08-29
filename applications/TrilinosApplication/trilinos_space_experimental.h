@@ -272,56 +272,95 @@ public:
         return rX.dot(rY);
     }
 
-//     /**
-//      * @brief Returns the maximum value of the vector rX
-//      * @param rX The vector considered
-//      * @return The maximum value of the vector rX
-//      */
-//     static double Max(const VectorType& rX)
-//     {
-//         double value;
-//         const int sucess = rX.MaxValue(&value); //it is prepared to handle vectors with multiple components
-//         KRATOS_ERROR_IF_NOT(sucess == 0) << "Error computing maximum value" <<  std::endl;
-//         return value;
-//     }
+    /**
+     * @brief Returns the maximum value of the vector rX
+     * @param rX The vector considered
+     * @return The maximum value of the vector rX
+     */
+    static double Max(const VectorType& rX)
+    {
+        // Access the local data
+        auto localVec = rX.getLocalViewHost(Tpetra::Access::ReadOnly);
 
-//     /**
-//      * @brief Returns the minimum value of the vector rX
-//      * @param rX The vector considered
-//      * @return The minimum value of the vector rX
-//      */
-//     static double Min(const VectorType& rX)
-//     {
-//         double value;
-//         const int sucess = rX.MinValue(&value); //it is prepared to handle vectors with multiple components
-//         KRATOS_ERROR_IF_NOT(sucess == 0) << "Error computing minimum value" <<  std::endl;
-//         return value;
-//     }
+        // Find the local maximum
+        ST localMax = localVec(0,0);
+        auto localLength = rX.getLocalLength();
+        for (size_t i = 1; i < localLength; ++i) {
+            localMax = std::max(localMax, localVec(i,0));
+        }
 
-//     /**
-//      * @brief Returns the norm of the vector rX
-//      * @details ||rX||2
-//      * @param rX The vector considered
-//      * @return The norm of the vector rX
-//      */
-//     static double TwoNorm(const VectorType& rX)
-//     {
-//         double value;
-//         const int sucess = rX.Norm2(&value); //it is prepared to handle vectors with multiple components
-//         KRATOS_ERROR_IF_NOT(sucess == 0) << "Error computing norm" <<  std::endl;
-//         return value;
-//     }
+        // Perform a global maximum reduction
+        ST globalMax;
+        Teuchos::reduceAll(*rX.getMap()->getComm(), Teuchos::REDUCE_MAX, localMax, Teuchos::outArg(globalMax));
 
-//     /**
-//      * @brief Returns the Frobenius norm of the matrix rX
-//      * @details ||rA||2
-//      * @param rA The matrix considered
-//      * @return The Frobenius norm of the matrix rX
-//      */
-//     static double TwoNorm(const MatrixType& rA)
-//     {
-//         return rA.NormFrobenius();
-//     }
+        return globalMax;
+    }
+
+    /**
+     * @brief Returns the minimum value of the vector rX
+     * @param rX The vector considered
+     * @return The minimum value of the vector rX
+     */
+    static double Min(const VectorType& rX)
+    {
+        // Access the local data
+        auto localVec = rX.getLocalViewHost(Tpetra::Access::ReadOnly);
+
+        // Find the local minimum
+        ST localMin = localVec(0,0);
+        auto localLength = rX.getLocalLength();
+        for (size_t i = 1; i < localLength; ++i) {
+            localMin = std::min(localMin, localVec(i,0));
+        }
+
+        // Perform a global minimum reduction
+        ST globalMin;
+        Teuchos::reduceAll(*rX.getMap()->getComm(), Teuchos::REDUCE_MIN, localMin, Teuchos::outArg(globalMin));
+
+        return globalMin;
+    }
+
+    /**
+     * @brief Returns the norm of the vector rX
+     * @details ||rX||2
+     * @param rX The vector considered
+     * @return The norm of the vector rX
+     */
+    static double TwoNorm(const VectorType& rX)
+    {
+        // Use the built-in norm2() method to compute the Euclidean norm (2-norm)
+        return rX.norm2();
+    }
+
+    /**
+     * @brief Returns the Frobenius norm of the matrix rA
+     * @details ||rA||2
+     * @param rA The matrix considered
+     * @return The Frobenius norm of the matrix rA
+     */
+    static double TwoNorm(const MatrixType& rA)
+    {
+        // Get local matrix
+        auto localMatrix = rA.getLocalMatrix();
+
+        // Compute Frobenius norm
+        double frobeniusNorm = 0.0;
+
+        for (size_t i = 0; i < localMatrix.numRows(); ++i) {
+            auto rowView = localMatrix.row(i);
+            for (size_t j = 0; j < rowView.length; ++j) {
+                double value = rowView.value(j);
+                frobeniusNorm += value * value;
+            }
+        }
+
+        // Perform a global sum across all processes
+        double globalFrobeniusNorm = 0.0;
+        Teuchos::reduceAll(*rA.getMap()->getComm(), Teuchos::REDUCE_SUM, frobeniusNorm, Teuchos::outArg(globalFrobeniusNorm));
+
+        // Take the square root to get the Frobenius norm
+        return std::sqrt(globalFrobeniusNorm);
+    }
 
 //     /**
 //      * @brief Returns the multiplication of a matrix by a vector
@@ -662,116 +701,118 @@ public:
 //         KRATOS_ERROR_IF(ierr < 0) << "Epetra failure when attempting to insert value in function SetValue" << std::endl;
 //     }
 
-//     /**
-//      * @brief assigns a scalar to a vector
-//      * @details rX = A
-//      * @param rX The vector considered
-//      * @param A The scalar considered
-//      */
-//     static void Set(
-//         VectorType& rX,
-//         const DataType A
-//         )
-//     {
-//         const int ierr = rX.PutScalar(A);
-//         KRATOS_ERROR_IF(ierr != 0) << "Epetra set failure " << ierr << std::endl;
-//     }
+    /**
+     * @brief assigns a scalar to a vector
+     * @details rX = A
+     * @param rX The vector considered
+     * @param A The scalar considered
+     */
+    static void Set(
+        VectorType& rX,
+        const DataType A
+        )
+    {
+        rX.putScalar(static_cast<ST>(A));
+    }
 
-//     /**
-//      * @brief Resizes a matrix
-//      * @param rA The matrix to be resized
-//      * @param m The new number of rows
-//      * @param n The new number of columns
-//      */
-//     static void Resize(
-//         MatrixType& rA,
-//         const SizeType m,
-//         const SizeType n
-//         )
-//     {
-//         KRATOS_ERROR << "Resize is not defined for Trilinos Sparse Matrix" << std::endl;
-//     }
+    /**
+     * @brief Resizes a matrix
+     * @param rA The matrix to be resized
+     * @param m The new number of rows
+     * @param n The new number of columns
+     */
+    static void Resize(
+        MatrixType& rA,
+        const SizeType m,
+        const SizeType n
+        )
+    {
+        KRATOS_ERROR << "Resize is not defined for Trilinos Sparse Matrix" << std::endl;
+    }
 
-//     /**
-//      * @brief Resizes a vector
-//      * @param rX The vector to be resized
-//      * @param n The new size
-//      */
-//     static void Resize(
-//         VectorType& rX,
-//         const SizeType n
-//         )
-//     {
-//         KRATOS_ERROR << "Resize is not defined for a reference to Trilinos Vector - need to use the version passing a Pointer" << std::endl;
-//     }
+    /**
+     * @brief Resizes a vector
+     * @param rX The vector to be resized
+     * @param n The new size
+     */
+    static void Resize(
+        VectorType& rX,
+        const SizeType n
+        )
+    {
+        KRATOS_ERROR << "Resize is not defined for a reference to Trilinos Vector - need to use the version passing a Pointer" << std::endl;
+    }
 
-//     /**
-//      * @brief Resizes a vector
-//      * @param pA The pointer to the vector to be resized
-//      * @param n The new size
-//     */
-//     static void Resize(
-//         VectorPointerType& pX,
-//         const SizeType n
-//         )
-//     {
-//         //KRATOS_ERROR_IF(pX != NULL) << "Trying to resize a null pointer" << std::endl;
-//         int global_elems = n;
-//         MapType Map(global_elems, 0, pX->Comm());
-//         VectorPointerType pNewEmptyX = Kratos::make_shared<VectorType>(Map);
-//         pX.swap(pNewEmptyX);
-//     }
+    /**
+     * @brief Resizes a vector
+     * @param pA The pointer to the vector to be resized
+     * @param n The new size
+    */
+    static void Resize(
+        VectorPointerType pX,
+        const SizeType n
+        )
+    {
+        //KRATOS_ERROR_IF(pX != Teuchos::null) << "Trying to resize a null pointer" << std::endl;
+        int global_elems = n;
+        auto map = Teuchos::rcp(new MapType(0, 0, pX->getMap()->getComm()));
+        VectorPointerType pNewEmptyX = Teuchos::rcp(new VectorType(map));
+        pX.swap(pNewEmptyX);
+    }
 
-//     /**
-//      * @brief Clears a matrix
-//      * @param pA The pointer to the matrix to be cleared
-//      */
-//     static void Clear(MatrixPointerType& pA)
-//     {
-//         if(pA != NULL) {
-//             int global_elems = 0;
-//             MapType Map(global_elems, 0, pA->Comm());
-//             MatrixPointerType pNewEmptyA = MatrixPointerType(new TMatrixType(::Copy, Map, 0));
-//             pA.swap(pNewEmptyA);
-//         }
-//     }
+    /**
+     * @brief Clears a matrix
+     * @param pA The pointer to the matrix to be cleared
+     */
+    static void Clear(MatrixPointerType pA)
+    {
+        if(pA != Teuchos::null) {
+            int global_elems = 0;
+            auto map = Teuchos::rcp(new MapType(0, 0, pA->getMap()->getComm()));
+            Teuchos::RCP<GraphType> graph = Teuchos::rcp(new GraphType(map, map, 0));
+            MatrixPointerType pNewEmptyA = Teuchos::rcp(new MatrixType(graph));
+            pA.swap(pNewEmptyA);
+        }
+    }
 
-//     /**
-//      * @brief Clears a vector
-//      * @param pX The pointer to the vector to be cleared
-//      */
-//     static void Clear(VectorPointerType& pX)
-//     {
-//         if(pX != NULL) {
-//             int global_elems = 0;
-//             MapType Map(global_elems, 0, pX->Comm());
-//             VectorPointerType pNewEmptyX = VectorPointerType(new VectorType(Map));
-//             pX.swap(pNewEmptyX);
-//         }
-//     }
+    /**
+     * @brief Clears a vector
+     * @param pX The pointer to the vector to be cleared
+     */
+    static void Clear(VectorPointerType pX)
+    {
+        if(pX != Teuchos::null) {
+            int global_elems = 0;
+            auto map = Teuchos::rcp(new MapType(0, 0, pX->getMap()->getComm()));
+            VectorPointerType pNewEmptyX = Teuchos::rcp(new VectorType(map));
+            pX.swap(pNewEmptyX);
+        }
+    }
 
-//     /**
-//      * @brief Sets a matrix to zero
-//      * @param rX The matrix to be set
-//      */
-//     inline static void SetToZero(MatrixType& rA)
-//     {
-//         const int ierr = rA.PutScalar(0.0);
-//         KRATOS_ERROR_IF(ierr != 0) << "Epetra set to zero failure " << ierr << std::endl;
-//     }
+    /**
+     * @brief Sets a matrix to zero
+     * @param rX The matrix to be set
+     */
+    inline static void SetToZero(MatrixType& rA)
+    {
+        // Set all values in the matrix to zero.
+        rA.setAllToScalar(0.0);
 
-//     /**
-//      * @brief Sets a vector to zero
-//      * @param rX The vector to be set
-//      */
-//     inline static void SetToZero(VectorType& rX)
-//     {
-//         const int ierr = rX.PutScalar(0.0);
-//         KRATOS_ERROR_IF(ierr != 0) << "Epetra set to zero failure " << ierr << std::endl;
-//     }
+        // Finalize the fill of the matrix if needed.
+        rA.fillComplete();
+    }
 
-//     /// TODO: creating the the calculating reaction version
-//     // 	template<class TOtherMatrixType, class TEquationIdVectorType>
+    /**
+     * @brief Sets a vector to zero
+     * @param rX The vector to be set
+     */
+    inline static void SetToZero(VectorType& rX)
+    {
+        rX.putScalar(static_cast<ST>(0));
+    }
+
+    /// TODO: creating the the calculating reaction version
+    // 	template<class TOtherMatrixType, class TEquationIdVectorType>
 
 //     /**
 //      * @brief Assembles the LHS of the system
