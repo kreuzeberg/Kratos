@@ -915,7 +915,9 @@ public:
         )
     {
         KRATOS_TRY
-        double tot_size = IndexArray.size();
+
+        // Get the total size of the index array
+        const std::size_t tot_size = IndexArray.size();
 
         //defining a map as needed
         Epetra_Map dof_update_map(-1, tot_size, &(*(IndexArray.begin())), 0, rX.Comm());

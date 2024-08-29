@@ -90,13 +90,13 @@ public:
 
     /// Tpetra definitions
     // Your scalar type; the type of sparse matrix entries. e.g., double.
-    using ST = typename TMatrixType::scalar_type;
+    using ST = typename MatrixType::scalar_type;
     // Your local ordinal type; the signed integer type used to store local sparse matrix indices.  e.g., int.
-    using LO = typename TMatrixType::local_ordinal_type;
+    using LO = typename MatrixType::local_ordinal_type;
     // Your global ordinal type; the signed integer type used to index the matrix globally, over all processes. e.g., int, long, ptrdif_t, int64_t, ...
-    using GO = typename TMatrixType::global_ordinal_type;
+    using GO = typename MatrixType::global_ordinal_type;
     // The Node type.  e.g., Kokkos::DefaultNode::DefaultNodeType, defined in KokkosCompat_DefaultNode.hpp.
-    using NT = typename TMatrixType::node_type;
+    using NT = typename MatrixType::node_type;
 
     /// Define the map type
     using MapType = Tpetra::Map<LO, GO, NT>;
@@ -108,12 +108,12 @@ public:
     using CommunicatorType = Teuchos::MpiComm<int>;
 
     /// Definition of the pointer types
-    using MatrixPointerType = Teuchos::RCP<TMatrixType>;
-    using VectorPointerType = Teuchos::RCP<TVectorType>;
+    using MatrixPointerType = Teuchos::RCP<MatrixType>;
+    using VectorPointerType = Teuchos::RCP<VectorType>;
 
     // /// Some other definitions
-    // using DofUpdaterType = TrilinosDofUpdater< TrilinosSpaceExperimental<TMatrixType,TVectorType>>;
-    // using DofUpdaterPointerType = typename DofUpdater<TrilinosSpaceExperimental<TMatrixType,TVectorType>>::UniquePointer;
+    // using DofUpdaterType = TrilinosDofUpdater< TrilinosSpaceExperimental<MatrixType,VectorType>>;
+    // using DofUpdaterPointerType = typename DofUpdater<TrilinosSpaceExperimental<MatrixType,VectorType>>::UniquePointer;
 
     ///@}
     ///@name Life Cycle
@@ -362,23 +362,22 @@ public:
         return std::sqrt(globalFrobeniusNorm);
     }
 
-//     /**
-//      * @brief Returns the multiplication of a matrix by a vector
-//      * @details y = A*x
-//      * @param rA The matrix considered
-//      * @param rX The vector considered
-//      * @param rY The result of the multiplication
-//      */
-//     static void Mult(
-//         const MatrixType& rA,
-//         const VectorType& rX,
-//         VectorType& rY
-//         )
-//     {
-//         constexpr bool transpose_flag = false;
-//         const int ierr = rA.Multiply(transpose_flag, rX, rY);
-//         KRATOS_ERROR_IF(ierr != 0) << "Epetra multiplication failure " << ierr << std::endl;
-//     }
+    /**
+     * @brief Returns the multiplication of a matrix by a vector
+     * @details y = A*x
+     * @param rA The matrix considered
+     * @param rX The vector considered
+     * @param rY The result of the multiplication
+     */
+    static void Mult(
+        const MatrixType& rA,
+        const VectorType& rX,
+        VectorType& rY
+        )
+    {
+        // Multiply: y = A * x
+        rA.apply(rX, rY);
+    }
 
 //     /**
 //      * @brief Returns the multiplication matrix-matrix
@@ -577,129 +576,128 @@ public:
 //         }
 //     }
 
-//     /**
-//      * @brief Returns the multiplication of a vector by a scalar
-//      * @details y = A*x
-//      * Checks if a multiplication is needed and tries to do otherwise
-//      * @param rX The vector considered
-//      * @param A The scalar considered
-//      */
-//     static void InplaceMult(
-//         VectorType& rX,
-//         const double A
-//         )
-//     {
-//         if (A != 1.00) {
-//             const int ierr = rX.Scale(A);
-//             KRATOS_ERROR_IF(ierr != 0) << "Epetra scaling failure " << ierr << std::endl;
-//         }
-//     }
+    /**
+     * @brief Returns the multiplication of a vector by a scalar
+     * @details y = A*x
+     * Checks if a multiplication is needed and tries to do otherwise
+     * @param rX The vector considered
+     * @param A The scalar considered
+     */
+    static void InplaceMult(
+        VectorType& rX,
+        const double A
+        )
+    {
+        if (A != 1.00) {
+            // Scale the vector: x = A * x
+            rX.scale(A);
+        }
+    }
 
-//     /**
-//      * @brief Returns the multiplication of a vector by a scalar
-//      * @details x = A*y
-//      * Checks if a multiplication is needed and tries to do otherwise
-//      * @note ATTENTION it is assumed no aliasing between rX and rY
-//      * @param rX The resulting vector considered
-//      * @param A The scalar considered
-//      * @param rY The multiplied vector considered
-//      */
-//     static void Assign(
-//         VectorType& rX,
-//         const double A,
-//         const VectorType& rY
-//         )
-//     {
-//         if (A != 1.00) {
-//             const int ierr = rX.Scale(A, rY); //not sure
-//             KRATOS_ERROR_IF(ierr != 0) << "Epetra assign failure " << ierr << std::endl;
-//         } else {
-//             rX = rY;
-//         }
-//     }
+    /**
+     * @brief Returns the multiplication of a vector by a scalar
+     * @details x = A*y
+     * Checks if a multiplication is needed and tries to do otherwise
+     * @note ATTENTION it is assumed no aliasing between rX and rY
+     * @param rX The resulting vector considered
+     * @param A The scalar considered
+     * @param rY The multiplied vector considered
+     */
+    static void Assign(
+        VectorType& rX,
+        const double A,
+        const VectorType& rY
+        )
+    {
+        if (A != 1.00) {
+            // Perform the operation x = A * y
+            rX.update(A, rY, 0.0);
+        } else {
+            rX = rY;
+        }
+    }
 
-//     /**
-//      * @brief Returns the unaliased addition of a vector by a scalar times a vector
-//      * @details X += A*y;
-//      * Checks if a multiplication is needed and tries to do otherwise
-//      * @note ATTENTION it is assumed no aliasing between rX and rY
-//      * @param rX The resulting vector considered
-//      * @param A The scalar considered
-//      * @param rY The multiplied vector considered
-//      */
-//     static void UnaliasedAdd(
-//         VectorType& rX,
-//         const double A,
-//         const VectorType& rY
-//         )
-//     {
-//         const int ierr = rX.Update(A, rY, 1.0);
-//         KRATOS_ERROR_IF(ierr != 0) << "Epetra unaliased add failure " << ierr << std::endl;
-//     }
+    /**
+     * @brief Returns the unaliased addition of a vector by a scalar times a vector
+     * @details X += A*y;
+     * Checks if a multiplication is needed and tries to do otherwise
+     * @note ATTENTION it is assumed no aliasing between rX and rY
+     * @param rX The resulting vector considered
+     * @param A The scalar considered
+     * @param rY The multiplied vector considered
+     */
+    static void UnaliasedAdd(
+        VectorType& rX,
+        const double A,
+        const VectorType& rY
+        )
+    {
+        rX.update(A, rY, 1.0);
+    }
 
-//     /**
-//      * @brief Returns the unaliased addition of two vectors by a scalar
-//      * @details rZ = (A * rX) + (B * rY)
-//      * @param A The scalar considered
-//      * @param rX The first vector considered
-//      * @param B The scalar considered
-//      * @param rY The second vector considered
-//      * @param rZ The resulting vector considered
-//      */
-//     static void ScaleAndAdd(
-//         const double A,
-//         const VectorType& rX,
-//         const double B,
-//         const VectorType& rY,
-//         VectorType& rZ
-//         )
-//     {
-//         const int ierr = rZ.Update(A, rX, B, rY, 0.0);
-//         KRATOS_ERROR_IF(ierr != 0) << "Epetra scale and add failure " << ierr << std::endl;
-//     }
+    /**
+     * @brief Returns the unaliased addition of two vectors by a scalar
+     * @details rZ = (A * rX) + (B * rY)
+     * @param A The scalar considered
+     * @param rX The first vector considered
+     * @param B The scalar considered
+     * @param rY The second vector considered
+     * @param rZ The resulting vector considered
+     */
+    static void ScaleAndAdd(
+        const double A,
+        const VectorType& rX,
+        const double B,
+        const VectorType& rY,
+        VectorType& rZ
+        )
+    {
+        // Compute rZ = A * rX + B * rY
+        rZ.update(A, rX, B, rY, 0.0);
+    }
 
-//     /**
-//      * @brief Returns the unaliased addition of two vectors by a scalar
-//      * @details rY = (A * rX) + (B * rY)
-//      * @param A The scalar considered
-//      * @param rX The first vector considered
-//      * @param B The scalar considered
-//      * @param rY The resulting vector considered
-//      */
-//     static void ScaleAndAdd(
-//         const double A,
-//         const VectorType& rX,
-//         const double B,
-//         VectorType& rY
-//         )
-//     {
-//         const int ierr = rY.Update(A, rX, B);
-//         KRATOS_ERROR_IF(ierr != 0) << "Epetra scale and add failure " << ierr << std::endl;
-//     }
+    /**
+     * @brief Returns the unaliased addition of two vectors by a scalar
+     * @details rY = (A * rX) + (B * rY)
+     * @param A The scalar considered
+     * @param rX The first vector considered
+     * @param B The scalar considered
+     * @param rY The resulting vector considered
+     */
+    static void ScaleAndAdd(
+        const double A,
+        const VectorType& rX,
+        const double B,
+        VectorType& rY
+        )
+    {
+        // Compute rY = A * rX + B * rY
+        rY.update(A, rX, B);
+    }
 
-//     /**
-//      * @brief Sets a value in a vector
-//      * @param rX The vector considered
-//      * @param i The index of the value considered
-//      * @param value The value considered
-//      */
-//     static void SetValue(
-//         VectorType& rX,
-//         IndexType i,
-//         const double value
-//         )
-//     {
-//         Epetra_IntSerialDenseVector indices(1);
-//         Epetra_SerialDenseVector values(1);
-//         indices[0] = i;
-//         values[0] = value;
+    /**
+     * @brief Sets a value in a vector
+     * @param rX The vector considered
+     * @param i The index of the value considered
+     * @param value The value considered
+     */
+    static void SetValue(
+        VectorType& rX,
+        IndexType i,
+        const double value
+        )
+    {
+        // Get the local index corresponding to the global index `i`
+        auto map = rX.getMap();
+        IndexType localIndex = map->getLocalElement(i);
 
-//         int ierr = rX.ReplaceGlobalValues(indices, values);
-//         KRATOS_ERROR_IF(ierr != 0) << "Epetra failure found" << std::endl;
-
-//         ierr = rX.GlobalAssemble(Insert,true); //Epetra_CombineMode mode=Add);
-//         KRATOS_ERROR_IF(ierr < 0) << "Epetra failure when attempting to insert value in function SetValue" << std::endl;
-//     }
+        // Check if the index is on this process
+        if (localIndex != Tpetra::Details::OrdinalTraits<IndexType>::invalid()) {
+            // Set the value at the specified local index
+            rX.replaceLocalValue(localIndex, value);
+        }
+        // If the index `i` is not local, it is ignored (handled by Tpetra's parallel distribution)
+    }
 
     /**
      * @brief assigns a scalar to a vector
@@ -936,57 +934,66 @@ public:
         return faster_direct_solvers;
     }
 
-//     /**
-//      * @brief This function returns a value from a given vector according to a given index
-//      * @param rX The vector from which values are to be gathered
-//      * @param I The index of the value to be gathered
-//      * @return The value of the vector corresponding to the index I
-//      */
-//     inline static double GetValue(
-//         const VectorType& rX,
-//         const std::size_t I
-//         )
-//     {
-//         // index must be local to this proc
-//         KRATOS_ERROR_IF_NOT(rX.Map().MyGID(static_cast<int>(I))) << " non-local id: " << I << "." << std::endl;
-//         // Epetra_MultiVector::operator[] is used here to get the pointer to
-//         // the zeroth (only) local vector.
-//         return rX[0][rX.Map().LID(static_cast<int>(I))];
-//     }
+    /**
+     * @brief This function returns a value from a given vector according to a given index
+     * @param rX The vector from which values are to be gathered
+     * @param I The index of the value to be gathered
+     * @return The value of the vector corresponding to the index I
+     */
+    inline static double GetValue(
+        const VectorType& rX,
+        const std::size_t I
+        )
+    {
+        // Get the local index corresponding to the global index `I`
+        auto map = rX.getMap();
+        IndexType localIndex = map->getLocalElement(static_cast<IndexType>(I));
 
-//     /**
-//      * @brief This function gathers the values of a given vector according to a given index array
-//      * @param rX The vector from which values are to be gathered
-//      * @param IndexArray The array containing the indices of the values to be gathered
-//      * @param pValues The array containing the gathered values
-//      */
-//     static void GatherValues(
-//         const VectorType& rX,
-//         const std::vector<int>& IndexArray,
-//         double* pValues
-//         )
-//     {
-//         KRATOS_TRY
-//         double tot_size = IndexArray.size();
+        // Index must be local to this proc
+        KRATOS_ERROR_IF(localIndex == Tpetra::Details::OrdinalTraits<IndexType>::invalid()) << " non-local id: " << I << "." << std::endl;
 
-//         //defining a map as needed
-//         MapType dof_update_map(-1, tot_size, &(*(IndexArray.begin())), 0, rX.Comm());
+        // Get the value at the specified local index
+        return rX.getLocalElement(localIndex);
+    }
 
-//         //defining the importer class
-//         Epetra_Import importer(dof_update_map, rX.Map());
+    /**
+     * @brief This function gathers the values of a given vector according to a given index array
+     * @param rX The vector from which values are to be gathered
+     * @param IndexArray The array containing the indices of the values to be gathered
+     * @param pValues The array containing the gathered values
+     */
+    static void GatherValues(
+        const VectorType& rX,
+        const std::vector<int>& IndexArray,
+        double* pValues
+        )
+    {
+        KRATOS_TRY
 
-//         //defining a temporary vector to gather all of the values needed
-//         Epetra_Vector temp(importer.TargetMap());
+        // Get the total size of the index array
+        const std::size_t tot_size = IndexArray.size();
 
-//         //importing in the new temp vector the values
-//         int ierr = temp.Import(rX, importer, Insert);
-//         if(ierr != 0) KRATOS_THROW_ERROR(std::logic_error,"Epetra failure found","");
+        // Create a Map with the desired indices
+        Teuchos::ArrayView<const IndexType> indexArrayView(IndexArray.data(), IndexArray.size());
+        Teuchos::RCP<const MapType> dof_update_map = Tpetra::createNonContigMapWithNode<IndexType, IndexType>(indexArrayView, rX.getMap()->getComm());
 
-//         temp.ExtractCopy(&pValues);
+        // Define the Importer
+        Tpetra::Import<IndexType, IndexType> importer(dof_update_map, rX.getMap());
 
-//         rX.Comm().Barrier();
-//         KRATOS_CATCH("")
-//     }
+        // Create a temporary vector to gather the values
+        VectorType temp(dof_update_map);
+
+        // Import the values from rX into the temp vector
+        temp.doImport(rX, importer, Tpetra::INSERT);
+
+        // Extract the values from the temp vector
+        temp.get1dCopy(Teuchos::ArrayView<double>(pValues, tot_size));
+
+        // Optional: Synchronize processes (similar to Epetra's Barrier)
+        rX.getMap()->getComm()->barrier();
+
+        KRATOS_CATCH("")
+    }
 
 //     /**
 //      * @brief Read a matrix from a MatrixMarket file
