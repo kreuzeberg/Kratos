@@ -25,6 +25,7 @@
 #include <Teuchos_RCP.hpp>
 #include <Teuchos_ArrayView.hpp>
 #include <Teuchos_GlobalMPISession.hpp>
+//#include <MatrixMarket_Tpetra.hpp>
 
 // Project includes
 #include "includes/ublas_interface.h"
@@ -100,12 +101,15 @@ public:
 
     /// Define the map type
     using MapType = Tpetra::Map<LO, GO, NT>;
+    using MapPointerType = Teuchos::RCP<const MapType>;
 
     /// Define the graph type
     using GraphType = Tpetra::FECrsGraph<LO, GO, NT>;
+    using GraphPointerType = Teuchos::RCP<const GraphType>;
 
     // Define TPetra communicator
     using CommunicatorType = Teuchos::MpiComm<int>;
+    using CommunicatorPointerType = Teuchos::RCP<const CommunicatorType>;
 
     /// Definition of the pointer types
     using MatrixPointerType = Teuchos::RCP<MatrixType>;
@@ -160,11 +164,11 @@ public:
      * @param rComm The Tpetra communicator
      * @return The pointer to the matrix
      */
-    static MatrixPointerType CreateEmptyMatrixPointer(Teuchos::RCP<CommunicatorType> pComm)
+    static MatrixPointerType CreateEmptyMatrixPointer(CommunicatorPointerType pComm)
     {
         const int global_elems = 0;
-        Teuchos::RCP<const MapType> map = Teuchos::rcp(new MapType(global_elems, 0, pComm));
-        Teuchos::RCP<GraphType> graph = Teuchos::rcp(new GraphType(map, map, 0));
+        MapPointerType map = Teuchos::rcp(new MapType(global_elems, 0, pComm));
+        GraphPointerType graph = Teuchos::rcp(new GraphType(map, map, 0));
         return Teuchos::rcp(new MatrixType(graph));
     }
 
@@ -173,10 +177,10 @@ public:
      * @param pComm The Tpetra communicator
      * @return The pointer to the vector
      */
-    static VectorPointerType CreateEmptyVectorPointer(Teuchos::RCP<CommunicatorType> pComm)
+    static VectorPointerType CreateEmptyVectorPointer(CommunicatorPointerType pComm)
     {
         const int global_elems = 0;
-        Teuchos::RCP<const MapType> map = Teuchos::rcp(new MapType(global_elems, 0, pComm));
+        MapPointerType map = Teuchos::rcp(new MapType(global_elems, 0, pComm));
         return Teuchos::rcp(new VectorType(map));
     }
 
@@ -767,7 +771,7 @@ public:
         if(pA != Teuchos::null) {
             int global_elems = 0;
             auto map = Teuchos::rcp(new MapType(0, 0, pA->getMap()->getComm()));
-            Teuchos::RCP<GraphType> graph = Teuchos::rcp(new GraphType(map, map, 0));
+            GraphPointerType graph = Teuchos::rcp(new GraphType(map, map, 0));
             MatrixPointerType pNewEmptyA = Teuchos::rcp(new MatrixType(graph));
             pA.swap(pNewEmptyA);
         }
@@ -975,7 +979,7 @@ public:
 
         // Create a Map with the desired indices
         Teuchos::ArrayView<const IndexType> indexArrayView(IndexArray.data(), IndexArray.size());
-        Teuchos::RCP<const MapType> dof_update_map = Tpetra::createNonContigMapWithNode<IndexType, IndexType>(indexArrayView, rX.getMap()->getComm());
+        MapPointerType dof_update_map = Tpetra::createNonContigMapWithNode<IndexType, IndexType>(indexArrayView, rX.getMap()->getComm());
 
         // Define the Importer
         Tpetra::Import<IndexType, IndexType> importer(dof_update_map, rX.getMap());
@@ -989,7 +993,7 @@ public:
         // Extract the values from the temp vector
         temp.get1dCopy(Teuchos::ArrayView<double>(pValues, tot_size));
 
-        // Optional: Synchronize processes (similar to Epetra's Barrier)
+        // Synchronize processes
         rX.getMap()->getComm()->barrier();
 
         KRATOS_CATCH("")
@@ -1055,46 +1059,41 @@ public:
 //         KRATOS_CATCH("");
 //     }
 
-//     /**
-//      * @brief Read a vector from a MatrixMarket file
-//      * @param rFileName The name of the file to read
-//      * @param rComm The MPI communicator
-//      * @param N The size of the vector
-//      */
-//     VectorPointerType ReadMatrixMarketVector(
-//         const std::string& rFileName,
-//         CommunicatorType& rComm,
-//         const int N
-//         )
-//     {
-//         KRATOS_TRY
+    // /**
+    //  * @brief Read a vector from a MatrixMarket file
+    //  * @param rFileName The name of the file to read
+    //  * @param pComm The MPI communicator
+    //  * @param N The size of the vector
+    //  */
+    // VectorPointerType ReadMatrixMarketVector(
+    //     const std::string& rFileName,
+    //     CommunicatorPointerType pComm,
+    //     const int N
+    //     )
+    // {
+    //     KRATOS_TRY
 
-//         MapType my_map(N, 0, rComm);
-//         Epetra_Vector* pv = nullptr;
+    //     // Create a Tpetra::Map
+    //     MapPointerType my_map = Tpetra::createUniformContigMapWithNode<GO, GO>(N, pComm);
 
-//         int error_code = EpetraExt::MatrixMarketFileToVector(rFileName.c_str(), my_map, pv);
+    //     // Create an empty Tpetra vector
+    //     VectorPointerType final_vector = Teuchos::rcp(new VectorType(my_map));
 
-//         KRATOS_ERROR_IF(error_code != 0) << "error thrown while reading Matrix Market Vector file " << rFileName << " error code is: " << error_code;
+    //     // Read the vector from the Matrix Market file
+    //     const int error_code = Tpetra::MatrixMarket::Reader<VectorType>::readVectorFile(rFileName, final_vector);
+    //     KRATOS_ERROR_IF(error_code != 0) << "Error thrown while reading Matrix Market Vector file: " << rFileName << " error code is: " << error_code << std::endl;
 
-//         rComm.Barrier();
+    //     // Ensure all processes are synchronized
+    //     pComm->barrier();
 
-//         IndexType num_my_rows = my_map.NumMyElements();
-//         std::vector<int> gids(num_my_rows);
-//         my_map.MyGlobalElements(gids.data());
+    //     // Global assemble the vector (if necessary)
+    //     final_vector->doImport(*final_vector, Tpetra::Import<GO, GO>(my_map, my_map), Tpetra::INSERT);
+    //     final_vector->globalAssemble();
 
-//         std::vector<double> values(num_my_rows);
-//         pv->ExtractCopy(values.data());
+    //     return final_vector;
 
-//         VectorPointerType final_vector = Kratos::make_shared<VectorType>(my_map);
-//         int ierr = final_vector->ReplaceGlobalValues(gids.size(),gids.data(), values.data());
-//         KRATOS_ERROR_IF(ierr != 0) << "Epetra failure found with code ierr = " << ierr << std::endl;
-
-//         final_vector->GlobalAssemble();
-
-//         delete pv;
-//         return final_vector;
-//         KRATOS_CATCH("");
-//     }
+    //     KRATOS_CATCH("");
+    // }
 
 //     /**
 //      * @brief Generates a graph combining the graphs of two matrices
