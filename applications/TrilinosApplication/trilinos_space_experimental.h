@@ -91,6 +91,9 @@ public:
     /// Definition of the size type
     using SizeType = std::size_t;
 
+    /// Class definition
+    using ClassType = TrilinosSpaceExperimental<TMatrixType, TVectorType>;
+
     /// Tpetra definitions
     // Your scalar type; the type of sparse matrix entries. e.g., double.
     using ST = typename MatrixType::scalar_type;
@@ -1279,104 +1282,97 @@ public:
 //         KRATOS_CATCH("");
 //     }
 
-//     /**
-//      * @brief This method returns the scale norm considering for scaling the diagonal
-//      * @param rProcessInfo The problem process info
-//      * @param rA The LHS matrix
-//      * @param ScalingDiagonal The type of caling diagonal considered
-//      * @return The scale norm
-//      */
-//     static double GetScaleNorm(
-//         const ProcessInfo& rProcessInfo,
-//         const MatrixType& rA,
-//         const SCALING_DIAGONAL ScalingDiagonal = SCALING_DIAGONAL::NO_SCALING
-//         )
-//     {
-//         KRATOS_TRY
+    /**
+     * @brief This method returns the scale norm considering for scaling the diagonal
+     * @param rProcessInfo The problem process info
+     * @param rA The LHS matrix
+     * @param ScalingDiagonal The type of scaling diagonal considered
+     * @return The scale norm
+     */
+    static double GetScaleNorm(
+        const ProcessInfo& rProcessInfo,
+        const MatrixType& rA,
+        const SCALING_DIAGONAL ScalingDiagonal = SCALING_DIAGONAL::NO_SCALING
+        )
+    {
+        KRATOS_TRY
 
-//         switch (ScalingDiagonal) {
-//             case SCALING_DIAGONAL::NO_SCALING:
-//                 return 1.0;
-//             case SCALING_DIAGONAL::CONSIDER_PRESCRIBED_DIAGONAL: {
-//                 KRATOS_ERROR_IF_NOT(rProcessInfo.Has(BUILD_SCALE_FACTOR)) << "Scale factor not defined at process info" << std::endl;
-//                 return rProcessInfo.GetValue(BUILD_SCALE_FACTOR);
-//             }
-//             case SCALING_DIAGONAL::CONSIDER_NORM_DIAGONAL:
-//                 return GetDiagonalNorm(rA)/static_cast<double>(Size1(rA));
-//             case SCALING_DIAGONAL::CONSIDER_MAX_DIAGONAL:
-//                 return GetMaxDiagonal(rA);
-//             default:
-//                 return GetMaxDiagonal(rA);
-//         }
+        switch (ScalingDiagonal) {
+            case SCALING_DIAGONAL::NO_SCALING:
+                return 1.0;
+            case SCALING_DIAGONAL::CONSIDER_PRESCRIBED_DIAGONAL: {
+                KRATOS_ERROR_IF_NOT(rProcessInfo.Has(BUILD_SCALE_FACTOR)) << "Scale factor not defined at process info" << std::endl;
+                return rProcessInfo.GetValue(BUILD_SCALE_FACTOR);
+            }
+            case SCALING_DIAGONAL::CONSIDER_NORM_DIAGONAL:
+                return GetDiagonalNorm(rA)/static_cast<double>(Size1(rA));
+            case SCALING_DIAGONAL::CONSIDER_MAX_DIAGONAL:
+                return GetMaxDiagonal(rA);
+            default:
+                return GetMaxDiagonal(rA);
+        }
 
-//         KRATOS_CATCH("");
-//     }
+        KRATOS_CATCH("");
+    }
 
-//     /**
-//      * @brief This method returns the diagonal norm considering for scaling the diagonal
-//      * @param rA The LHS matrix
-//      * @return The diagonal norm
-//      */
-//     static double GetDiagonalNorm(const MatrixType& rA)
-//     {
-//         KRATOS_TRY
+    /**
+    * @brief This method returns the diagonal norm considering for scaling the diagonal
+    * @param rA The LHS matrix
+    * @return The diagonal norm
+    */
+    static double GetDiagonalNorm(const MatrixType& rA)
+    {
+        KRATOS_TRY
 
-//         Epetra_Vector diagonal(rA.RowMap());
-//         const int ierr = rA.ExtractDiagonalCopy(diagonal);
-//         KRATOS_ERROR_IF(ierr != 0) << "Epetra failure extracting diagonal " << ierr << std::endl;
+        auto diagonal = rA.getLocalDiagCopy(); // Tpetra equivalent of ExtractDiagonalCopy
+        return ClassType::TwoNorm(diagonal);
 
-//         return TrilinosSpace<Epetra_FECrsMatrix, Epetra_Vector>::TwoNorm(diagonal);
+        KRATOS_CATCH("");
+    }
 
-//         KRATOS_CATCH("");
-//     }
+    /**
+    * @brief This method returns the diagonal max value
+    * @param rA The LHS matrix
+    * @return The diagonal max value
+    */
+    static double GetAveragevalueDiagonal(const MatrixType& rA)
+    {
+        KRATOS_TRY
 
-//     /**
-//      * @brief This method returns the diagonal max value
-//      * @param rA The LHS matrix
-//      * @return The diagonal  max value
-//      */
-//     static double GetAveragevalueDiagonal(const MatrixType& rA)
-//     {
-//         KRATOS_TRY
+        return 0.5 * (GetMaxDiagonal(rA) + GetMinDiagonal(rA));
 
-//         return 0.5 * (GetMaxDiagonal(rA) + GetMinDiagonal(rA));
+        KRATOS_CATCH("");
+    }
 
-//         KRATOS_CATCH("");
-//     }
+    /**
+    * @brief This method returns the diagonal max value
+    * @param rA The LHS matrix
+    * @return The diagonal max value
+    */
+    static double GetMaxDiagonal(const MatrixType& rA)
+    {
+        KRATOS_TRY
 
-//     /**
-//      * @brief This method returns the diagonal max value
-//      * @param rA The LHS matrix
-//      * @return The diagonal  max value
-//      */
-//     static double GetMaxDiagonal(const MatrixType& rA)
-//     {
-//         KRATOS_TRY
+        auto diagonal = rA.getLocalDiagCopy(); // Tpetra equivalent of ExtractDiagonalCopy
+        return ClassType::Max(diagonal);
 
-//         Epetra_Vector diagonal(rA.RowMap());
-//         const int ierr = rA.ExtractDiagonalCopy(diagonal);
-//         KRATOS_ERROR_IF(ierr != 0) << "Epetra failure extracting diagonal " << ierr << std::endl;
-//         return TrilinosSpace<Epetra_FECrsMatrix, Epetra_Vector>::Max(diagonal);
+        KRATOS_CATCH("");
+    }
 
-//         KRATOS_CATCH("");
-//     }
+    /**
+    * @brief This method returns the diagonal min value
+    * @param rA The LHS matrix
+    * @return The diagonal min value
+    */
+    static double GetMinDiagonal(const MatrixType& rA)
+    {
+        KRATOS_TRY
 
-//     /**
-//      * @brief This method returns the diagonal min value
-//      * @param rA The LHS matrix
-//      * @return The diagonal min value
-//      */
-//     static double GetMinDiagonal(const MatrixType& rA)
-//     {
-//         KRATOS_TRY
+        auto diagonal = rA.getLocalDiagCopy(); // Tpetra equivalent of ExtractDiagonalCopy
+        return ClassType::Min(diagonal);
 
-//         Epetra_Vector diagonal(rA.RowMap());
-//         const int ierr = rA.ExtractDiagonalCopy(diagonal);
-//         KRATOS_ERROR_IF(ierr != 0) << "Epetra failure extracting diagonal " << ierr << std::endl;
-//         return TrilinosSpace<Epetra_FECrsMatrix, Epetra_Vector>::Min(diagonal);
-
-//         KRATOS_CATCH("");
-//     }
+        KRATOS_CATCH("");
+    }
 
    /**
     * @brief Check if the TrilinosSpaceExperimental is distributed.
