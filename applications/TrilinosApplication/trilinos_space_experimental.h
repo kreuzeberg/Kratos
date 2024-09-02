@@ -25,7 +25,9 @@
 #include <Teuchos_RCP.hpp>
 #include <Teuchos_ArrayView.hpp>
 #include <Teuchos_GlobalMPISession.hpp>
-//#include <MatrixMarket_Tpetra.hpp>
+#include <TpetraExt_MatrixMatrix.hpp>
+// #include <TpetraExt_TripleMatrixMultiply_def.hpp> # TODO: Failing compilation for some reason in Ubuntu 20.04 version available
+//#include <MatrixMarket_Tpetra.hpp> # TODO: Failing compilation for some reason in Ubuntu 20.04 version available
 
 // Project includes
 #include "includes/ublas_interface.h"
@@ -383,202 +385,188 @@ public:
         rA.apply(rX, rY);
     }
 
-//     /**
-//      * @brief Returns the multiplication matrix-matrix
-//      * @details C = A*B
-//      * @param rA The first matrix considered
-//      * @param rB The second matrix considered
-//      * @param rC The result of the multiplication
-//      * @param CallFillCompleteOnResult	Optional argument, defaults to true. Power users may specify this argument to be false if they DON'T want this function to call C.FillComplete. (It is often useful to allow this function to call C.FillComplete, in cases where one or both of the input matrices are rectangular and it is not trivial to know which maps to use for the domain- and range-maps.)
-//      * @param KeepAllHardZeros	Optional argument, defaults to false. If true, Multiply, keeps all entries in C corresponding to hard zeros. If false, the following happens by case: A*B^T, A^T*B^T - Does not store entries caused by hard zeros in C. A^T*B (unoptimized) - Hard zeros are always stored (this option has no effect) A*B, A^T*B (optimized) - Hard zeros in corresponding to hard zeros in A are not stored, There are certain cases involving reuse of C, where this can be useful.
-//      */
-//     static void Mult(
-//         const MatrixType& rA,
-//         const MatrixType& rB,
-//         MatrixType& rC,
-//         const bool CallFillCompleteOnResult = true,
-//         const bool KeepAllHardZeros = false
-//         )
-//     {
-//         KRATOS_TRY
+    /**
+     * @brief Returns the multiplication matrix-matrix
+     * @details C = A*B
+     * @param rA The first matrix considered
+     * @param rB The second matrix considered
+     * @param rC The result of the multiplication
+     * @param CallFillCompleteOnResult	Optional argument, defaults to true. Power users may specify this argument to be false if they DON'T want this function to call C.FillComplete. (It is often useful to allow this function to call C.FillComplete, in cases where one or both of the input matrices are rectangular and it is not trivial to know which maps to use for the domain- and range-maps.)
+     * @param KeepAllHardZeros	Optional argument, defaults to false. If true, Multiply, keeps all entries in C corresponding to hard zeros. If false, the following happens by case: A*B^T, A^T*B^T - Does not store entries caused by hard zeros in C. A^T*B (unoptimized) - Hard zeros are always stored (this option has no effect) A*B, A^T*B (optimized) - Hard zeros in corresponding to hard zeros in A are not stored, There are certain cases involving reuse of C, where this can be useful.
+     */
+    static void Mult(
+        const MatrixType& rA,
+        const MatrixType& rB,
+        MatrixType& rC,
+        const bool CallFillCompleteOnResult = true,
+        const bool KeepAllHardZeros = false
+        )
+    {
+        KRATOS_TRY
 
-//         constexpr bool transpose_flag = false;
-//         const int ierr = EpetraExt::MatrixMatrix::Multiply(rA, transpose_flag, rB, transpose_flag, rC, CallFillCompleteOnResult, KeepAllHardZeros);
-//         KRATOS_ERROR_IF(ierr != 0) << "Epetra multiplication failure. This may result if A or B are not already Filled, or if errors occur in putting values into C, etc. " << std::endl;
+        // Check if the KeepAllHardZeros is implemented
+        //KRATOS_ERROR_IF(KeepAllHardZeros) << "KeepAllHardZeros is not implemented in Trilinos TPetra" << std::endl;
 
-//         KRATOS_CATCH("")
-//     }
+        // Ensure rC is ready to receive the result
+        rC.resumeFill();
 
-//     /**
-//      * @brief Returns the transpose multiplication of a matrix by a vector
-//      * @details y = AT*x
-//      * @param rA The matrix considered
-//      * @param rX The vector considered
-//      * @param rY The result of the multiplication
-//      */
-//     static void TransposeMult(
-//         const MatrixType& rA,
-//         const VectorType& rX,
-//         VectorType& rY
-//         )
-//     {
-//         constexpr bool transpose_flag = true;
-//         const int ierr = rA.Multiply(transpose_flag, rX, rY);
-//         KRATOS_ERROR_IF(ierr != 0) << "Epetra multiplication failure " << ierr << std::endl;
-//     }
+        // Perform the matrix multiplication
+        Tpetra::MatrixMatrix::Multiply(rA, false, rB, false, rC, CallFillCompleteOnResult);
 
-//     /**
-//      * @brief Returns the transpose multiplication matrix-matrix
-//      * @details C = A*B
-//      * @param rA The first matrix considered
-//      * @param rB The second matrix considered
-//      * @param rC The result of the multiplication
-//      * @param TransposeFlag Flags to transpose the matrices
-//      * @param CallFillCompleteOnResult	Optional argument, defaults to true. Power users may specify this argument to be false if they DON'T want this function to call C.FillComplete. (It is often useful to allow this function to call C.FillComplete, in cases where one or both of the input matrices are rectangular and it is not trivial to know which maps to use for the domain- and range-maps.)
-//      * @param KeepAllHardZeros	Optional argument, defaults to false. If true, Multiply, keeps all entries in C corresponding to hard zeros. If false, the following happens by case: A*B^T, A^T*B^T - Does not store entries caused by hard zeros in C. A^T*B (unoptimized) - Hard zeros are always stored (this option has no effect) A*B, A^T*B (optimized) - Hard zeros in corresponding to hard zeros in A are not stored, There are certain cases involving reuse of C, where this can be useful.
-//      */
-//     static void TransposeMult(
-//         const MatrixType& rA,
-//         const MatrixType& rB,
-//         MatrixType& rC,
-//         const std::pair<bool, bool> TransposeFlag = {false, false},
-//         const bool CallFillCompleteOnResult = true,
-//         const bool KeepAllHardZeros = false
-//         )
-//     {
-//         KRATOS_TRY
+        KRATOS_CATCH("")
+    }
 
-//         const int ierr = EpetraExt::MatrixMatrix::Multiply(rA, TransposeFlag.first, rB, TransposeFlag.second, rC, CallFillCompleteOnResult, KeepAllHardZeros);
-//         KRATOS_ERROR_IF(ierr != 0) << "Epetra multiplication failure. This may result if A or B are not already Filled, or if errors occur in putting values into C, etc. " << std::endl;
+    /**
+     * @brief Returns the transpose multiplication of a matrix by a vector
+     * @details y = AT*x
+     * @param rA The matrix considered
+     * @param rX The vector considered
+     * @param rY The result of the multiplication
+     */
+    static void TransposeMult(
+        const MatrixType& rA,
+        const VectorType& rX,
+        VectorType& rY
+        )
+    {
+        // Use the apply method with the transpose flag set to true
+        rA.apply(rX, rY, Teuchos::TRANS);
+    }
 
-//         KRATOS_CATCH("")
-//     }
+    /**
+     * @brief Returns the transpose multiplication matrix-matrix
+     * @details C = A*B
+     * @param rA The first matrix considered
+     * @param rB The second matrix considered
+     * @param rC The result of the multiplication
+     * @param TransposeFlag Flags to transpose the matrices
+     * @param CallFillCompleteOnResult	Optional argument, defaults to true. Power users may specify this argument to be false if they DON'T want this function to call C.FillComplete. (It is often useful to allow this function to call C.FillComplete, in cases where one or both of the input matrices are rectangular and it is not trivial to know which maps to use for the domain- and range-maps.)
+     * @param KeepAllHardZeros	Optional argument, defaults to false. If true, Multiply, keeps all entries in C corresponding to hard zeros. If false, the following happens by case: A*B^T, A^T*B^T - Does not store entries caused by hard zeros in C. A^T*B (unoptimized) - Hard zeros are always stored (this option has no effect) A*B, A^T*B (optimized) - Hard zeros in corresponding to hard zeros in A are not stored, There are certain cases involving reuse of C, where this can be useful.
+     */
+    static void TransposeMult(
+        const MatrixType& rA,
+        const MatrixType& rB,
+        MatrixType& rC,
+        const std::pair<bool, bool> TransposeFlag = {false, false},
+        const bool CallFillCompleteOnResult = true,
+        const bool KeepAllHardZeros = false
+        )
+    {
+        KRATOS_TRY
 
-//     /**
-//      * @brief Calculates the product operation B'DB
-//      * @param rA The resulting matrix
-//      * @param rD The "center" matrix
-//      * @param rB The matrices to be transposed
-//      * @param CallFillCompleteOnResult	Optional argument, defaults to true. Power users may specify this argument to be false if they DON'T want this function to call C.FillComplete. (It is often useful to allow this function to call C.FillComplete, in cases where one or both of the input matrices are rectangular and it is not trivial to know which maps to use for the domain- and range-maps.)
-//      * @param KeepAllHardZeros	Optional argument, defaults to false. If true, Multiply, keeps all entries in C corresponding to hard zeros. If false, the following happens by case: A*B^T, A^T*B^T - Does not store entries caused by hard zeros in C. A^T*B (unoptimized) - Hard zeros are always stored (this option has no effect) A*B, A^T*B (optimized) - Hard zeros in corresponding to hard zeros in A are not stored, There are certain cases involving reuse of C, where this can be useful.
-//      * @tparam TEnforceInitialGraph If the initial graph is enforced, or a new one is generated
-//      */
-//     static void BtDBProductOperation(
-//         MatrixType& rA,
-//         const MatrixType& rD,
-//         const MatrixType& rB,
-//         const bool CallFillCompleteOnResult = true,
-//         const bool KeepAllHardZeros = false,
-//         const bool EnforceInitialGraph = false
-//         )
-//     {
-//         // Define first auxiliary matrix
-//         std::vector<int> NumNz;
-//         MatrixType aux_1(::Copy, rA.RowMap(), NumNz.data());
+        // Check if the KeepAllHardZeros is implemented
+        //KRATOS_ERROR_IF(KeepAllHardZeros) << "KeepAllHardZeros is not implemented in Trilinos TPetra" << std::endl;
 
-//         // First multiplication
-//         TransposeMult(rB, rD, aux_1, {true, false}, CallFillCompleteOnResult, KeepAllHardZeros);
+        // Ensure rC is ready to receive the result
+        rC.resumeFill();
 
-//         // If we enforce the initial connectivity
-//         if (EnforceInitialGraph) {
-//             // Second multiplication
-//             MatrixType aux_2(::Copy, rA.RowMap(), NumNz.data());
-//             Mult(aux_1, rB, aux_2, CallFillCompleteOnResult, KeepAllHardZeros);
+        // Perform the matrix multiplication
+        Tpetra::MatrixMatrix::Multiply(rA, TransposeFlag.first, rB, TransposeFlag.second, rC, CallFillCompleteOnResult);
 
-//             // Create an Epetra_Matrix
-//             MatrixType* aux_3 =  new MatrixType(::Copy, CombineMatricesGraphs(rA, aux_2));
+        KRATOS_CATCH("")
+    }
 
-//             // Copy values
-//             CopyMatrixValues(*aux_3, aux_2);
+    /**
+     * @brief Calculates the product operation B'DB
+     * @param rA The resulting matrix
+     * @param rD The "center" matrix
+     * @param rB The matrices to be transposed
+     * @param CallFillCompleteOnResult	Optional argument, defaults to true. Power users may specify this argument to be false if they DON'T want this function to call C.FillComplete. (It is often useful to allow this function to call C.FillComplete, in cases where one or both of the input matrices are rectangular and it is not trivial to know which maps to use for the domain- and range-maps.)
+     * @param KeepAllHardZeros	Optional argument, defaults to false. If true, Multiply, keeps all entries in C corresponding to hard zeros. If false, the following happens by case: A*B^T, A^T*B^T - Does not store entries caused by hard zeros in C. A^T*B (unoptimized) - Hard zeros are always stored (this option has no effect) A*B, A^T*B (optimized) - Hard zeros in corresponding to hard zeros in A are not stored, There are certain cases involving reuse of C, where this can be useful.
+     * @param EnforceInitialGraph If the initial graph is enforced, or a new one is generated
+     * @todo TpetraExt_TripleMatrixMultiply_def is failing compilation in the version of Trilinos available in Ubuntu 20.04. We cannot use TripleMatrixMultiply::MultiplyRAP
+     */
+    static void BtDBProductOperation(
+        MatrixType& rA,
+        const MatrixType& rD,
+        const MatrixType& rB,
+        const bool CallFillCompleteOnResult = true,
+        const bool KeepAllHardZeros = false,
+        const bool EnforceInitialGraph = false
+        )
+    {
+        // Check if the KeepAllHardZeros is implemented
+        //KRATOS_ERROR_IF(KeepAllHardZeros) << "KeepAllHardZeros is not implemented in Trilinos TPetra" << std::endl;
 
-//             // Doing a swap
-//             std::swap(rA, *aux_3);
+        // Check if the EnforceInitialGraph is implemented
+        //KRATOS_ERROR_IF(EnforceInitialGraph) << "EnforceInitialGraph is not implemented in Trilinos TPetra" << std::endl;
 
-//             // Delete the new matrix
-//             delete aux_3;
-//         } else { // A new matrix
-//             // Already existing matrix
-//             if (rA.NumGlobalNonzeros() > 0) {
-//                 // Create an Epetra_Matrix
-//                 MatrixType* aux_2 =  new MatrixType(::Copy, rB.RowMap(), NumNz.data());
+        // Ensure rA is empty and ready to be filled
+        rA.resumeFill();
 
-//                 // Second multiplication
-//                 Mult(aux_1, rB, *aux_2, CallFillCompleteOnResult, KeepAllHardZeros);
+        // Define first auxiliary matrix
+        std::vector<size_t> NumNz; // In Tpetra, non-zero counts are size_t
+        MatrixPointerType aux_1 = Teuchos::rcp(new MatrixType(rA.getRowMap(), NumNz));
 
-//                 // Doing a swap
-//                 std::swap(rA, *aux_2);
+        // First multiplication
+        TransposeMult(rB, rD, *aux_1, {true, false}, CallFillCompleteOnResult, KeepAllHardZeros);
 
-//                 // Delete the new matrix
-//                 delete aux_2;
-//             } else { // Empty matrix
-//                 // Second multiplication
-//                 Mult(aux_1, rB, rA, CallFillCompleteOnResult, KeepAllHardZeros);
-//             }
-//         }
-//     }
+        // Already existing matrix
+        if (rA.getGlobalNumEntries() > 0) {
+            // Create a Tpetra_Matrix
+            MatrixPointerType aux_2 = Teuchos::rcp(new MatrixType(rB.getRowMap(), NumNz));
 
-//     /**
-//      * @brief Calculates the product operation BDB'
-//      * @param rA The resulting matrix
-//      * @param rD The "center" matrix
-//      * @param rB The matrices to be transposed
-//      * @param CallFillCompleteOnResult	Optional argument, defaults to true. Power users may specify this argument to be false if they DON'T want this function to call C.FillComplete. (It is often useful to allow this function to call C.FillComplete, in cases where one or both of the input matrices are rectangular and it is not trivial to know which maps to use for the domain- and range-maps.)
-//      * @param KeepAllHardZeros	Optional argument, defaults to false. If true, Multiply, keeps all entries in C corresponding to hard zeros. If false, the following happens by case: A*B^T, A^T*B^T - Does not store entries caused by hard zeros in C. A^T*B (unoptimized) - Hard zeros are always stored (this option has no effect) A*B, A^T*B (optimized) - Hard zeros in corresponding to hard zeros in A are not stored, There are certain cases involving reuse of C, where this can be useful.
-//      * @tparam TEnforceInitialGraph If the initial graph is enforced, or a new one is generated
-//      */
-//     static void BDBtProductOperation(
-//         MatrixType& rA,
-//         const MatrixType& rD,
-//         const MatrixType& rB,
-//         const bool CallFillCompleteOnResult = true,
-//         const bool KeepAllHardZeros = false,
-//         const bool EnforceInitialGraph = false
-//         )
-//     {
-//         // Define first auxiliary matrix
-//         std::vector<int> NumNz;
-//         MatrixType aux_1(::Copy, rA.RowMap(), NumNz.data());
+            // Second multiplication
+            Mult(*aux_1, rB, *aux_2, CallFillCompleteOnResult, KeepAllHardZeros);
 
-//         // First multiplication
-//         Mult(rB, rD, aux_1, CallFillCompleteOnResult, KeepAllHardZeros);
+            // Doing a swap
+            rA.swap(*aux_2);
+        } else { // Empty matrix
+            // Second multiplication
+            Mult(*aux_1, rB, rA, CallFillCompleteOnResult, KeepAllHardZeros);
+        }
 
-//         // If we enforce the initial connectivity
-//         if (EnforceInitialGraph) {
-//             // Second multiplication
-//             MatrixType aux_2(::Copy, rA.RowMap(), NumNz.data());
-//             TransposeMult(aux_1, rB, aux_2, {false, true}, CallFillCompleteOnResult, KeepAllHardZeros);
+    }
 
-//             // Create an Epetra_Matrix
-//             MatrixType* aux_3 =  new MatrixType(::Copy, CombineMatricesGraphs(rA, aux_2));
+    /**
+     * @brief Calculates the product operation BDB'
+     * @param rA The resulting matrix
+     * @param rD The "center" matrix
+     * @param rB The matrices to be transposed
+     * @param CallFillCompleteOnResult	Optional argument, defaults to true. Power users may specify this argument to be false if they DON'T want this function to call C.FillComplete. (It is often useful to allow this function to call C.FillComplete, in cases where one or both of the input matrices are rectangular and it is not trivial to know which maps to use for the domain- and range-maps.)
+     * @param KeepAllHardZeros	Optional argument, defaults to false. If true, Multiply, keeps all entries in C corresponding to hard zeros. If false, the following happens by case: A*B^T, A^T*B^T - Does not store entries caused by hard zeros in C. A^T*B (unoptimized) - Hard zeros are always stored (this option has no effect) A*B, A^T*B (optimized) - Hard zeros in corresponding to hard zeros in A are not stored, There are certain cases involving reuse of C, where this can be useful.
+     * @param EnforceInitialGraph If the initial graph is enforced, or a new one is generated
+     */
+    static void BDBtProductOperation(
+        MatrixType& rA,
+        const MatrixType& rD,
+        const MatrixType& rB,
+        const bool CallFillCompleteOnResult = true,
+        const bool KeepAllHardZeros = false,
+        const bool EnforceInitialGraph = false
+        )
+    {
+        // Check if the KeepAllHardZeros is implemented
+        //KRATOS_ERROR_IF(KeepAllHardZeros) << "KeepAllHardZeros is not implemented in Trilinos TPetra" << std::endl;
 
-//             // Copy values
-//             CopyMatrixValues(*aux_3, aux_2);
+        // Check if the EnforceInitialGraph is implemented
+        //KRATOS_ERROR_IF(EnforceInitialGraph) << "EnforceInitialGraph is not implemented in Trilinos TPetra" << std::endl;
 
-//             // Doing a swap
-//             std::swap(rA, *aux_3);
+        // Ensure rA is empty and ready to be filled
+        rA.resumeFill();
 
-//             // Delete the new matrix
-//             delete aux_3;
-//         } else { // A new matrix
-//             // Already existing matrix
-//             if (rA.NumGlobalNonzeros() > 0) {
-//                 // Create an Epetra_Matrix
-//                 MatrixType* aux_2 =  new MatrixType(::Copy, rA.RowMap(), NumNz.data());
+        // Define first auxiliary matrix
+        std::vector<size_t> NumNz; // In Tpetra, non-zero counts are size_t
+        MatrixPointerType aux_1 = Teuchos::rcp(new MatrixType(rA.getRowMap(), NumNz));
 
-//                 // Second multiplication
-//                 TransposeMult(aux_1, rB, *aux_2, {false, true}, CallFillCompleteOnResult, KeepAllHardZeros);
+        // First multiplication
+        Mult(rB, rD, *aux_1, CallFillCompleteOnResult, KeepAllHardZeros);
 
-//                 // Doing a swap
-//                 std::swap(rA, *aux_2);
+        // Already existing matrix
+        if (rA.getGlobalNumEntries() > 0) {
+            // Create a Tpetra_Matrix
+            MatrixPointerType aux_2 = Teuchos::rcp(new MatrixType(rB.getRowMap(), NumNz));
 
-//                 // Delete the new matrix
-//                 delete aux_2;
-//             } else { // Empty matrix
-//                 // Second multiplication
-//                 TransposeMult(aux_1, rB, rA, {false, true}, CallFillCompleteOnResult, KeepAllHardZeros);
-//             }
-//         }
-//     }
+            // Second multiplication
+            TransposeMult(*aux_1, rB, *aux_2, {false, true}, CallFillCompleteOnResult, KeepAllHardZeros);
+
+            // Doing a swap
+            std::swap(rA, *aux_2);
+        } else { // Empty matrix
+            // Second multiplication
+            TransposeMult(*aux_1, rB, rA, {false, true}, CallFillCompleteOnResult, KeepAllHardZeros);
+        }
+}
 
     /**
      * @brief Returns the multiplication of a vector by a scalar
