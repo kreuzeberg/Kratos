@@ -1182,7 +1182,7 @@ public:
      * @param rProcessInfo The problem process info
      * @param rA The LHS matrix
      * @param rb The RHS vector
-     * @param ScalingDiagonal The type of caling diagonal considered
+     * @param ScalingDiagonal The type of scaling diagonal considered
      * @return The scale norm
      */
     static double CheckAndCorrectZeroDiagonalValues(
