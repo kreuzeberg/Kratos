@@ -120,9 +120,9 @@ public:
     using MatrixPointerType = Teuchos::RCP<MatrixType>;
     using VectorPointerType = Teuchos::RCP<VectorType>;
 
-    // /// Some other definitions
-    // using DofUpdaterType = TrilinosDofUpdater< TrilinosSpaceExperimental<MatrixType,VectorType>>;
-    // using DofUpdaterPointerType = typename DofUpdater<TrilinosSpaceExperimental<MatrixType,VectorType>>::UniquePointer;
+    /// Some other definitions
+    // using DofUpdaterType = TrilinosDofUpdater<ClassType>;
+    // using DofUpdaterPointerType = typename DofUpdater<ClassType>::UniquePointer;
 
     ///@}
     ///@name Life Cycle
