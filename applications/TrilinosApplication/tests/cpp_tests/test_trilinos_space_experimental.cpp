@@ -96,55 +96,55 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMaxMin, KratosTrilinosApplicationM
     KRATOS_EXPECT_DOUBLE_EQ(static_cast<double>(size - 1), TrilinosSparseSpaceType::Max(*vector));
 }
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTwoNormVector, KratosTrilinosApplicationMPITestSuite)
-// {
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTwoNormVector, KratosTrilinosApplicationMPITestSuite)
+{
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy vector
-//     const int size = 2 * r_comm.Size();
-//     auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
-//     double ref = 0.0;
-//     for (int i = 0; i < size; ++i) {
-//         ref += std::pow(static_cast<double>(i), 2);
-//     }
-//     ref = std::sqrt(ref);
+    // The dummy vector
+    const int size = 2 * r_comm.Size();
+    auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
+    double ref = 0.0;
+    for (int i = 0; i < size; ++i) {
+        ref += std::pow(static_cast<double>(i), 2);
+    }
+    ref = std::sqrt(ref);
 
-//     // Check
-//     KRATOS_EXPECT_DOUBLE_EQ(ref, TrilinosSparseSpaceType::TwoNorm(*vector));
-// }
+    // Check
+    KRATOS_EXPECT_DOUBLE_EQ(ref, TrilinosSparseSpaceType::TwoNorm(*vector));
+}
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTwoNormMatrix1, KratosTrilinosApplicationMPITestSuite)
-// {
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTwoNormMatrix1, KratosTrilinosApplicationMPITestSuite)
+{
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy matrix
-//     const int size = 2 * r_comm.Size();
-//     auto matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size);
-//     double ref = 0.0;
-//     for (int i = 0; i < size; ++i) {
-//         ref += std::pow(static_cast<double>(i), 2);
-//     }
-//     ref = std::sqrt(ref);
+    // The dummy matrix
+    const int size = 2 * r_comm.Size();
+    auto matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size);
+    double ref = 0.0;
+    for (int i = 0; i < size; ++i) {
+        ref += std::pow(static_cast<double>(i), 2);
+    }
+    ref = std::sqrt(ref);
 
-//     // Check
-//     KRATOS_EXPECT_DOUBLE_EQ(ref, TrilinosSparseSpaceType::TwoNorm(*matrix));
-// }
+    // Check
+    KRATOS_EXPECT_DOUBLE_EQ(ref, TrilinosSparseSpaceType::TwoNorm(*matrix));
+}
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTwoNormMatrix2, KratosTrilinosApplicationMPITestSuite)
-// {
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTwoNormMatrix2, KratosTrilinosApplicationMPITestSuite)
+{
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy matrix
-//     const int size = 2 * r_comm.Size();
-//     auto matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
-//     auto local_matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
+    // The dummy matrix
+    const int size = 2 * r_comm.Size();
+    auto matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
+    auto local_matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
 
-//     // Check
-//     KRATOS_EXPECT_DOUBLE_EQ(TrilinosLocalSpaceType::TwoNorm(*local_matrix), TrilinosSparseSpaceType::TwoNorm(*matrix));
-// }
+    // Check
+    KRATOS_EXPECT_DOUBLE_EQ(TrilinosLocalSpaceType::TwoNorm(local_matrix), TrilinosSparseSpaceType::TwoNorm(*matrix));
+}
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMultMatrixVector, KratosTrilinosApplicationMPITestSuite)
 // {
