@@ -298,7 +298,7 @@ public:
         // Find the local maximum
         ST localMax = localVec(0,0);
         auto localLength = rX.getLocalLength();
-        for (std::size_t i = 1; i < localLength; ++i) {
+        for (LO i = 1; i < localLength; ++i) {
             localMax = std::max(localMax, localVec(i,0));
         }
 
@@ -322,7 +322,7 @@ public:
         // Find the local minimum
         ST localMin = localVec(0,0);
         auto localLength = rX.getLocalLength();
-        for (std::size_t i = 1; i < localLength; ++i) {
+        for (LO i = 1; i < localLength; ++i) {
             localMin = std::min(localMin, localVec(i,0));
         }
 
@@ -359,9 +359,9 @@ public:
         // Compute Frobenius norm
         double frobeniusNorm = 0.0;
 
-        for (std::size_t i = 0; i < localMatrix.numRows(); ++i) {
+        for (LO i = 0; i < localMatrix.numRows(); ++i) {
             auto rowView = localMatrix.row(i);
-            for (std::size_t j = 0; j < rowView.length; ++j) {
+            for (LO j = 0; j < rowView.length; ++j) {
                 double value = rowView.value(j);
                 frobeniusNorm += value * value;
             }
