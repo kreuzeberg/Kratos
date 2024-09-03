@@ -158,7 +158,7 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosMultMatrixVector, KratosTrilinosApplicationMPI
     auto vector = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size, 0.0);
     auto local_vector = TrilinosCPPTestUtilities::GenerateDummyLocalVector(size, 0.0);
 
-    // Epetra coomunicator
+    // Epetra communicator
     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
     Epetra_MpiComm epetra_comm(raw_mpi_comm);
 
@@ -188,7 +188,7 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosMultMatrixMatrix, KratosTrilinosApplicationMPI
     auto matrix_2 = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
     auto local_matrix_2 = TrilinosCPPTestUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
 
-    // Epetra coomunicator
+    // Epetra communicator
     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
     Epetra_MpiComm epetra_comm(raw_mpi_comm);
 
@@ -219,7 +219,7 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosTransposeMultMatrixVector, KratosTrilinosAppli
     auto vector = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size, 0.0);
     auto local_vector = TrilinosCPPTestUtilities::GenerateDummyLocalVector(size, 0.0);
 
-    // Epetra coomunicator
+    // Epetra communicator
     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
     Epetra_MpiComm epetra_comm(raw_mpi_comm);
 
@@ -249,7 +249,7 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosTransposeMultMatrixMatrix, KratosTrilinosAppli
     auto matrix_2 = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
     auto local_matrix_2 = TrilinosCPPTestUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
 
-    // Epetra coomunicator
+    // Epetra communicator
     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
     Epetra_MpiComm epetra_comm(raw_mpi_comm);
 
@@ -280,7 +280,7 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosBtDBProductOperation, KratosTrilinosApplicatio
     auto matrix_2 = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
     auto local_matrix_2 = TrilinosCPPTestUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
 
-    // Epetra coomunicator
+    // Epetra communicator
     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
     Epetra_MpiComm epetra_comm(raw_mpi_comm);
 
@@ -370,7 +370,7 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosBDBtProductOperation, KratosTrilinosApplicatio
     auto matrix_2 = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
     auto local_matrix_2 = TrilinosCPPTestUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
 
-    // Epetra coomunicator
+    // Epetra communicator
     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
     Epetra_MpiComm epetra_comm(raw_mpi_comm);
 

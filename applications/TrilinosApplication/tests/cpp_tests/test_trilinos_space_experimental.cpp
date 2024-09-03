@@ -111,7 +111,7 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMaxMin, KratosTrilinosApplicationM
 //     ref = std::sqrt(ref);
 
 //     // Check
-//     KRATOS_EXPECT_DOUBLE_EQ(ref, TrilinosSparseSpaceType::TwoNorm(vector));
+//     KRATOS_EXPECT_DOUBLE_EQ(ref, TrilinosSparseSpaceType::TwoNorm(*vector));
 // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTwoNormMatrix1, KratosTrilinosApplicationMPITestSuite)
@@ -129,7 +129,7 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMaxMin, KratosTrilinosApplicationM
 //     ref = std::sqrt(ref);
 
 //     // Check
-//     KRATOS_EXPECT_DOUBLE_EQ(ref, TrilinosSparseSpaceType::TwoNorm(matrix));
+//     KRATOS_EXPECT_DOUBLE_EQ(ref, TrilinosSparseSpaceType::TwoNorm(*matrix));
 // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTwoNormMatrix2, KratosTrilinosApplicationMPITestSuite)
@@ -143,7 +143,7 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMaxMin, KratosTrilinosApplicationM
 //     auto local_matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
 
 //     // Check
-//     KRATOS_EXPECT_DOUBLE_EQ(TrilinosLocalSpaceType::TwoNorm(local_matrix), TrilinosSparseSpaceType::TwoNorm(matrix));
+//     KRATOS_EXPECT_DOUBLE_EQ(TrilinosLocalSpaceType::TwoNorm(*local_matrix), TrilinosSparseSpaceType::TwoNorm(*matrix));
 // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMultMatrixVector, KratosTrilinosApplicationMPITestSuite)
@@ -158,7 +158,7 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMaxMin, KratosTrilinosApplicationM
 //     auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 0.0);
 //     auto local_vector = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 0.0);
 
-//     // Epetra coomunicator
+//     // Epetra communicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
 //     Epetra_MpiComm epetra_comm(raw_mpi_comm);
 
@@ -169,7 +169,7 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMaxMin, KratosTrilinosApplicationM
 //     TrilinosVectorType mult(Map);
 
 //     // Solution
-//     TrilinosSparseSpaceType::Mult(matrix, vector, mult);
+//     TrilinosSparseSpaceType::Mult(*matrix, *vector, mult);
 
 //     // Check
 //     const TrilinosLocalVectorType multiply_reference = prod(local_matrix, local_vector);
@@ -188,7 +188,7 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMaxMin, KratosTrilinosApplicationM
 //     auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
 //     auto local_matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
 
-//     // Epetra coomunicator
+//     // Epetra communicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
 //     Epetra_MpiComm epetra_comm(raw_mpi_comm);
 
@@ -219,7 +219,7 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMaxMin, KratosTrilinosApplicationM
 //     auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 0.0);
 //     auto local_vector = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 0.0);
 
-//     // Epetra coomunicator
+//     // Epetra communicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
 //     Epetra_MpiComm epetra_comm(raw_mpi_comm);
 
@@ -249,7 +249,7 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMaxMin, KratosTrilinosApplicationM
 //     auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
 //     auto local_matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
 
-//     // Epetra coomunicator
+//     // Epetra communicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
 //     Epetra_MpiComm epetra_comm(raw_mpi_comm);
 
@@ -280,7 +280,7 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMaxMin, KratosTrilinosApplicationM
 //     auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
 //     auto local_matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
 
-//     // Epetra coomunicator
+//     // Epetra communicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
 //     Epetra_MpiComm epetra_comm(raw_mpi_comm);
 
@@ -319,7 +319,7 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMaxMin, KratosTrilinosApplicationM
 //     auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
 //     auto local_matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
 
-//     // Epetra coomunicator
+//     // Epetra communicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
 //     Epetra_MpiComm epetra_comm(raw_mpi_comm);
 
@@ -591,10 +591,10 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMaxMin, KratosTrilinosApplicationM
 //     }
 // }
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalIsDistributed, KratosTrilinosApplicationMPITestSuite)
-// {
-//     KRATOS_EXPECT_TRUE(TrilinosSparseSpaceType::IsDistributed());
-// }
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalIsDistributed, KratosTrilinosApplicationMPITestSuite)
+{
+    KRATOS_EXPECT_TRUE(TrilinosSparseSpaceType::IsDistributed());
+}
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalGetScaleNorm, KratosTrilinosApplicationMPITestSuite)
 // {
