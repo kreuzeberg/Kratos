@@ -104,6 +104,10 @@ public:
     // The Node type.  e.g., Kokkos::DefaultNode::DefaultNodeType, defined in KokkosCompat_DefaultNode.hpp.
     using NT = typename MatrixType::node_type;
 
+    /// Define the import/export types
+    using ImportType = Tpetra::Import<LO, GO, NT>;
+    using ExportType = Tpetra::Export<LO, GO, NT>;
+
     /// Define the map type
     using MapType = Tpetra::Map<LO, GO, NT>;
     using MapPointerType = Teuchos::RCP<const MapType>;
@@ -990,79 +994,66 @@ public:
         KRATOS_CATCH("")
     }
 
-//     /**
-//      * @brief Read a matrix from a MatrixMarket file
-//      * @param rFileName The name of the file to read
-//      * @param rComm The MPI communicator
-//      * @return The matrix read from the file
-//      */
-//     MatrixPointerType ReadMatrixMarket(
-//         const std::string FileName,
-//         CommunicatorType& rComm
-//         )
-//     {
-//         KRATOS_TRY
+    /**
+     * @brief Read a matrix from a MatrixMarket file
+     * @param rFileName The name of the file to read
+     * @param rComm The MPI communicator
+     * @return The matrix read from the file
+     */
+    MatrixPointerType ReadMatrixMarket(
+        const std::string FileName,
+        CommunicatorType& rComm
+        )
+    {
+        KRATOS_TRY
 
-//         Epetra_CrsMatrix* pp = nullptr;
+    //     // Load the matrix using Tpetra's MatrixMarket reader
+    //     RCP<const MapType> map;
+    //     RCP<MatrixType> matrix = Tpetra::MatrixMarket::Reader<MatrixType>::readSparseFile(FileName, map, rComm);
 
-//         int error_code = EpetraExt::MatrixMarketFileToCrsMatrix(FileName.c_str(), rComm, pp);
+    //     KRATOS_ERROR_IF(matrix.is_null()) << "Error thrown while reading Matrix Market file " << FileName;
 
-//         KRATOS_ERROR_IF(error_code != 0) << "Eerror thrown while reading Matrix Market file "<<FileName<< " error code is : " << error_code;
+    //     rComm.barrier();
 
-//         rComm.Barrier();
+    //     // Create a copy of the matrix
+    //     MatrixPointerType paux = Teuchos::cp(new MatrixType(matrix->getRowMap(), matrix->getColMap(), matrix->getNodeNumEntries()));
 
-//         const Epetra_CrsGraph& rGraph = pp->Graph();
-//         MatrixPointerType paux = Kratos::make_shared<Epetra_FECrsMatrix>( ::Copy, rGraph, false );
+    //     // Copy values from original matrix to the new matrix
+    //     for (size_t i = 0; i < matrix->getNodeNumRows(); ++i) {
+    //         const auto globalRow = matrix->getRowMap()->getGlobalElement(i);
 
-//         IndexType NumMyRows = rGraph.RowMap().NumMyElements();
+    //         Teuchos::ArrayView<const ST> values;
+    //         Teuchos::ArrayView<const LO> indices;
 
-//         int* MyGlobalElements = new int[NumMyRows];
-//         rGraph.RowMap().MyGlobalElements(MyGlobalElements);
+    //         matrix->getLocalRowView(i, indices, values);
 
-//         for(IndexType i = 0; i < NumMyRows; ++i) {
-// //             std::cout << pA->Comm().MyPID() << " : I=" << i << std::endl;
-//             IndexType GlobalRow = MyGlobalElements[i];
+    //         paux->replaceGlobalValues(globalRow, indices, values);
+    //     }
 
-//             int NumEntries;
-//             std::size_t Length = pp->NumGlobalEntries(GlobalRow);  // length of Values and Indices
+    //     // Assemble the matrix
+    //     paux->fillComplete();
 
-//             double* Values = new double[Length];     // extracted values for this row
-//             int* Indices = new int[Length];          // extracted global column indices for the corresponding values
+    //     return paux;
 
-//             error_code = pp->ExtractGlobalRowCopy(GlobalRow, Length, NumEntries, Values, Indices);
+        KRATOS_ERROR << "ReadMatrixMarket is not implemented for Trilinos TPetra" << std::endl;
+        return CreateEmptyMatrixPointer();
 
-//             KRATOS_ERROR_IF(error_code != 0) << "Error thrown in ExtractGlobalRowCopy : " << error_code;
+        KRATOS_CATCH("");
+    }
 
-//             error_code = paux->ReplaceGlobalValues(GlobalRow, Length, Values, Indices);
-
-//             KRATOS_ERROR_IF(error_code != 0) << "Error thrown in ReplaceGlobalValues : " << error_code;
-
-//             delete [] Values;
-//             delete [] Indices;
-//         }
-
-//         paux->GlobalAssemble();
-
-//         delete [] MyGlobalElements;
-//         delete pp;
-
-//         return paux;
-//         KRATOS_CATCH("");
-//     }
-
-    // /**
-    //  * @brief Read a vector from a MatrixMarket file
-    //  * @param rFileName The name of the file to read
-    //  * @param pComm The MPI communicator
-    //  * @param N The size of the vector
-    //  */
-    // VectorPointerType ReadMatrixMarketVector(
-    //     const std::string& rFileName,
-    //     CommunicatorPointerType pComm,
-    //     const int N
-    //     )
-    // {
-    //     KRATOS_TRY
+    /**
+     * @brief Read a vector from a MatrixMarket file
+     * @param rFileName The name of the file to read
+     * @param pComm The MPI communicator
+     * @param N The size of the vector
+     */
+    VectorPointerType ReadMatrixMarketVector(
+        const std::string& rFileName,
+        CommunicatorPointerType pComm,
+        const int N
+        )
+    {
+        KRATOS_TRY
 
     //     // Create a Tpetra::Map
     //     MapPointerType my_map = Tpetra::createUniformContigMapWithNode<GO, GO>(N, pComm);
@@ -1083,8 +1074,11 @@ public:
 
     //     return final_vector;
 
-    //     KRATOS_CATCH("");
-    // }
+        KRATOS_ERROR << "ReadMatrixMarketVector is not implemented for Trilinos TPetra" << std::endl;
+        return CreateEmptyVectorPointer();
+
+        KRATOS_CATCH("");
+    }
 
     /**
      * @brief Generates a graph combining the graphs of two matrices
