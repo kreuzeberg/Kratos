@@ -37,32 +37,32 @@ using TrilinosVectorType = TrilinosSparseSpaceType::VectorType;
 using TrilinosLocalMatrixType = TrilinosLocalSpaceType::MatrixType;
 using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalSizeVector, KratosTrilinosApplicationMPITestSuite)
-// {
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalSizeVector, KratosTrilinosApplicationMPITestSuite)
+{
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy vector
-//     const int size = 2 * r_comm.Size();
-//     auto vector = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size);
+    // The dummy vector
+    const int size = 2 * r_comm.Size();
+    auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
 
-//     // Check
-//     KRATOS_EXPECT_EQ(static_cast<std::size_t>(size), TrilinosSparseSpaceType::Size(vector));
-// }
+    // Check
+    KRATOS_EXPECT_EQ(static_cast<std::size_t>(size), TrilinosSparseSpaceType::Size(*vector));
+}
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalSizeMatrix, KratosTrilinosApplicationMPITestSuite)
-// {
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalSizeMatrix, KratosTrilinosApplicationMPITestSuite)
+{
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy vector
-//     const int size = 2 * r_comm.Size();
-//     auto vector = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size);
+    // The dummy vector
+    const int size = 2 * r_comm.Size();
+    auto matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size);
 
-//     // Check
-//     KRATOS_EXPECT_EQ(static_cast<std::size_t>(size), TrilinosSparseSpaceType::Size1(vector));
-//     KRATOS_EXPECT_EQ(static_cast<std::size_t>(size), TrilinosSparseSpaceType::Size2(vector));
-// }
+    // Check
+    KRATOS_EXPECT_EQ(static_cast<std::size_t>(size), TrilinosSparseSpaceType::Size1(*matrix));
+    KRATOS_EXPECT_EQ(static_cast<std::size_t>(size), TrilinosSparseSpaceType::Size2(*matrix));
+}
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalDotProduct, KratosTrilinosApplicationMPITestSuite)
 // {
@@ -71,8 +71,8 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy vector
 //     const int size = 2 * r_comm.Size();
-//     auto vector1 = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size);
-//     auto vector2 = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size);
+//     auto vector1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
+//     auto vector2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
 //     double ref = 0.0;
 //     for (int i = 0; i < size; ++i) {
 //         ref += std::pow(static_cast<double>(i), 2);
@@ -89,7 +89,7 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy vector
 //     const int size = 2 * r_comm.Size();
-//     auto vector = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size);
+//     auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
 
 //     // Check
 //     KRATOS_EXPECT_DOUBLE_EQ(0.0, TrilinosSparseSpaceType::Min(vector));
@@ -103,7 +103,7 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy vector
 //     const int size = 2 * r_comm.Size();
-//     auto vector = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size);
+//     auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
 //     double ref = 0.0;
 //     for (int i = 0; i < size; ++i) {
 //         ref += std::pow(static_cast<double>(i), 2);
@@ -121,7 +121,7 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy matrix
 //     const int size = 2 * r_comm.Size();
-//     auto matrix = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size);
+//     auto matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size);
 //     double ref = 0.0;
 //     for (int i = 0; i < size; ++i) {
 //         ref += std::pow(static_cast<double>(i), 2);
@@ -139,8 +139,8 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy matrix
 //     const int size = 2 * r_comm.Size();
-//     auto matrix = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
-//     auto local_matrix = TrilinosCPPTestUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
+//     auto matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
+//     auto local_matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
 
 //     // Check
 //     KRATOS_EXPECT_DOUBLE_EQ(TrilinosLocalSpaceType::TwoNorm(local_matrix), TrilinosSparseSpaceType::TwoNorm(matrix));
@@ -153,10 +153,10 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy matrix
 //     const int size = 2 * r_comm.Size();
-//     auto matrix = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
-//     auto local_matrix = TrilinosCPPTestUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
-//     auto vector = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size, 0.0);
-//     auto local_vector = TrilinosCPPTestUtilities::GenerateDummyLocalVector(size, 0.0);
+//     auto matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
+//     auto local_matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
+//     auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 0.0);
+//     auto local_vector = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 0.0);
 
 //     // Epetra coomunicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
@@ -173,7 +173,7 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // Check
 //     const TrilinosLocalVectorType multiply_reference = prod(local_matrix, local_vector);
-//     TrilinosCPPTestUtilities::CheckSparseVectorFromLocalVector(mult, multiply_reference);
+//     TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(mult, multiply_reference);
 // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMultMatrixMatrix, KratosTrilinosApplicationMPITestSuite)
@@ -183,10 +183,10 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy matrix
 //     const int size = 2 * r_comm.Size();
-//     auto matrix_1 = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
-//     auto local_matrix_1 = TrilinosCPPTestUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
-//     auto matrix_2 = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
-//     auto local_matrix_2 = TrilinosCPPTestUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
+//     auto matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
+//     auto local_matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
+//     auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
+//     auto local_matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
 
 //     // Epetra coomunicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
@@ -204,7 +204,7 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // Check
 //     const TrilinosLocalMatrixType multiply_reference = prod(local_matrix_1, local_matrix_2);
-//     TrilinosCPPTestUtilities::CheckSparseMatrixFromLocalMatrix(mult, multiply_reference);
+//     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(mult, multiply_reference);
 // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTransposeMultMatrixVector, KratosTrilinosApplicationMPITestSuite)
@@ -214,10 +214,10 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy matrix
 //     const int size = 2 * r_comm.Size();
-//     auto matrix = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
-//     auto local_matrix = TrilinosCPPTestUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
-//     auto vector = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size, 0.0);
-//     auto local_vector = TrilinosCPPTestUtilities::GenerateDummyLocalVector(size, 0.0);
+//     auto matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
+//     auto local_matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
+//     auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 0.0);
+//     auto local_vector = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 0.0);
 
 //     // Epetra coomunicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
@@ -234,7 +234,7 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // Check
 //     const TrilinosLocalVectorType multiply_reference = prod(trans(local_matrix), local_vector);
-//     TrilinosCPPTestUtilities::CheckSparseVectorFromLocalVector(mult, multiply_reference);
+//     TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(mult, multiply_reference);
 // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTransposeMultMatrixMatrix, KratosTrilinosApplicationMPITestSuite)
@@ -244,10 +244,10 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy matrix
 //     const int size = 2 * r_comm.Size();
-//     auto matrix_1 = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
-//     auto local_matrix_1 = TrilinosCPPTestUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
-//     auto matrix_2 = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
-//     auto local_matrix_2 = TrilinosCPPTestUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
+//     auto matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
+//     auto local_matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
+//     auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
+//     auto local_matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
 
 //     // Epetra coomunicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
@@ -265,7 +265,7 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // Check
 //     const TrilinosLocalMatrixType multiply_reference = prod(trans(local_matrix_1), local_matrix_2);
-//     TrilinosCPPTestUtilities::CheckSparseMatrixFromLocalMatrix(mult, multiply_reference);
+//     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(mult, multiply_reference);
 // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalBtDBProductOperation, KratosTrilinosApplicationMPITestSuite)
@@ -275,10 +275,10 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy matrix
 //     const int size = 2 * r_comm.Size();
-//     auto matrix_1 = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
-//     auto local_matrix_1 = TrilinosCPPTestUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
-//     auto matrix_2 = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
-//     auto local_matrix_2 = TrilinosCPPTestUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
+//     auto matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
+//     auto local_matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
+//     auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
+//     auto local_matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
 
 //     // Epetra coomunicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
@@ -297,66 +297,15 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 //     // Check
 //     TrilinosLocalMatrixType multiply_reference;
 //     MathUtils<double>::BtDBProductOperation(multiply_reference, local_matrix_1, local_matrix_2);
-//     TrilinosCPPTestUtilities::CheckSparseMatrixFromLocalMatrix(mult, multiply_reference);
+//     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(mult, multiply_reference);
 
 //     // Non zero matrix
-//     auto second_mult = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
+//     auto second_mult = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
 
 //     // Solution
 //     TrilinosSparseSpaceType::BtDBProductOperation(second_mult, matrix_1, matrix_2);
-//     TrilinosCPPTestUtilities::CheckSparseMatrixFromLocalMatrix(second_mult, multiply_reference);
+//     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(second_mult, multiply_reference);
 // }
-
-// // Error related to Trilinos issue: https://github.com/trilinos/Trilinos/issues/9252
-// // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalBtDBProductOperationRealCase, KratosTrilinosApplicationMPITestSuite)
-// // {
-// //     // The data communicator
-// //     const auto& r_comm = Testing::GetDefaultDataCommunicator();
-
-// //     // The dummy matrix
-// //     const int size = 6;
-
-// //     // Generate A matrix
-// //     std::vector<int> row_indexes = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5};
-// //     std::vector<int> column_indexes = {0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 2, 3, 4, 5, 2, 3, 4, 5};
-// //     std::vector<double> values = {2069000000.0, 0.0, -2069000000.0, 0.0, 0.0, 0.0, 0.0, 0.0, -2069000000.0, 0.0, 4138000000.0, 0.0, -2069000000.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -2069000000.0, 0.0, 2069000000.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-// //     auto A = TrilinosCPPTestUtilities::GenerateSparseMatrix(r_comm, size, row_indexes, column_indexes, values);
-// //     const Epetra_Map* p_map = &(A.RowMap());
-
-// //     // Generate T matrix
-// //     row_indexes = {0,1,2,3,4,4,5};
-// //     column_indexes = {0,1,2,3,2,4,5};
-// //     values = {1,1,1,1,1,0,1};
-// //     auto T = TrilinosCPPTestUtilities::GenerateSparseMatrix(r_comm, size, row_indexes, column_indexes, values, p_map);
-
-// //     /* Intermediate multiplication */
-
-// //     // Create an Epetra_Matrix
-// //     TrilinosSparseMatrixType aux(::Copy, A.Graph());
-
-// //     // First multiplication
-// //     TrilinosSparseSpaceType::TransposeMult(T, A, aux, {true, false}, true, true);
-
-// //     // Values to check
-// //     row_indexes = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5};
-// //     column_indexes = {0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 2, 3, 4, 5, 2, 3, 4, 5};
-// //     values = {2069000000.0, 0.0, -2069000000.0, 0.0, 0.0, 0.0, 0.0, 0.0, -2069000000.0, 0.0, 2069000000.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-
-// //     // Check
-// //     TrilinosCPPTestUtilities::CheckSparseMatrix(aux, row_indexes, column_indexes, values);
-
-// //     // Compute T' A T
-// //     const TrilinosSparseMatrixType copy_A(A);
-// //     TrilinosSparseSpaceType::BtDBProductOperation(A, copy_A, T, true, false, true);
-
-// //     // Values to check
-// //     row_indexes = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5};
-// //     column_indexes = {0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 2, 3, 4, 5, 2, 3, 4, 5};
-// //     values = {2069000000.0, 0.0, -2069000000.0, 0.0, 0.0, 0.0, 0.0, 0.0, -2069000000.0, 0.0, 2069000000.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-
-// //     // Check
-// //     TrilinosCPPTestUtilities::CheckSparseMatrix(A, row_indexes, column_indexes, values);
-// // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalBDBtProductOperation, KratosTrilinosApplicationMPITestSuite)
 // {
@@ -365,10 +314,10 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy matrix
 //     const int size = 2 * r_comm.Size();
-//     auto matrix_1 = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
-//     auto local_matrix_1 = TrilinosCPPTestUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
-//     auto matrix_2 = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
-//     auto local_matrix_2 = TrilinosCPPTestUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
+//     auto matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
+//     auto local_matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
+//     auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
+//     auto local_matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
 
 //     // Epetra coomunicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
@@ -387,14 +336,14 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 //     // Check
 //     TrilinosLocalMatrixType multiply_reference;
 //     MathUtils<double>::BDBtProductOperation(multiply_reference, local_matrix_1, local_matrix_2);
-//     TrilinosCPPTestUtilities::CheckSparseMatrixFromLocalMatrix(mult, multiply_reference);
+//     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(mult, multiply_reference);
 
 //     // Non zero matrix
-//     auto second_mult = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
+//     auto second_mult = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
 
 //     // Solution
 //     TrilinosSparseSpaceType::BDBtProductOperation(second_mult, matrix_1, matrix_2);
-//     TrilinosCPPTestUtilities::CheckSparseMatrixFromLocalMatrix(second_mult, multiply_reference);
+//     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(second_mult, multiply_reference);
 // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalInplaceMult, KratosTrilinosApplicationMPITestSuite)
@@ -404,8 +353,8 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy vector
 //     const int size = 2 * r_comm.Size();
-//     auto vector = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size);
-//     auto local_vector = TrilinosCPPTestUtilities::GenerateDummyLocalVector(size);
+//     auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
+//     auto local_vector = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size);
 
 //     // Multiply
 //     const double mult = 2.0;
@@ -415,7 +364,7 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // Check
 //     local_vector *= mult;
-//     TrilinosCPPTestUtilities::CheckSparseVectorFromLocalVector(vector, local_vector);
+//     TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(vector, local_vector);
 // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalAssign, KratosTrilinosApplicationMPITestSuite)
@@ -425,10 +374,10 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy vector
 //     const int size = 2 * r_comm.Size();
-//     auto vector_1 = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size);
-//     auto vector_2 = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size, 1.0);
-//     auto local_vector_1 = TrilinosCPPTestUtilities::GenerateDummyLocalVector(size);
-//     auto local_vector_2 = TrilinosCPPTestUtilities::GenerateDummyLocalVector(size, 1.0);
+//     auto vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
+//     auto vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 1.0);
+//     auto local_vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size);
+//     auto local_vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 1.0);
 
 //     // Multiply
 //     const double mult = 2.0;
@@ -438,7 +387,7 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // Check
 //     local_vector_1 = mult * local_vector_2;
-//     TrilinosCPPTestUtilities::CheckSparseVectorFromLocalVector(vector_1, local_vector_1);
+//     TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(vector_1, local_vector_1);
 // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalUnaliasedAdd, KratosTrilinosApplicationMPITestSuite)
@@ -448,10 +397,10 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy vector
 //     const int size = 2 * r_comm.Size();
-//     auto vector_1 = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size);
-//     auto vector_2 = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size, 1.0);
-//     auto local_vector_1 = TrilinosCPPTestUtilities::GenerateDummyLocalVector(size);
-//     auto local_vector_2 = TrilinosCPPTestUtilities::GenerateDummyLocalVector(size, 1.0);
+//     auto vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
+//     auto vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 1.0);
+//     auto local_vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size);
+//     auto local_vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 1.0);
 
 //     // Multiply
 //     const double mult = 2.0;
@@ -461,7 +410,7 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // Check
 //     local_vector_1 += mult * local_vector_2;
-//     TrilinosCPPTestUtilities::CheckSparseVectorFromLocalVector(vector_1, local_vector_1);
+//     TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(vector_1, local_vector_1);
 // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalScaleAndAdd1, KratosTrilinosApplicationMPITestSuite)
@@ -471,12 +420,12 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy vector
 //     const int size = 2 * r_comm.Size();
-//     auto vector_1 = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size);
-//     auto vector_2 = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size, 1.0);
-//     auto vector_3 = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size, 2.0);
-//     auto local_vector_1 = TrilinosCPPTestUtilities::GenerateDummyLocalVector(size);
-//     auto local_vector_2 = TrilinosCPPTestUtilities::GenerateDummyLocalVector(size, 1.0);
-//     auto local_vector_3 = TrilinosCPPTestUtilities::GenerateDummyLocalVector(size, 2.0);
+//     auto vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
+//     auto vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 1.0);
+//     auto vector_3 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 2.0);
+//     auto local_vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size);
+//     auto local_vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 1.0);
+//     auto local_vector_3 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 2.0);
 
 //     // Multiply
 //     const double mult_1 = 2.0;
@@ -487,7 +436,7 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // Check
 //     local_vector_1 = mult_1 * local_vector_2 + mult_2 * local_vector_3;
-//     TrilinosCPPTestUtilities::CheckSparseVectorFromLocalVector(vector_1, local_vector_1);
+//     TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(vector_1, local_vector_1);
 // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalScaleAndAdd2, KratosTrilinosApplicationMPITestSuite)
@@ -497,10 +446,10 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy vector
 //     const int size = 2 * r_comm.Size();
-//     auto vector_1 = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size);
-//     auto vector_2 = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size, 1.0);
-//     auto local_vector_1 = TrilinosCPPTestUtilities::GenerateDummyLocalVector(size);
-//     auto local_vector_2 = TrilinosCPPTestUtilities::GenerateDummyLocalVector(size, 1.0);
+//     auto vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
+//     auto vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 1.0);
+//     auto local_vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size);
+//     auto local_vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 1.0);
 
 //     // Multiply
 //     const double mult_1 = 2.0;
@@ -511,7 +460,7 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // Check
 //     local_vector_1 = mult_1 * local_vector_2 + mult_2 * local_vector_1;
-//     TrilinosCPPTestUtilities::CheckSparseVectorFromLocalVector(vector_1, local_vector_1);
+//     TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(vector_1, local_vector_1);
 // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalSet, KratosTrilinosApplicationMPITestSuite)
@@ -521,8 +470,8 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy vector
 //     const int size = 2 * r_comm.Size();
-//     auto vector = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size);
-//     auto local_vector = TrilinosCPPTestUtilities::GenerateDummyLocalVector(size);
+//     auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
+//     auto local_vector = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size);
 
 //     // Set
 //     const double value = 2.0;
@@ -532,7 +481,7 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // Check
 //     for (int i = 0; i < size; ++i) local_vector[i] = value;
-//     TrilinosCPPTestUtilities::CheckSparseVectorFromLocalVector(vector, local_vector);
+//     TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(vector, local_vector);
 // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalSetToZeroMatrix, KratosTrilinosApplicationMPITestSuite)
@@ -542,14 +491,14 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy vector
 //     const int size = 2 * r_comm.Size();
-//     auto matrix = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size);
+//     auto matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size);
 //     TrilinosLocalMatrixType local_matrix = ZeroMatrix(size, size);
 
 //     // Solution
 //     TrilinosSparseSpaceType::SetToZero(matrix);
 
 //     // Check
-//     TrilinosCPPTestUtilities::CheckSparseMatrixFromLocalMatrix(matrix, local_matrix);
+//     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(matrix, local_matrix);
 // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalSetToZeroVector, KratosTrilinosApplicationMPITestSuite)
@@ -559,14 +508,14 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy vector
 //     const int size = 2 * r_comm.Size();
-//     auto vector = TrilinosCPPTestUtilities::GenerateDummySparseVector(r_comm, size);
+//     auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
 //     TrilinosLocalVectorType local_vector = ZeroVector(size);
 
 //     // Solution
 //     TrilinosSparseSpaceType::SetToZero(vector);
 
 //     // Check
-//     TrilinosCPPTestUtilities::CheckSparseVectorFromLocalVector(vector, local_vector);
+//     TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(vector, local_vector);
 // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalCopyMatrixValues, KratosTrilinosApplicationMPITestSuite)
@@ -576,15 +525,15 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy vector
 //     const int size = 2 * r_comm.Size();
-//     auto matrix_1 = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
-//     auto matrix_2 = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0);
-//     auto local_matrix = TrilinosCPPTestUtilities::GenerateDummyLocalMatrix(size, 0.0);
+//     auto matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
+//     auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0);
+//     auto local_matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0);
 
 //     // Solution
 //     TrilinosSparseSpaceType::CopyMatrixValues(matrix_1, matrix_2);
 
 //     // Check
-//     TrilinosCPPTestUtilities::CheckSparseMatrixFromLocalMatrix(matrix_1, local_matrix);
+//     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(matrix_1, local_matrix);
 // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalCombineMatricesGraphs, KratosTrilinosApplicationMPITestSuite)
@@ -594,9 +543,9 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy vector
 //     const int size = 2 * r_comm.Size();
-//     auto matrix_1 = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0);
-//     auto matrix_2 = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
-//     auto local_matrix = TrilinosCPPTestUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
+//     auto matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0);
+//     auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
+//     auto local_matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
 
 //     // Creating new matrix
 //     const auto combined_graph = TrilinosSparseSpaceType::CombineMatricesGraphs(matrix_1, matrix_2);
@@ -606,7 +555,7 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 //     TrilinosSparseSpaceType::CopyMatrixValues(copied_matrix, matrix_2);
 
 //     // Check
-//     TrilinosCPPTestUtilities::CheckSparseMatrixFromLocalMatrix(copied_matrix, local_matrix);
+//     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(copied_matrix, local_matrix);
 // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalCheckAndCorrectZeroDiagonalValues, KratosTrilinosApplicationMPITestSuite)
@@ -621,7 +570,7 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy matrix
 //     const int size = 12;
-//     auto matrix12x12 = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size);
+//     auto matrix12x12 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size);
 
 //     // Generate Epetra communicator
 //     KRATOS_ERROR_IF_NOT(r_comm.IsDistributed()) << "Only distributed DataCommunicators can be used!" << std::endl;
@@ -659,7 +608,7 @@ using TrilinosLocalVectorType = TrilinosLocalSpaceType::VectorType;
 
 //     // The dummy matrix
 //     const int size = 12;
-//     auto matrix12x12 = TrilinosCPPTestUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0);
+//     auto matrix12x12 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0);
 
 //     // Test the norm of the matrix
 //     double norm = 0.0;
