@@ -1086,201 +1086,192 @@ public:
     //     KRATOS_CATCH("");
     // }
 
-//     /**
-//      * @brief Generates a graph combining the graphs of two matrices
-//      * @param rA The first matrix
-//      * @param rB The second matrix
-//      */
-//     static Epetra_CrsGraph CombineMatricesGraphs(
-//         const MatrixType& rA,
-//         const MatrixType& rB
-//         )
-//     {
-//         // Row maps must be the same
-//         KRATOS_ERROR_IF_NOT(rA.RowMap().SameAs(rB.RowMap())) << "Row maps are not compatible" << std::endl;
+    /**
+     * @brief Generates a graph combining the graphs of two matrices
+     * @param rA The first matrix
+     * @param rB The second matrix
+     */
+    static GraphPointerType CombineMatricesGraphs(
+        const MatrixType& rA,
+        const MatrixType& rB
+        )
+    {
+        // Row maps must be the same
+        KRATOS_ERROR_IF(!rA.getRowMap()->isSameAs(*rB.getRowMap())) << "Row maps are not compatible" << std::endl;
 
-//         // Getting the graphs
-//         const auto& r_graph_a = rA.Graph();
-//         const auto& r_graph_b = rB.Graph();
+        // Getting the graphs
+        auto r_graph_a = rA.getCrsGraph();
+        auto r_graph_b = rB.getCrsGraph();
 
-//         // Assuming local indexes
-//         KRATOS_ERROR_IF_NOT(r_graph_a.IndicesAreLocal() && r_graph_b.IndicesAreLocal()) << "Graphs indexes must be local" << std::endl;
+        // Assuming local indexes
+        KRATOS_ERROR_IF(!r_graph_a->isLocallyIndexed() || !r_graph_b->isLocallyIndexed()) << "Graphs indexes must be local" << std::endl;
 
-//         // Some definitions
-//         int i, j, ierr;
-//         int num_entries; // Number of non-zero entries
-//         int* cols;       // Column indices of row non-zero values
-//         const bool same_col_map = rA.ColMap().SameAs(rB.ColMap());
-//         Epetra_CrsGraph graph = same_col_map ? Epetra_CrsGraph(::Copy, rA.RowMap(), rA.ColMap(), 1000) : Epetra_CrsGraph(::Copy, rA.RowMap(), 1000);
+        // Some definitions
+        size_t num_entries; // Number of non-zero entries
+        Teuchos::ArrayView<const GO> cols_a, cols_b; // Column indices of row non-zero values
+        const bool same_col_map = rA.getColMap()->isSameAs(*rB.getColMap());
+        GraphPointerType graph;
 
-//         // Same column map. Local indices, simpler and faster
-//         if (same_col_map) {
-//             for (i = 0; i < r_graph_a.NumMyRows(); i++) {
-//                 std::unordered_set<int> combined_indexes;
-//                 // First graph
-//                 ierr = r_graph_a.ExtractMyRowView(i, num_entries, cols);
-//                 KRATOS_ERROR_IF(ierr != 0) << "Epetra failure found extracting indices (I) with code ierr = " << ierr << std::endl;
-//                 for (j = 0; j < num_entries; j++) {
-//                     combined_indexes.insert(cols[j]);
-//                 }
-//                 // Second graph
-//                 ierr = r_graph_b.ExtractMyRowView(i, num_entries, cols);
-//                 KRATOS_ERROR_IF(ierr != 0) << "Epetra failure found extracting indices (II) with code ierr = " << ierr << std::endl;
-//                 for (j = 0; j < num_entries; j++) {
-//                     combined_indexes.insert(cols[j]);
-//                 }
-//                 // Vector equivalent
-//                 std::vector<int> combined_indexes_vector(combined_indexes.begin(), combined_indexes.end());
-//                 num_entries = combined_indexes_vector.size();
-//                 // Adding to graph
-//                 ierr = graph.InsertMyIndices(i, num_entries, combined_indexes_vector.data());
-//                 KRATOS_ERROR_IF(ierr != 0) << "Epetra failure inserting indices with code ierr = " << ierr << std::endl;
-//             }
-//         } else { // Different column map, global indices
-//             for (i = 0; i < r_graph_a.NumMyRows(); i++) {
-//                 const int global_row_index = r_graph_a.GRID(i);
-//                 // First graph
-//                 ierr = r_graph_a.ExtractMyRowView(i, num_entries, cols);
-//                 KRATOS_ERROR_IF(ierr != 0) << "Epetra failure found extracting indices (I) with code ierr = " << ierr << std::endl;
-//                 std::vector<int> combined_indexes_vector;
-//                 combined_indexes_vector.reserve(num_entries);
-//                 for (j = 0; j < num_entries; j++) {
-//                     combined_indexes_vector.push_back(r_graph_a.GCID(cols[j]));
-//                 }
-//                 // Adding to graph
-//                 ierr = graph.InsertGlobalIndices(global_row_index, num_entries, combined_indexes_vector.data());
-//                 KRATOS_ERROR_IF(ierr != 0) << "Epetra failure inserting indices with code ierr = " << ierr << std::endl;
-//             }
-//             for (i = 0; i < r_graph_b.NumMyRows(); i++) {
-//                 const int global_row_index = r_graph_b.GRID(i);
-//                 // Second graph
-//                 ierr = r_graph_b.ExtractMyRowView(i, num_entries, cols);
-//                 KRATOS_ERROR_IF(ierr != 0) << "Epetra failure found extracting indices (II) with code ierr = " << ierr << std::endl;
-//                 std::vector<int> combined_indexes_vector;
-//                 combined_indexes_vector.reserve(num_entries);
-//                 for (j = 0; j < num_entries; j++) {
-//                     combined_indexes_vector.push_back(r_graph_b.GCID(cols[j]));
-//                 }
-//                 // Adding to graph
-//                 ierr = graph.InsertGlobalIndices(global_row_index, num_entries, combined_indexes_vector.data());
-//                 KRATOS_ERROR_IF(ierr != 0) << "Epetra failure inserting indices with code ierr = " << ierr << std::endl;
-//             }
-//         }
+        if (same_col_map) {
+            graph = Teuchos::rcp(new Tpetra::CrsGraph<>(rA.getRowMap(), rA.getColMap(), 1000));
+        } else {
+            graph = Teuchos::rcp(new Tpetra::CrsGraph<>(rA.getRowMap(), 1000));
+        }
 
-//         // Finalizing graph construction
-//         ierr = graph.FillComplete();
-//         KRATOS_ERROR_IF(ierr < 0) << ": Epetra failure in Epetra_CrsGraph.FillComplete. Error code: " << ierr << std::endl;
+        if (same_col_map) {
+            for (std::size_t i = 0; i < r_graph_a->getLocalNumRows(); ++i) {
+                std::unordered_set<int> combined_indexes;
+                // First graph
+                r_graph_a->getLocalRowView(i, cols_a);
+                combined_indexes.insert(cols_a.begin(), cols_a.end());
+                // Second graph
+                r_graph_b->getLocalRowView(i, cols_b);
+                combined_indexes.insert(cols_b.begin(), cols_b.end());
+                // Vector equivalent
+                std::vector<int> combined_indexes_vector(combined_indexes.begin(), combined_indexes.end());
+                // Adding to graph
+                graph->insertLocalIndices(i, Teuchos::ArrayView<const int>(combined_indexes_vector));
+            }
+        } else { // Different column map, global indices
+            for (std::size_t i = 0; i < r_graph_a->getLocalNumRows(); ++i) {
+                const auto global_row_index = r_graph_a->getRowMap()->getGlobalElement(i);
+                std::vector<int> combined_indexes_vector;
+                // First graph
+                r_graph_a->getLocalRowView(i, cols_a);
+                combined_indexes_vector.reserve(cols_a.size());
+                for (size_t j = 0; j < cols_a.size(); ++j) {
+                    combined_indexes_vector.push_back(r_graph_a->getColMap()->getGlobalElement(cols_a[j]));
+                }
+                // Adding to graph
+                graph->insertGlobalIndices(global_row_index, Teuchos::ArrayView<const int>(combined_indexes_vector));
+            }
+            for (std::size_t i = 0; i < r_graph_b->getLocalNumRows(); ++i) {
+                const auto global_row_index = r_graph_b->getRowMap()->getGlobalElement(i);
+                std::vector<int> combined_indexes_vector;
+                // Second graph
+                r_graph_b->getLocalRowView(i, cols_b);
+                combined_indexes_vector.reserve(cols_b.size());
+                for (size_t j = 0; j < cols_b.size(); ++j) {
+                    combined_indexes_vector.push_back(r_graph_b->getColMap()->getGlobalElement(cols_b[j]));
+                }
+                // Adding to graph
+                graph->insertGlobalIndices(global_row_index, Teuchos::ArrayView<const int>(combined_indexes_vector));
+            }
+        }
 
-//         return graph;
-//     }
+        // Finalizing graph construction
+        graph->fillComplete();
+        KRATOS_ERROR_IF(!graph->isFillComplete()) << "Tpetra graph fillComplete failed" << std::endl;
 
-//     /**
-//      * @brief Copy values from one matrix to another
-//      * @details It is assumed that the sparcity of both matrices is compatible
-//      * @param rA The matrix where assigning values
-//      * @param rB The matrix to be copied
-//      */
-//     static void CopyMatrixValues(
-//         MatrixType& rA,
-//         const MatrixType& rB
-//         )
-//     {
-//         // Cleaning destination matrix
-//         SetToZero(rA);
+        return graph;
+    }
 
-//         // The current process id
-//         const int rank = rA.Comm().MyPID();
+    /**
+     * @brief Copy values from one matrix to another
+     * @details It is assumed that the sparcity of both matrices is compatible
+     * @param rA The matrix where assigning values
+     * @param rB The matrix to be copied
+     */
+    static void CopyMatrixValues(
+        MatrixType& rA,
+        const MatrixType& rB
+        )
+    {
+        // Cleaning destination matrix
+        SetToZero(rA);
 
-//         // Row maps must be the same
-//         const bool same_col_map = rA.ColMap().SameAs(rB.ColMap());
+        // The current process id
+        const int rank = rA.getMap()->getComm()->getRank();
 
-//         // Getting the graphs
-//         const auto& r_graph_b = rB.Graph();
+        // Row maps must be the same
+        const bool same_col_map = rA.getColMap()->isSameAs(*rB.getColMap());
 
-//         // Copy values from rB to intermediate
-//         int i, ierr;
-//         int num_entries; // Number of non-zero entries (rB matrix)
-//         double* vals;    // Row non-zero values (rB matrix)
-//         int* cols;       // Column indices of row non-zero values (rB matrix)
-//         if (same_col_map) {
-//             for (i = 0; i < rB.NumMyRows(); i++) {
-//                 ierr = rB.ExtractMyRowView(i, num_entries, vals, cols);
-//                 KRATOS_ERROR_IF(ierr != 0) << "Epetra failure found extracting values in local row " << i << " in rank " << rank << " with code ierr = " << ierr << std::endl;
-//                 ierr = rA.ReplaceMyValues(i, num_entries, vals, cols);
-//                 KRATOS_ERROR_IF(ierr != 0) << "Epetra failure found replacing values in local row " << i << " in rank " << rank << " with code ierr = " << ierr << std::endl;
-//             }
-//         } else {
-//             for (i = 0; i < rB.NumMyRows(); i++) {
-//                 ierr = rB.ExtractMyRowView(i, num_entries, vals, cols);
-//                 KRATOS_ERROR_IF(ierr != 0) << "Epetra failure found extracting values in local row " << i << " in rank " << rank << " with code ierr = " << ierr << std::endl;
-//                 const int global_row_index = r_graph_b.GRID(i);
-//                 for (int j = 0; j < num_entries; j++) {
-//                     cols[j] = r_graph_b.GCID(cols[j]);
-//                 }
-//                 ierr = rA.ReplaceGlobalValues(global_row_index, num_entries, vals, cols);
-//                 KRATOS_ERROR_IF(ierr != 0) << "Epetra failure found extracting values in global row " << global_row_index << " in rank " << rank << " with code ierr = " << ierr << std::endl;
-//             }
-//         }
-//     }
+        // Getting the graphs
+        auto r_graph_b = rB.getCrsGraph();
 
-//     /**
-//      * @brief This method checks and corrects the zero diagonal values
-//      * @details This method returns the scale norm considering for scaling the diagonal
-//      * @param rProcessInfo The problem process info
-//      * @param rA The LHS matrix
-//      * @param rb The RHS vector
-//      * @param ScalingDiagonal The type of caling diagonal considered
-//      * @return The scale norm
-//      */
-//     static double CheckAndCorrectZeroDiagonalValues(
-//         const ProcessInfo& rProcessInfo,
-//         MatrixType& rA,
-//         VectorType& rb,
-//         const SCALING_DIAGONAL ScalingDiagonal = SCALING_DIAGONAL::NO_SCALING
-//         )
-//     {
-//         KRATOS_TRY
+        // Copy values from rB to rA
+        int i;
+        size_t num_entries; // Number of non-zero entries (rB matrix)
+        Teuchos::ArrayView<const ST> vals; // Row non-zero values (rB matrix)
+        Teuchos::ArrayView<const GO> cols; // Column indices of row non-zero values (rB matrix)
+        if (same_col_map) {
+            for (i = 0; i < rB.getLocalNumRows(); ++i) {
+                rB.getLocalRowView(i, cols, vals);
+                rA.replaceLocalValues(i, cols, vals);
+            }
+        } else {
+            for (i = 0; i < rB.getLocalNumRows(); ++i) {
+                rB.getLocalRowView(i, cols, vals);
+                const int global_row_index = r_graph_b->getRowMap()->getGlobalElement(i);
+                Teuchos::Array<int> global_cols(cols.size());
+                for (int j = 0; j < cols.size(); ++j) {
+                    global_cols[j] = r_graph_b->getColMap()->getGlobalElement(cols[j]);
+                }
+                rA.replaceGlobalValues(global_row_index, global_cols(), vals());
+            }
+        }
+    }
 
-//         // Define  zero value tolerance
-//         const double zero_tolerance = std::numeric_limits<double>::epsilon();
+    /**
+     * @brief This method checks and corrects the zero diagonal values
+     * @details This method returns the scale norm considering scaling the diagonal
+     * @param rProcessInfo The problem process info
+     * @param rA The LHS matrix
+     * @param rb The RHS vector
+     * @param ScalingDiagonal The type of scaling diagonal considered
+     * @return The scale norm
+     */
+    static double CheckAndCorrectZeroDiagonalValues(
+        const ProcessInfo& rProcessInfo,
+        MatrixType& rA,
+        VectorType& rb,
+        const SCALING_DIAGONAL ScalingDiagonal = SCALING_DIAGONAL::NO_SCALING
+        )
+    {
+        KRATOS_TRY
 
-//         // The diagonal considered
-//         const double scale_factor = GetScaleNorm(rProcessInfo, rA, ScalingDiagonal);
+        // Define zero value tolerance
+        const double zero_tolerance = std::numeric_limits<double>::epsilon();
 
-//         for (int i = 0; i < rA.NumMyRows(); i++) {
-//             int numEntries; // Number of non-zero entries
-//             double* vals;   // Row non-zero values
-//             int* cols;      // Column indices of row non-zero values
-//             rA.ExtractMyRowView(i, numEntries, vals, cols);
-//             const int row_gid = rA.RowMap().GID(i);
-//             bool empty = true;
-//             int j;
-//             for (j = 0; j < numEntries; j++) {
-//                 const int col_gid = rA.ColMap().GID(cols[j]);
-//                 // Check diagonal value
-//                 if (col_gid == row_gid) {
-//                     if(std::abs(vals[j]) > zero_tolerance) {
-//                         empty = false;
-//                     }
-//                     break;
-//                 }
-//             }
+        // The diagonal considered
+        const double scale_factor = GetScaleNorm(rProcessInfo, rA, ScalingDiagonal);
 
-//             // If diagonal empty assign scale factor
-//             if (empty) {
-//                 vals[j] = scale_factor;
-//                 rb[0][i] = 0.0;
-//             }
-//         }
+        auto localMatrix = rA.getLocalMatrix();
+        auto rowMap = rA.getRowMap();
+        auto colMap = rA.getColMap();
+        auto localRhs = rb.getLocalViewHost();
 
-//         // Global assembly
-//         rb.GlobalAssemble();
-//         rA.GlobalAssemble();
+        for (size_t i = 0; i < localMatrix.numRows(); ++i) {
+            auto localRow = localMatrix.row(i);
+            const auto row_gid = rowMap->getGlobalElement(i);
+            bool empty = true;
+            int j;
+            for (j = 0; j < localRow.length; ++j) {
+                const auto col_gid = colMap->getGlobalElement(localRow.colidx(j));
+                // Check diagonal value
+                if (col_gid == row_gid) {
+                    if (std::abs(localRow.value(j)) > zero_tolerance) {
+                        empty = false;
+                    }
+                    break;
+                }
+            }
 
-//         return scale_factor;
+            // If diagonal empty assign scale factor
+            if (empty) {
+                localMatrix.replaceValues(i, Teuchos::ArrayView<const GO>(&row_gid, 1), Teuchos::ArrayView<const ST>(&scale_factor, 1));
+                localRhs(i, 0) = 0.0;
+            }
+        }
 
-//         KRATOS_CATCH("");
-//     }
+        // Global assembly
+        rb.doExport(*rb, Tpetra::REPLACE);
+        rA.doExport(*rA, Tpetra::REPLACE);
+
+        return scale_factor;
+
+        KRATOS_CATCH("");
+    }
 
     /**
      * @brief This method returns the scale norm considering for scaling the diagonal
