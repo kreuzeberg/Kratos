@@ -200,7 +200,7 @@ public:
      */
     static IndexType Size(const VectorType& rV)
     {
-        const int size = rV.GlobalLength();
+        const int size = rV.getGlobalLength();
         return size;
     }
 
@@ -211,7 +211,7 @@ public:
      */
     static IndexType Size1(MatrixType const& rM)
     {
-        const int size1 = rM.NumGlobalRows();
+        const int size1 = rM.getGlobalNumRows();
         return size1;
     }
 
@@ -222,7 +222,7 @@ public:
      */
     static IndexType Size2(MatrixType const& rM)
     {
-        const int size1 = rM.NumGlobalCols();
+        const int size1 = rM.getGlobalNumCols();
         return size1;
     }
 
