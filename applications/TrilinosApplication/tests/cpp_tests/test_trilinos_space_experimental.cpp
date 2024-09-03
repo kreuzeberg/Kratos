@@ -64,37 +64,37 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalSizeMatrix, KratosTrilinosApplicat
     KRATOS_EXPECT_EQ(static_cast<std::size_t>(size), TrilinosSparseSpaceType::Size2(*matrix));
 }
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalDotProduct, KratosTrilinosApplicationMPITestSuite)
-// {
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalDotProduct, KratosTrilinosApplicationMPITestSuite)
+{
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy vector
-//     const int size = 2 * r_comm.Size();
-//     auto vector1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
-//     auto vector2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
-//     double ref = 0.0;
-//     for (int i = 0; i < size; ++i) {
-//         ref += std::pow(static_cast<double>(i), 2);
-//     }
+    // The dummy vector
+    const int size = 2 * r_comm.Size();
+    auto vector1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
+    auto vector2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
+    double ref = 0.0;
+    for (int i = 0; i < size; ++i) {
+        ref += std::pow(static_cast<double>(i), 2);
+    }
 
-//     // Check
-//     KRATOS_EXPECT_DOUBLE_EQ(ref, TrilinosSparseSpaceType::Dot(vector1, vector2));
-// }
+    // Check
+    KRATOS_EXPECT_DOUBLE_EQ(ref, TrilinosSparseSpaceType::Dot(*vector1, *vector2));
+}
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMaxMin, KratosTrilinosApplicationMPITestSuite)
-// {
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMaxMin, KratosTrilinosApplicationMPITestSuite)
+{
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy vector
-//     const int size = 2 * r_comm.Size();
-//     auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
+    // The dummy vector
+    const int size = 2 * r_comm.Size();
+    auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
 
-//     // Check
-//     KRATOS_EXPECT_DOUBLE_EQ(0.0, TrilinosSparseSpaceType::Min(vector));
-//     KRATOS_EXPECT_DOUBLE_EQ(static_cast<double>(size - 1), TrilinosSparseSpaceType::Max(vector));
-// }
+    // Check
+    KRATOS_EXPECT_DOUBLE_EQ(0.0, TrilinosSparseSpaceType::Min(*vector));
+    KRATOS_EXPECT_DOUBLE_EQ(static_cast<double>(size - 1), TrilinosSparseSpaceType::Max(*vector));
+}
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTwoNormVector, KratosTrilinosApplicationMPITestSuite)
 // {
