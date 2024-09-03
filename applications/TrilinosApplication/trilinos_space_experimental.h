@@ -298,7 +298,7 @@ public:
         // Find the local maximum
         ST localMax = localVec(0,0);
         auto localLength = rX.getLocalLength();
-        for (size_t i = 1; i < localLength; ++i) {
+        for (std::size_t i = 1; i < localLength; ++i) {
             localMax = std::max(localMax, localVec(i,0));
         }
 
@@ -322,7 +322,7 @@ public:
         // Find the local minimum
         ST localMin = localVec(0,0);
         auto localLength = rX.getLocalLength();
-        for (size_t i = 1; i < localLength; ++i) {
+        for (std::size_t i = 1; i < localLength; ++i) {
             localMin = std::min(localMin, localVec(i,0));
         }
 
@@ -359,9 +359,9 @@ public:
         // Compute Frobenius norm
         double frobeniusNorm = 0.0;
 
-        for (size_t i = 0; i < localMatrix.numRows(); ++i) {
+        for (std::size_t i = 0; i < localMatrix.numRows(); ++i) {
             auto rowView = localMatrix.row(i);
-            for (size_t j = 0; j < rowView.length; ++j) {
+            for (std::size_t j = 0; j < rowView.length; ++j) {
                 double value = rowView.value(j);
                 frobeniusNorm += value * value;
             }
@@ -811,96 +811,89 @@ public:
     /// TODO: creating the the calculating reaction version
     // 	template<class TOtherMatrixType, class TEquationIdVectorType>
 
-//     /**
-//      * @brief Assembles the LHS of the system
-//      * @param rA The LHS matrix
-//      * @param rLHSContribution The contribution to the LHS
-//      * @param rEquationId The equation ids
-//      */
-//     inline static void AssembleLHS(
-//         MatrixType& rA,
-//         const Matrix& rLHSContribution,
-//         const std::vector<std::size_t>& rEquationId
-//         )
-//     {
-//         const unsigned int system_size = Size1(rA);
+    /**
+     * @brief Assembles the LHS of the system
+     * @param rA The LHS matrix
+     * @param rLHSContribution The contribution to the LHS
+     * @param rEquationId The equation ids
+     */
+    inline static void AssembleLHS(
+        MatrixType& rA,
+        const Matrix& rLHSContribution,
+        const std::vector<std::size_t>& rEquationId
+        )
+    {
+        const std::size_t system_size = rA.getGlobalNumRows();
 
-//         // Count active indices
-//         unsigned int active_indices = 0;
-//         for (unsigned int i = 0; i < rEquationId.size(); i++)
-//             if (rEquationId[i] < system_size)
-//                 ++active_indices;
+        // Count active indices
+        std::vector<LO> indices;
+        for (std::size_t i = 0; i < rEquationId.size(); ++i) {
+            if (rEquationId[i] < system_size) {
+                indices.push_back(static_cast<LO>(rEquationId[i]));
+            }
+        }
 
-//         if (active_indices > 0) {
-//             // Size Epetra vectors
-//             Epetra_IntSerialDenseVector indices(active_indices);
-//             Epetra_SerialDenseMatrix values(active_indices, active_indices);
+        if (!indices.empty()) {
+            // Fill Tpetra local arrays
+            std::vector<ST> values(indices.size() * indices.size(), 0.0);
 
-//             // Fill epetra vectors
-//             unsigned int loc_i = 0;
-//             for (unsigned int i = 0; i < rEquationId.size(); i++) {
-//                 if (rEquationId[i] < system_size) {
-//                     indices[loc_i] = rEquationId[i];
+            for (std::size_t i = 0; i < indices.size(); ++i) {
+                for (std::size_t j = 0; j < indices.size(); ++j) {
+                    values[i * indices.size() + j] = rLHSContribution(i, j);
+                }
+            }
 
-//                     unsigned int loc_j = 0;
-//                     for (unsigned int j = 0; j < rEquationId.size(); j++) {
-//                         if (rEquationId[j] < system_size) {
-//                             values(loc_i, loc_j) = rLHSContribution(i, j);
-//                             ++loc_j;
-//                         }
-//                     }
-//                     ++loc_i;
-//                 }
-//             }
+            // Insert or sum into global values
+            Teuchos::ArrayView<LO> indices_view(indices);
+            Teuchos::ArrayView<ST> values_view(values);
 
-//             const int ierr = rA.SumIntoGlobalValues(indices, values);
-//             KRATOS_ERROR_IF(ierr != 0) << "Epetra failure found" << std::endl;
-//         }
-//     }
+            const int ierr = rA.sumIntoGlobalValues(indices_view, indices_view, values_view);
+            KRATOS_ERROR_IF(ierr != 0) << "Tpetra failure found" << std::endl;
+        }
+    }
 
-//     //***********************************************************************
-//     /// TODO: creating the the calculating reaction version
-//     // 	template<class TOtherVectorType, class TEquationIdVectorType>
+    //***********************************************************************
+    /// TODO: creating the the calculating reaction version
+    // 	template<class TOtherVectorType, class TEquationIdVectorType>
 
-//     /**
-//      * @brief Assembles the RHS of the system
-//      * @param rb The RHS vector
-//      * @param rRHSContribution The RHS contribution
-//      * @param rEquationId The equation ids
-//      */
-//     inline static void AssembleRHS(
-//         VectorType& rb,
-//         const Vector& rRHSContribution,
-//         const std::vector<std::size_t>& rEquationId
-//         )
-//     {
-//         const unsigned int system_size = Size(rb);
+    /**
+     * @brief Assembles the RHS of the system
+     * @param rb The RHS vector
+     * @param rRHSContribution The RHS contribution
+     * @param rEquationId The equation ids
+     */
+    inline static void AssembleRHS(
+        VectorType& rb,
+        const Vector& rRHSContribution,
+        const std::vector<std::size_t>& rEquationId
+        )
+    {
+        const std::size_t system_size = rb->getGlobalLength();
 
-//         // Count active indices
-//         unsigned int active_indices = 0;
-//         for (unsigned int i = 0; i < rEquationId.size(); i++)
-//             if (rEquationId[i] < system_size)
-//                 ++active_indices;
+        // Count active indices
+        std::vector<LO> indices;
+        for (std::size_t i = 0; i < rEquationId.size(); ++i) {
+            if (rEquationId[i] < system_size) {
+                indices.push_back(static_cast<LO>(rEquationId[i]));
+            }
+        }
 
-//         if (active_indices > 0) {
-//             // Size Epetra vectors
-//             Epetra_IntSerialDenseVector indices(active_indices);
-//             Epetra_SerialDenseVector values(active_indices);
+        if (!indices.empty()) {
+            // Fill Tpetra values array
+            std::vector<ST> values(indices.size(), 0.0);
 
-//             // Fill epetra vectors
-//             unsigned int loc_i = 0;
-//             for (unsigned int i = 0; i < rEquationId.size(); i++) {
-//                 if (rEquationId[i] < system_size) {
-//                     indices[loc_i] = rEquationId[i];
-//                     values[loc_i] = rRHSContribution[i];
-//                     ++loc_i;
-//                 }
-//             }
+            for (std::size_t i = 0; i < indices.size(); ++i) {
+                values[i] = rRHSContribution[i];
+            }
 
-//             const int ierr = rb.SumIntoGlobalValues(indices, values);
-//             KRATOS_ERROR_IF(ierr != 0) << "Epetra failure found" << std::endl;
-//         }
-//     }
+            // Insert or sum into global values
+            Teuchos::ArrayView<LO> indices_view(indices);
+            Teuchos::ArrayView<ST> values_view(values);
+
+            const int ierr = rb->sumIntoGlobalValues(indices_view, values_view);
+            KRATOS_ERROR_IF(ierr != 0) << "Tpetra failure found" << std::endl;
+        }
+    }
 
     /**
      * @brief This function returns if we are in a distributed system
@@ -1019,7 +1012,7 @@ public:
     //     MatrixPointerType paux = Teuchos::cp(new MatrixType(matrix->getRowMap(), matrix->getColMap(), matrix->getNodeNumEntries()));
 
     //     // Copy values from original matrix to the new matrix
-    //     for (size_t i = 0; i < matrix->getNodeNumRows(); ++i) {
+    //     for (std::size_t i = 0; i < matrix->getNodeNumRows(); ++i) {
     //         const auto globalRow = matrix->getRowMap()->getGlobalElement(i);
 
     //         Teuchos::ArrayView<const ST> values;
@@ -1133,7 +1126,7 @@ public:
                 // First graph
                 r_graph_a->getLocalRowView(i, cols_a);
                 combined_indexes_vector.reserve(cols_a.size());
-                for (size_t j = 0; j < cols_a.size(); ++j) {
+                for (std::size_t j = 0; j < cols_a.size(); ++j) {
                     combined_indexes_vector.push_back(r_graph_a->getColMap()->getGlobalElement(cols_a[j]));
                 }
                 // Adding to graph
@@ -1145,7 +1138,7 @@ public:
                 // Second graph
                 r_graph_b->getLocalRowView(i, cols_b);
                 combined_indexes_vector.reserve(cols_b.size());
-                for (size_t j = 0; j < cols_b.size(); ++j) {
+                for (std::size_t j = 0; j < cols_b.size(); ++j) {
                     combined_indexes_vector.push_back(r_graph_b->getColMap()->getGlobalElement(cols_b[j]));
                 }
                 // Adding to graph
@@ -1235,7 +1228,7 @@ public:
         auto colMap = rA.getColMap();
         auto localRhs = rb.getLocalViewHost();
 
-        for (size_t i = 0; i < localMatrix.numRows(); ++i) {
+        for (std::size_t i = 0; i < localMatrix.numRows(); ++i) {
             auto localRow = localMatrix.row(i);
             const auto row_gid = rowMap->getGlobalElement(i);
             bool empty = true;
