@@ -346,177 +346,177 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTwoNormMatrix2, KratosTrilinosAppl
 //     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(second_mult, multiply_reference);
 // }
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalInplaceMult, KratosTrilinosApplicationMPITestSuite)
-// {
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalInplaceMult, KratosTrilinosApplicationMPITestSuite)
+{
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy vector
-//     const int size = 2 * r_comm.Size();
-//     auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
-//     auto local_vector = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size);
+    // The dummy vector
+    const int size = 2 * r_comm.Size();
+    auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
+    auto local_vector = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size);
 
-//     // Multiply
-//     const double mult = 2.0;
+    // Multiply
+    const double mult = 2.0;
 
-//     // Solution
-//     TrilinosSparseSpaceType::InplaceMult(vector, mult);
+    // Solution
+    TrilinosSparseSpaceType::InplaceMult(*vector, mult);
 
-//     // Check
-//     local_vector *= mult;
-//     TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(vector, local_vector);
-// }
+    // Check
+    local_vector *= mult;
+    TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(*vector, local_vector);
+}
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalAssign, KratosTrilinosApplicationMPITestSuite)
-// {
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalAssign, KratosTrilinosApplicationMPITestSuite)
+{
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy vector
-//     const int size = 2 * r_comm.Size();
-//     auto vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
-//     auto vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 1.0);
-//     auto local_vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size);
-//     auto local_vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 1.0);
+    // The dummy vector
+    const int size = 2 * r_comm.Size();
+    auto vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
+    auto vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 1.0);
+    auto local_vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size);
+    auto local_vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 1.0);
 
-//     // Multiply
-//     const double mult = 2.0;
+    // Multiply
+    const double mult = 2.0;
 
-//     // Solution
-//     TrilinosSparseSpaceType::Assign(vector_1, mult, vector_2);
+    // Solution
+    TrilinosSparseSpaceType::Assign(*vector_1, mult, *vector_2);
 
-//     // Check
-//     local_vector_1 = mult * local_vector_2;
-//     TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(vector_1, local_vector_1);
-// }
+    // Check
+    local_vector_1 = mult * local_vector_2;
+    TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(*vector_1, local_vector_1);
+}
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalUnaliasedAdd, KratosTrilinosApplicationMPITestSuite)
-// {
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalUnaliasedAdd, KratosTrilinosApplicationMPITestSuite)
+{
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy vector
-//     const int size = 2 * r_comm.Size();
-//     auto vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
-//     auto vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 1.0);
-//     auto local_vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size);
-//     auto local_vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 1.0);
+    // The dummy vector
+    const int size = 2 * r_comm.Size();
+    auto vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
+    auto vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 1.0);
+    auto local_vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size);
+    auto local_vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 1.0);
 
-//     // Multiply
-//     const double mult = 2.0;
+    // Multiply
+    const double mult = 2.0;
 
-//     // Solution
-//     TrilinosSparseSpaceType::UnaliasedAdd(vector_1, mult, vector_2);
+    // Solution
+    TrilinosSparseSpaceType::UnaliasedAdd(*vector_1, mult, *vector_2);
 
-//     // Check
-//     local_vector_1 += mult * local_vector_2;
-//     TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(vector_1, local_vector_1);
-// }
+    // Check
+    local_vector_1 += mult * local_vector_2;
+    TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(*vector_1, local_vector_1);
+}
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalScaleAndAdd1, KratosTrilinosApplicationMPITestSuite)
-// {
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalScaleAndAdd1, KratosTrilinosApplicationMPITestSuite)
+{
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy vector
-//     const int size = 2 * r_comm.Size();
-//     auto vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
-//     auto vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 1.0);
-//     auto vector_3 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 2.0);
-//     auto local_vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size);
-//     auto local_vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 1.0);
-//     auto local_vector_3 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 2.0);
+    // The dummy vector
+    const int size = 2 * r_comm.Size();
+    auto vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
+    auto vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 1.0);
+    auto vector_3 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 2.0);
+    auto local_vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size);
+    auto local_vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 1.0);
+    auto local_vector_3 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 2.0);
 
-//     // Multiply
-//     const double mult_1 = 2.0;
-//     const double mult_2 = 1.5;
+    // Multiply
+    const double mult_1 = 2.0;
+    const double mult_2 = 1.5;
 
-//     // Solution
-//     TrilinosSparseSpaceType::ScaleAndAdd(mult_1, vector_2, mult_2, vector_3, vector_1);
+    // Solution
+    TrilinosSparseSpaceType::ScaleAndAdd(mult_1, *vector_2, mult_2, *vector_3, *vector_1);
 
-//     // Check
-//     local_vector_1 = mult_1 * local_vector_2 + mult_2 * local_vector_3;
-//     TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(vector_1, local_vector_1);
-// }
+    // Check
+    local_vector_1 = mult_1 * local_vector_2 + mult_2 * local_vector_3;
+    TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(*vector_1, local_vector_1);
+}
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalScaleAndAdd2, KratosTrilinosApplicationMPITestSuite)
-// {
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalScaleAndAdd2, KratosTrilinosApplicationMPITestSuite)
+{
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy vector
-//     const int size = 2 * r_comm.Size();
-//     auto vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
-//     auto vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 1.0);
-//     auto local_vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size);
-//     auto local_vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 1.0);
+    // The dummy vector
+    const int size = 2 * r_comm.Size();
+    auto vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
+    auto vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 1.0);
+    auto local_vector_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size);
+    auto local_vector_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 1.0);
 
-//     // Multiply
-//     const double mult_1 = 2.0;
-//     const double mult_2 = 1.5;
+    // Multiply
+    const double mult_1 = 2.0;
+    const double mult_2 = 1.5;
 
-//     // Solution
-//     TrilinosSparseSpaceType::ScaleAndAdd(mult_1, vector_2, mult_2, vector_1);
+    // Solution
+    TrilinosSparseSpaceType::ScaleAndAdd(mult_1, *vector_2, mult_2, *vector_1);
 
-//     // Check
-//     local_vector_1 = mult_1 * local_vector_2 + mult_2 * local_vector_1;
-//     TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(vector_1, local_vector_1);
-// }
+    // Check
+    local_vector_1 = mult_1 * local_vector_2 + mult_2 * local_vector_1;
+    TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(*vector_1, local_vector_1);
+}
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalSet, KratosTrilinosApplicationMPITestSuite)
-// {
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalSet, KratosTrilinosApplicationMPITestSuite)
+{
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy vector
-//     const int size = 2 * r_comm.Size();
-//     auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
-//     auto local_vector = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size);
+    // The dummy vector
+    const int size = 2 * r_comm.Size();
+    auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
+    auto local_vector = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size);
 
-//     // Set
-//     const double value = 2.0;
+    // Set
+    const double value = 2.0;
 
-//     // Solution
-//     TrilinosSparseSpaceType::Set(vector, value);
+    // Solution
+    TrilinosSparseSpaceType::Set(*vector, value);
 
-//     // Check
-//     for (int i = 0; i < size; ++i) local_vector[i] = value;
-//     TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(vector, local_vector);
-// }
+    // Check
+    for (int i = 0; i < size; ++i) local_vector[i] = value;
+    TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(*vector, local_vector);
+}
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalSetToZeroMatrix, KratosTrilinosApplicationMPITestSuite)
-// {
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalSetToZeroMatrix, KratosTrilinosApplicationMPITestSuite)
+{
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy vector
-//     const int size = 2 * r_comm.Size();
-//     auto matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size);
-//     TrilinosLocalMatrixType local_matrix = ZeroMatrix(size, size);
+    // The dummy vector
+    const int size = 2 * r_comm.Size();
+    auto matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size);
+    TrilinosLocalMatrixType local_matrix = ZeroMatrix(size, size);
 
-//     // Solution
-//     TrilinosSparseSpaceType::SetToZero(matrix);
+    // Solution
+    TrilinosSparseSpaceType::SetToZero(*matrix);
 
-//     // Check
-//     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(matrix, local_matrix);
-// }
+    // Check
+    TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(*matrix, local_matrix);
+}
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalSetToZeroVector, KratosTrilinosApplicationMPITestSuite)
-// {
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalSetToZeroVector, KratosTrilinosApplicationMPITestSuite)
+{
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy vector
-//     const int size = 2 * r_comm.Size();
-//     auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
-//     TrilinosLocalVectorType local_vector = ZeroVector(size);
+    // The dummy vector
+    const int size = 2 * r_comm.Size();
+    auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size);
+    TrilinosLocalVectorType local_vector = ZeroVector(size);
 
-//     // Solution
-//     TrilinosSparseSpaceType::SetToZero(vector);
+    // Solution
+    TrilinosSparseSpaceType::SetToZero(*vector);
 
-//     // Check
-//     TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(vector, local_vector);
-// }
+    // Check
+    TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(*vector, local_vector);
+}
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalCopyMatrixValues, KratosTrilinosApplicationMPITestSuite)
 // {
@@ -530,10 +530,10 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTwoNormMatrix2, KratosTrilinosAppl
 //     auto local_matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0);
 
 //     // Solution
-//     TrilinosSparseSpaceType::CopyMatrixValues(matrix_1, matrix_2);
+//     TrilinosSparseSpaceType::CopyMatrixValues(*matrix_1, *matrix_2);
 
 //     // Check
-//     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(matrix_1, local_matrix);
+//     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(*matrix_1, local_matrix);
 // }
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalCombineMatricesGraphs, KratosTrilinosApplicationMPITestSuite)
@@ -612,17 +612,17 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalIsDistributed, KratosTrilinosAppli
 
 //     // Test the norm of the matrix
 //     double norm = 0.0;
-//     norm = TrilinosSparseSpaceType::GetScaleNorm(r_process_info, matrix12x12, SCALING_DIAGONAL::NO_SCALING);
+//     norm = TrilinosSparseSpaceType::GetScaleNorm(r_process_info, *matrix12x12, SCALING_DIAGONAL::NO_SCALING);
 //     KRATOS_EXPECT_DOUBLE_EQ(norm, 1.0);
-//     norm = TrilinosSparseSpaceType::GetScaleNorm(r_process_info, matrix12x12, SCALING_DIAGONAL::CONSIDER_PRESCRIBED_DIAGONAL);
+//     norm = TrilinosSparseSpaceType::GetScaleNorm(r_process_info, *matrix12x12, SCALING_DIAGONAL::CONSIDER_PRESCRIBED_DIAGONAL);
 //     KRATOS_EXPECT_DOUBLE_EQ(norm, 3.0);
-//     norm = TrilinosSparseSpaceType::GetScaleNorm(r_process_info, matrix12x12, SCALING_DIAGONAL::CONSIDER_NORM_DIAGONAL);
+//     norm = TrilinosSparseSpaceType::GetScaleNorm(r_process_info, *matrix12x12, SCALING_DIAGONAL::CONSIDER_NORM_DIAGONAL);
 //     KRATOS_EXPECT_NEAR(norm, 2.124591464, 1.0e-6);
-//     norm = TrilinosSparseSpaceType::GetScaleNorm(r_process_info, matrix12x12, SCALING_DIAGONAL::CONSIDER_MAX_DIAGONAL);
+//     norm = TrilinosSparseSpaceType::GetScaleNorm(r_process_info, *matrix12x12, SCALING_DIAGONAL::CONSIDER_MAX_DIAGONAL);
 //     KRATOS_EXPECT_DOUBLE_EQ(norm, 12.0);
-//     norm = TrilinosSparseSpaceType::GetAveragevalueDiagonal(matrix12x12);
+//     norm = TrilinosSparseSpaceType::GetAveragevalueDiagonal(*matrix12x12);
 //     KRATOS_EXPECT_DOUBLE_EQ(norm, 6.5);
-//     norm = TrilinosSparseSpaceType::GetMinDiagonal(matrix12x12);
+//     norm = TrilinosSparseSpaceType::GetMinDiagonal(*matrix12x12);
 //     KRATOS_EXPECT_DOUBLE_EQ(norm, 1.0);
 // }
 

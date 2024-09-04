@@ -298,7 +298,7 @@ public:
         // Find the local maximum
         ST localMax = localVec(0,0);
         auto localLength = rX.getLocalLength();
-        for (LO i = 1; i < localLength; ++i) {
+        for (std::size_t i = 1; i < localLength; ++i) {
             localMax = std::max(localMax, localVec(i,0));
         }
 
@@ -322,7 +322,7 @@ public:
         // Find the local minimum
         ST localMin = localVec(0,0);
         auto localLength = rX.getLocalLength();
-        for (LO i = 1; i < localLength; ++i) {
+        for (std::size_t i = 1; i < localLength; ++i) {
             localMin = std::min(localMin, localVec(i,0));
         }
 
