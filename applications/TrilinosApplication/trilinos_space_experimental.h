@@ -353,26 +353,8 @@ public:
      */
     static double TwoNorm(const MatrixType& rA)
     {
-        // Get local matrix
-        auto localMatrix = rA.getLocalMatrix();
-
-        // Compute Frobenius norm
-        double frobeniusNorm = 0.0;
-
-        for (LO i = 0; i < localMatrix.numRows(); ++i) {
-            auto rowView = localMatrix.row(i);
-            for (LO j = 0; j < rowView.length; ++j) {
-                double value = rowView.value(j);
-                frobeniusNorm += value * value;
-            }
-        }
-
-        // Perform a global sum across all processes
-        double globalFrobeniusNorm = 0.0;
-        Teuchos::reduceAll(*rA.getMap()->getComm(), Teuchos::REDUCE_SUM, frobeniusNorm, Teuchos::outArg(globalFrobeniusNorm));
-
-        // Take the square root to get the Frobenius norm
-        return std::sqrt(globalFrobeniusNorm);
+        // Use the built-in getFrobeniusNorm() method to compute the Frobenius norm
+        return rA.getFrobeniusNorm();
     }
 
     /**
