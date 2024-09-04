@@ -94,6 +94,21 @@ public:
     /// Definition of the size type
     using SizeType = std::size_t;
 
+    /// Class definition
+    using ClassType = TrilinosSpace<TMatrixType, TVectorType>;
+
+    /// Define the map type
+    using MapType = Epetra_Map;
+    using MapPointerType = Kratos::shared_ptr<MapType>;
+
+    /// Define the graph type
+    using GraphType = Epetra_CrsGraph;
+    using GraphPointerType = Kratos::shared_ptr<GraphType>;
+
+    // Define TPetra communicator
+    using CommunicatorType = Epetra_MpiComm;
+    using CommunicatorPointerType = Kratos::shared_ptr<CommunicatorType>;
+
     /// Definition of the pointer types
     using MatrixPointerType = typename Kratos::shared_ptr<TMatrixType>;
     using VectorPointerType = typename Kratos::shared_ptr<TVectorType>;
@@ -147,10 +162,10 @@ public:
      * @param rComm The epetra communicator
      * @return The pointer to the matrix
      */
-    static MatrixPointerType CreateEmptyMatrixPointer(Epetra_MpiComm& rComm)
+    static MatrixPointerType CreateEmptyMatrixPointer(CommunicatorType& rComm)
     {
         const int global_elems = 0;
-        Epetra_Map Map(global_elems, 0, rComm);
+        MapType Map(global_elems, 0, rComm);
         return MatrixPointerType(new TMatrixType(::Copy, Map, 0));
     }
 
@@ -159,10 +174,10 @@ public:
      * @param rComm The epetra communicator
      * @return The pointer to the vector
      */
-    static VectorPointerType CreateEmptyVectorPointer(Epetra_MpiComm& rComm)
+    static VectorPointerType CreateEmptyVectorPointer(CommunicatorType& rComm)
     {
         const int global_elems = 0;
-        Epetra_Map Map(global_elems, 0, rComm);
+        MapType Map(global_elems, 0, rComm);
         return VectorPointerType(new TVectorType(Map));
     }
 
@@ -706,7 +721,7 @@ public:
     {
         //KRATOS_ERROR_IF(pX != NULL) << "Trying to resize a null pointer" << std::endl;
         int global_elems = n;
-        Epetra_Map Map(global_elems, 0, pX->Comm());
+        MapType Map(global_elems, 0, pX->Comm());
         VectorPointerType pNewEmptyX = Kratos::make_shared<VectorType>(Map);
         pX.swap(pNewEmptyX);
     }
@@ -719,7 +734,7 @@ public:
     {
         if(pA != NULL) {
             int global_elems = 0;
-            Epetra_Map Map(global_elems, 0, pA->Comm());
+            MapType Map(global_elems, 0, pA->Comm());
             MatrixPointerType pNewEmptyA = MatrixPointerType(new TMatrixType(::Copy, Map, 0));
             pA.swap(pNewEmptyA);
         }
@@ -733,7 +748,7 @@ public:
     {
         if(pX != NULL) {
             int global_elems = 0;
-            Epetra_Map Map(global_elems, 0, pX->Comm());
+            MapType Map(global_elems, 0, pX->Comm());
             VectorPointerType pNewEmptyX = VectorPointerType(new VectorType(Map));
             pX.swap(pNewEmptyX);
         }
@@ -920,7 +935,7 @@ public:
         const std::size_t tot_size = IndexArray.size();
 
         //defining a map as needed
-        Epetra_Map dof_update_map(-1, tot_size, &(*(IndexArray.begin())), 0, rX.Comm());
+        MapType dof_update_map(-1, tot_size, &(*(IndexArray.begin())), 0, rX.Comm());
 
         //defining the importer class
         Epetra_Import importer(dof_update_map, rX.Map());
@@ -946,7 +961,7 @@ public:
      */
     MatrixPointerType ReadMatrixMarket(
         const std::string FileName,
-        Epetra_MpiComm& rComm
+        CommunicatorType& rComm
         )
     {
         KRATOS_TRY
@@ -959,7 +974,7 @@ public:
 
         rComm.Barrier();
 
-        const Epetra_CrsGraph& rGraph = pp->Graph();
+        const GraphType& rGraph = pp->Graph();
         MatrixPointerType paux = Kratos::make_shared<Epetra_FECrsMatrix>( ::Copy, rGraph, false );
 
         IndexType NumMyRows = rGraph.RowMap().NumMyElements();
@@ -1006,13 +1021,13 @@ public:
      */
     VectorPointerType ReadMatrixMarketVector(
         const std::string& rFileName,
-        Epetra_MpiComm& rComm,
+        CommunicatorType& rComm,
         const int N
         )
     {
         KRATOS_TRY
 
-        Epetra_Map my_map(N, 0, rComm);
+        MapType my_map(N, 0, rComm);
         Epetra_Vector* pv = nullptr;
 
         int error_code = EpetraExt::MatrixMarketFileToVector(rFileName.c_str(), my_map, pv);
@@ -1044,7 +1059,7 @@ public:
      * @param rA The first matrix
      * @param rB The second matrix
      */
-    static Epetra_CrsGraph CombineMatricesGraphs(
+    static GraphType CombineMatricesGraphs(
         const MatrixType& rA,
         const MatrixType& rB
         )
@@ -1064,7 +1079,7 @@ public:
         int num_entries; // Number of non-zero entries
         int* cols;       // Column indices of row non-zero values
         const bool same_col_map = rA.ColMap().SameAs(rB.ColMap());
-        Epetra_CrsGraph graph = same_col_map ? Epetra_CrsGraph(::Copy, rA.RowMap(), rA.ColMap(), 1000) : Epetra_CrsGraph(::Copy, rA.RowMap(), 1000);
+        GraphType graph = same_col_map ? GraphType(::Copy, rA.RowMap(), rA.ColMap(), 1000) : GraphType(::Copy, rA.RowMap(), 1000);
 
         // Same column map. Local indices, simpler and faster
         if (same_col_map) {
@@ -1122,7 +1137,7 @@ public:
 
         // Finalizing graph construction
         ierr = graph.FillComplete();
-        KRATOS_ERROR_IF(ierr < 0) << ": Epetra failure in Epetra_CrsGraph.FillComplete. Error code: " << ierr << std::endl;
+        KRATOS_ERROR_IF(ierr < 0) << ": Epetra failure in GraphType.FillComplete. Error code: " << ierr << std::endl;
 
         return graph;
     }

@@ -160,10 +160,10 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosMultMatrixVector, KratosTrilinosApplicationMPI
 
     // Epetra communicator
     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-    Epetra_MpiComm epetra_comm(raw_mpi_comm);
+    TrilinosSparseSpaceType::CommunicatorType epetra_comm(raw_mpi_comm);
 
     // Create a map
-    Epetra_Map Map(size,0,epetra_comm);
+    TrilinosSparseSpaceType::MapType Map(size,0,epetra_comm);
 
     // Create an Epetra_Vector
     TrilinosVectorType mult(Map);
@@ -190,10 +190,10 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosMultMatrixMatrix, KratosTrilinosApplicationMPI
 
     // Epetra communicator
     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-    Epetra_MpiComm epetra_comm(raw_mpi_comm);
+    TrilinosSparseSpaceType::CommunicatorType epetra_comm(raw_mpi_comm);
 
     // Create a map
-    Epetra_Map Map(size,0,epetra_comm);
+    TrilinosSparseSpaceType::MapType Map(size,0,epetra_comm);
 
     // Create an Epetra_Matrix
     std::vector<int> NumNz;
@@ -221,10 +221,10 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosTransposeMultMatrixVector, KratosTrilinosAppli
 
     // Epetra communicator
     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-    Epetra_MpiComm epetra_comm(raw_mpi_comm);
+    TrilinosSparseSpaceType::CommunicatorType epetra_comm(raw_mpi_comm);
 
     // Create a map
-    Epetra_Map Map(size,0,epetra_comm);
+    TrilinosSparseSpaceType::MapType Map(size,0,epetra_comm);
 
     // Create an Epetra_Vector
     TrilinosVectorType mult(Map);
@@ -251,10 +251,10 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosTransposeMultMatrixMatrix, KratosTrilinosAppli
 
     // Epetra communicator
     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-    Epetra_MpiComm epetra_comm(raw_mpi_comm);
+    TrilinosSparseSpaceType::CommunicatorType epetra_comm(raw_mpi_comm);
 
     // Create a map
-    Epetra_Map Map(size,0,epetra_comm);
+    TrilinosSparseSpaceType::MapType Map(size,0,epetra_comm);
 
     // Create an Epetra_Matrix
     std::vector<int> NumNz;
@@ -282,10 +282,10 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosBtDBProductOperation, KratosTrilinosApplicatio
 
     // Epetra communicator
     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-    Epetra_MpiComm epetra_comm(raw_mpi_comm);
+    TrilinosSparseSpaceType::CommunicatorType epetra_comm(raw_mpi_comm);
 
     // Create a map
-    Epetra_Map Map(size,0,epetra_comm);
+    TrilinosSparseSpaceType::MapType Map(size,0,epetra_comm);
 
     // Create an Epetra_Matrix
     std::vector<int> NumNz;
@@ -321,7 +321,7 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosBtDBProductOperation, KratosTrilinosApplicatio
 //     std::vector<int> column_indexes = {0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 2, 3, 4, 5, 2, 3, 4, 5};
 //     std::vector<double> values = {2069000000.0, 0.0, -2069000000.0, 0.0, 0.0, 0.0, 0.0, 0.0, -2069000000.0, 0.0, 4138000000.0, 0.0, -2069000000.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -2069000000.0, 0.0, 2069000000.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 //     auto A = TrilinosCPPTestUtilities::GenerateSparseMatrix(r_comm, size, row_indexes, column_indexes, values);
-//     const Epetra_Map* p_map = &(A.RowMap());
+//     const TrilinosSparseSpaceType::MapType* p_map = &(A.RowMap());
 
 //     // Generate T matrix
 //     row_indexes = {0,1,2,3,4,4,5};
@@ -372,10 +372,10 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosBDBtProductOperation, KratosTrilinosApplicatio
 
     // Epetra communicator
     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-    Epetra_MpiComm epetra_comm(raw_mpi_comm);
+    TrilinosSparseSpaceType::CommunicatorType epetra_comm(raw_mpi_comm);
 
     // Create a map
-    Epetra_Map Map(size,0,epetra_comm);
+    TrilinosSparseSpaceType::MapType Map(size,0,epetra_comm);
 
     // Create an Epetra_Matrix
     std::vector<int> NumNz;
@@ -626,10 +626,10 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosCheckAndCorrectZeroDiagonalValues, KratosTrili
     // Generate Epetra communicator
     KRATOS_ERROR_IF_NOT(r_comm.IsDistributed()) << "Only distributed DataCommunicators can be used!" << std::endl;
     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-    Epetra_MpiComm epetra_comm(raw_mpi_comm);
+    TrilinosSparseSpaceType::CommunicatorType epetra_comm(raw_mpi_comm);
 
     // Dummy vector
-    Epetra_Map map(size, 0, epetra_comm);
+    TrilinosSparseSpaceType::MapType map(size, 0, epetra_comm);
     TrilinosVectorType vector12(map);
 
     // Test the norm of the matrix

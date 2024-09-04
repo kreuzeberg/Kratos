@@ -158,14 +158,14 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTwoNormMatrix2, KratosTrilinosAppl
 //     auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 0.0);
 //     auto local_vector = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 0.0);
 
-//     // Epetra communicator
+//     // Tpetra communicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-//     Epetra_MpiComm epetra_comm(raw_mpi_comm);
+//     TrilinosSparseSpaceType::CommunicatorType tpetra_comm(raw_mpi_comm);
 
 //     // Create a map
-//     Epetra_Map Map(size,0,epetra_comm);
+//     TrilinosSparseSpaceType::MapType Map(size,0,tpetra_comm);
 
-//     // Create an Epetra_Vector
+//     // Create an Tpetra_Vector
 //     TrilinosVectorType mult(Map);
 
 //     // Solution
@@ -188,14 +188,14 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTwoNormMatrix2, KratosTrilinosAppl
 //     auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
 //     auto local_matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
 
-//     // Epetra communicator
+//     // Tpetra communicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-//     Epetra_MpiComm epetra_comm(raw_mpi_comm);
+//     TrilinosSparseSpaceType::CommunicatorType tpetra_comm(raw_mpi_comm);
 
 //     // Create a map
-//     Epetra_Map Map(size,0,epetra_comm);
+//     TrilinosSparseSpaceType::MapType Map(size,0,tpetra_comm);
 
-//     // Create an Epetra_Matrix
+//     // Create an Tpetra_Matrix
 //     std::vector<int> NumNz;
 //     TrilinosSparseMatrixType mult(Copy, Map, NumNz.data());
 
@@ -219,14 +219,14 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTwoNormMatrix2, KratosTrilinosAppl
 //     auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 0.0);
 //     auto local_vector = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 0.0);
 
-//     // Epetra communicator
+//     // Tpetra communicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-//     Epetra_MpiComm epetra_comm(raw_mpi_comm);
+//     TrilinosSparseSpaceType::CommunicatorType tpetra_comm(raw_mpi_comm);
 
 //     // Create a map
-//     Epetra_Map Map(size,0,epetra_comm);
+//     TrilinosSparseSpaceType::MapType Map(size,0,tpetra_comm);
 
-//     // Create an Epetra_Vector
+//     // Create an Tpetra_Vector
 //     TrilinosVectorType mult(Map);
 
 //     // Solution
@@ -249,14 +249,14 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTwoNormMatrix2, KratosTrilinosAppl
 //     auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
 //     auto local_matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
 
-//     // Epetra communicator
+//     // Tpetra communicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-//     Epetra_MpiComm epetra_comm(raw_mpi_comm);
+//     TrilinosSparseSpaceType::CommunicatorType tpetra_comm(raw_mpi_comm);
 
 //     // Create a map
-//     Epetra_Map Map(size,0,epetra_comm);
+//     TrilinosSparseSpaceType::MapType Map(size,0,tpetra_comm);
 
-//     // Create an Epetra_Matrix
+//     // Create an Tpetra_Matrix
 //     std::vector<int> NumNz;
 //     TrilinosSparseMatrixType mult(Copy, Map, NumNz.data());
 
@@ -280,14 +280,14 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTwoNormMatrix2, KratosTrilinosAppl
 //     auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
 //     auto local_matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
 
-//     // Epetra communicator
+//     // Tpetra communicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-//     Epetra_MpiComm epetra_comm(raw_mpi_comm);
+//     TrilinosSparseSpaceType::CommunicatorType tpetra_comm(raw_mpi_comm);
 
 //     // Create a map
-//     Epetra_Map Map(size,0,epetra_comm);
+//     TrilinosSparseSpaceType::MapType Map(size,0,tpetra_comm);
 
-//     // Create an Epetra_Matrix
+//     // Create an Tpetra_Matrix
 //     std::vector<int> NumNz;
 //     TrilinosSparseMatrixType mult(Copy, Map, NumNz.data());
 
@@ -319,14 +319,14 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTwoNormMatrix2, KratosTrilinosAppl
 //     auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
 //     auto local_matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
 
-//     // Epetra communicator
+//     // Tpetra communicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-//     Epetra_MpiComm epetra_comm(raw_mpi_comm);
+//     TrilinosSparseSpaceType::CommunicatorType tpetra_comm(raw_mpi_comm);
 
 //     // Create a map
-//     Epetra_Map Map(size,0,epetra_comm);
+//     TrilinosSparseSpaceType::MapType Map(size,0,tpetra_comm);
 
-//     // Create an Epetra_Matrix
+//     // Create an Tpetra_Matrix
 //     std::vector<int> NumNz;
 //     TrilinosSparseMatrixType mult(Copy, Map, NumNz.data());
 
@@ -572,13 +572,13 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalSetToZeroVector, KratosTrilinosApp
 //     const int size = 12;
 //     auto matrix12x12 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size);
 
-//     // Generate Epetra communicator
+//     // Generate Tpetra communicator
 //     KRATOS_ERROR_IF_NOT(r_comm.IsDistributed()) << "Only distributed DataCommunicators can be used!" << std::endl;
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-//     Epetra_MpiComm epetra_comm(raw_mpi_comm);
+//     TrilinosSparseSpaceType::CommunicatorType tpetra_comm(raw_mpi_comm);
 
 //     // Dummy vector
-//     Epetra_Map map(size, 0, epetra_comm);
+//     TrilinosSparseSpaceType::MapType map(size, 0, tpetra_comm);
 //     TrilinosVectorType vector12(map);
 
 //     // Test the norm of the matrix
