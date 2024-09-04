@@ -1284,8 +1284,31 @@ public:
     {
         KRATOS_TRY
 
-        auto diagonal = rA.getLocalDiagCopy(); // Tpetra equivalent of ExtractDiagonalCopy
-        return ClassType::TwoNorm(diagonal);
+        // Create a vector to store the diagonal
+        VectorType diag(rA.getRowMap());
+
+        // Extract the diagonal entries
+        rA.getLocalDiagCopy(diag);
+
+        // Get the local view of the diagonal
+        auto diagLocalView = diag.getLocalViewHost(Tpetra::Access::ReadOnly);
+
+        // Compute the local sum of squares of the diagonal
+        ST localSumOfSquares = Teuchos::ScalarTraits<ST>::zero();  // Initialize to 0
+
+        auto numLocalEntries = diag.getLocalLength();
+        ST value = 0.0;
+        for (std::size_t i = 0; i < numLocalEntries; ++i) {
+            value = diagLocalView(i, 0);
+            localSumOfSquares += value * value;  // Sum of squares
+        }
+
+        // Perform a global reduction to sum the squares across all processes
+        ST globalSumOfSquares = 0.0;
+        Teuchos::reduceAll(*rA.getMap()->getComm(), Teuchos::REDUCE_SUM, localSumOfSquares, Teuchos::outArg(globalSumOfSquares));
+
+        // Compute the two-norm by taking the square root of the global sum of squares
+        return std::sqrt(globalSumOfSquares);
 
         KRATOS_CATCH("");
     }
@@ -1313,8 +1336,32 @@ public:
     {
         KRATOS_TRY
 
-        auto diagonal = rA.getLocalDiagCopy(); // Tpetra equivalent of ExtractDiagonalCopy
-        return ClassType::Max(diagonal);
+        // Create a vector to store the diagonal
+        VectorType diag(rA.getRowMap());
+
+        // Extract the diagonal entries
+        rA.getLocalDiagCopy(diag);
+
+        // Get the local view of the diagonal
+        auto diagLocalView = diag.getLocalViewHost(Tpetra::Access::ReadOnly);
+
+        // Find the local maximum value
+        ST localMax = Teuchos::ScalarTraits<ST>::zero();  // Initialize to 0
+
+        auto numLocalEntries = diag.getLocalLength();
+        ST value = 0.0;
+        for (std::size_t i = 0; i < numLocalEntries; ++i) {
+            value = diagLocalView(i, 0);
+            if (value > localMax) {
+                localMax = value;
+            }
+        }
+
+        // Perform a global reduction to find the global maximum
+        double globalMax = 0.0;
+        Teuchos::reduceAll(*rA.getMap()->getComm(), Teuchos::REDUCE_MAX, localMax, Teuchos::outArg(globalMax));
+
+        return globalMax;
 
         KRATOS_CATCH("");
     }
@@ -1328,8 +1375,32 @@ public:
     {
         KRATOS_TRY
 
-        auto diagonal = rA.getLocalDiagCopy(); // Tpetra equivalent of ExtractDiagonalCopy
-        return ClassType::Min(diagonal);
+        // Create a vector to store the diagonal
+        VectorType diag(rA.getRowMap());
+
+        // Extract the diagonal entries
+        rA.getLocalDiagCopy(diag);
+
+        // Get the local view of the diagonal
+        auto diagLocalView = diag.getLocalViewHost(Tpetra::Access::ReadOnly);
+
+        // Find the local minimum value
+        ST localMin = Teuchos::ScalarTraits<ST>::rmax();  // Initialize to the max possible value
+
+        auto numLocalEntries = diag.getLocalLength();
+        ST value = 0.0;
+        for (std::size_t i = 0; i < numLocalEntries; ++i) {
+            value = diagLocalView(i, 0);
+            if (value < localMin) {
+                localMin = value;
+            }
+        }
+
+        // Perform a global reduction to find the global minimum
+        double globalMin = 0.0;
+        Teuchos::reduceAll(*rA.getMap()->getComm(), Teuchos::REDUCE_MIN, localMin, Teuchos::outArg(globalMin));
+
+        return globalMin;
 
         KRATOS_CATCH("");
     }

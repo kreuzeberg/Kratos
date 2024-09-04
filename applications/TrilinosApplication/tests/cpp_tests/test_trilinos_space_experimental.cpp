@@ -596,34 +596,34 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalIsDistributed, KratosTrilinosAppli
     KRATOS_EXPECT_TRUE(TrilinosSparseSpaceType::IsDistributed());
 }
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalGetScaleNorm, KratosTrilinosApplicationMPITestSuite)
-// {
-//     Model current_model;
-//     ModelPart& r_model_part = current_model.CreateModelPart("Main");
-//     auto& r_process_info = r_model_part.GetProcessInfo();
-//     r_process_info.SetValue(BUILD_SCALE_FACTOR, 3.0);
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalGetScaleNorm, KratosTrilinosApplicationMPITestSuite)
+{
+    Model current_model;
+    ModelPart& r_model_part = current_model.CreateModelPart("Main");
+    auto& r_process_info = r_model_part.GetProcessInfo();
+    r_process_info.SetValue(BUILD_SCALE_FACTOR, 3.0);
 
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy matrix
-//     const int size = 12;
-//     auto matrix12x12 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0);
+    // The dummy matrix
+    const int size = 12;
+    auto matrix12x12 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0);
 
-//     // Test the norm of the matrix
-//     double norm = 0.0;
-//     norm = TrilinosSparseSpaceType::GetScaleNorm(r_process_info, *matrix12x12, SCALING_DIAGONAL::NO_SCALING);
-//     KRATOS_EXPECT_DOUBLE_EQ(norm, 1.0);
-//     norm = TrilinosSparseSpaceType::GetScaleNorm(r_process_info, *matrix12x12, SCALING_DIAGONAL::CONSIDER_PRESCRIBED_DIAGONAL);
-//     KRATOS_EXPECT_DOUBLE_EQ(norm, 3.0);
-//     norm = TrilinosSparseSpaceType::GetScaleNorm(r_process_info, *matrix12x12, SCALING_DIAGONAL::CONSIDER_NORM_DIAGONAL);
-//     KRATOS_EXPECT_NEAR(norm, 2.124591464, 1.0e-6);
-//     norm = TrilinosSparseSpaceType::GetScaleNorm(r_process_info, *matrix12x12, SCALING_DIAGONAL::CONSIDER_MAX_DIAGONAL);
-//     KRATOS_EXPECT_DOUBLE_EQ(norm, 12.0);
-//     norm = TrilinosSparseSpaceType::GetAveragevalueDiagonal(*matrix12x12);
-//     KRATOS_EXPECT_DOUBLE_EQ(norm, 6.5);
-//     norm = TrilinosSparseSpaceType::GetMinDiagonal(*matrix12x12);
-//     KRATOS_EXPECT_DOUBLE_EQ(norm, 1.0);
-// }
+    // Test the norm of the matrix
+    double norm = 0.0;
+    norm = TrilinosSparseSpaceType::GetScaleNorm(r_process_info, *matrix12x12, SCALING_DIAGONAL::NO_SCALING);
+    KRATOS_EXPECT_DOUBLE_EQ(norm, 1.0);
+    norm = TrilinosSparseSpaceType::GetScaleNorm(r_process_info, *matrix12x12, SCALING_DIAGONAL::CONSIDER_PRESCRIBED_DIAGONAL);
+    KRATOS_EXPECT_DOUBLE_EQ(norm, 3.0);
+    norm = TrilinosSparseSpaceType::GetScaleNorm(r_process_info, *matrix12x12, SCALING_DIAGONAL::CONSIDER_NORM_DIAGONAL);
+    KRATOS_EXPECT_NEAR(norm, 2.124591464, 1.0e-6);
+    norm = TrilinosSparseSpaceType::GetScaleNorm(r_process_info, *matrix12x12, SCALING_DIAGONAL::CONSIDER_MAX_DIAGONAL);
+    KRATOS_EXPECT_DOUBLE_EQ(norm, 12.0);
+    norm = TrilinosSparseSpaceType::GetAveragevalueDiagonal(*matrix12x12);
+    KRATOS_EXPECT_DOUBLE_EQ(norm, 6.5);
+    norm = TrilinosSparseSpaceType::GetMinDiagonal(*matrix12x12);
+    KRATOS_EXPECT_DOUBLE_EQ(norm, 1.0);
+}
 
 } // namespace Kratos::Testing
