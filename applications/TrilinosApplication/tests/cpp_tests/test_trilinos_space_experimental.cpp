@@ -209,35 +209,36 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMultMatrixVector, KratosTrilinosAp
 //     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(mult, multiply_reference);
 // }
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTransposeMultMatrixVector, KratosTrilinosApplicationMPITestSuite)
-// {
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTransposeMultMatrixVector, KratosTrilinosApplicationMPITestSuite)
+{
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy matrix
-//     const int size = 2 * r_comm.Size();
-//     auto matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
-//     auto local_matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
-//     auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 0.0);
-//     auto local_vector = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 0.0);
+    // The dummy matrix
+    const int size = 2 * r_comm.Size();
+    auto matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
+    auto local_matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
+    auto vector = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseVector(r_comm, size, 0.0);
+    auto local_vector = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalVector(size, 0.0);
 
-//     // Tpetra communicator
-//     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-//     TrilinosSparseSpaceType::CommunicatorType tpetra_comm(raw_mpi_comm);
+    // Tpetra communicator
+    auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
+    TrilinosSparseSpaceType::CommunicatorPointerType tpetra_comm = Teuchos::rcp(new TrilinosSparseSpaceType::CommunicatorType(raw_mpi_comm));
 
-//     // Create a map
-//     TrilinosSparseSpaceType::MapType Map(size,0,tpetra_comm);
+    // Create a map
+    const int global_elems = 0;
+    TrilinosSparseSpaceType::MapPointerType map = Teuchos::rcp(new TrilinosSparseSpaceType::MapType(global_elems, 0, tpetra_comm));
 
-//     // Create an Tpetra_Vector
-//     TrilinosVectorType mult(Map);
+    // Create an Tpetra_Vector
+    TrilinosVectorType mult(map);
 
-//     // Solution
-//     TrilinosSparseSpaceType::TransposeMult(*matrix, *vector, mult);
+    // Solution
+    TrilinosSparseSpaceType::TransposeMult(*matrix, *vector, mult);
 
-//     // Check
-//     const TrilinosLocalVectorType multiply_reference = prod(trans(local_matrix), local_vector);
-//     TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(mult, multiply_reference);
-// }
+    // Check
+    const TrilinosLocalVectorType multiply_reference = prod(trans(local_matrix), local_vector);
+    TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(mult, multiply_reference);
+}
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTransposeMultMatrixMatrix, KratosTrilinosApplicationMPITestSuite)
 // {
@@ -253,14 +254,15 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMultMatrixVector, KratosTrilinosAp
 
 //     // Tpetra communicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-//     TrilinosSparseSpaceType::CommunicatorType tpetra_comm(raw_mpi_comm);
+//     TrilinosSparseSpaceType::CommunicatorPointerType tpetra_comm = Teuchos::rcp(new TrilinosSparseSpaceType::CommunicatorType(raw_mpi_comm));
 
 //     // Create a map
-//     TrilinosSparseSpaceType::MapType Map(size,0,tpetra_comm);
+//     const int global_elems = 0;
+//     TrilinosSparseSpaceType::MapPointerType map = Teuchos::rcp(new TrilinosSparseSpaceType::MapType(global_elems, 0, tpetra_comm));
 
 //     // Create an Tpetra_Matrix
-//     std::vector<int> NumNz;
-//     TrilinosSparseMatrixType mult(Copy, Map, NumNz.data());
+//     TrilinosSparseSpaceType::GraphPointerType graph = Teuchos::rcp(new TrilinosSparseSpaceType::GraphType(map, map, 0));
+//     TrilinosSparseMatrixType mult(graph);
 
 //     // Solution
 //     TrilinosSparseSpaceType::TransposeMult(matrix_1, matrix_2, mult, {true, false});
@@ -284,14 +286,15 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMultMatrixVector, KratosTrilinosAp
 
 //     // Tpetra communicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-//     TrilinosSparseSpaceType::CommunicatorType tpetra_comm(raw_mpi_comm);
+//     TrilinosSparseSpaceType::CommunicatorPointerType tpetra_comm = Teuchos::rcp(new TrilinosSparseSpaceType::CommunicatorType(raw_mpi_comm));
 
 //     // Create a map
-//     TrilinosSparseSpaceType::MapType Map(size,0,tpetra_comm);
+//     const int global_elems = 0;
+//     TrilinosSparseSpaceType::MapPointerType map = Teuchos::rcp(new TrilinosSparseSpaceType::MapType(global_elems, 0, tpetra_comm));
 
 //     // Create an Tpetra_Matrix
-//     std::vector<int> NumNz;
-//     TrilinosSparseMatrixType mult(Copy, Map, NumNz.data());
+//     TrilinosSparseSpaceType::GraphPointerType graph = Teuchos::rcp(new TrilinosSparseSpaceType::GraphType(map, map, 0));
+//     TrilinosSparseMatrixType mult(graph);
 
 //     // Solution
 //     TrilinosSparseSpaceType::BtDBProductOperation(mult, matrix_1, matrix_2);
@@ -323,14 +326,15 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalMultMatrixVector, KratosTrilinosAp
 
 //     // Tpetra communicator
 //     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-//     TrilinosSparseSpaceType::CommunicatorType tpetra_comm(raw_mpi_comm);
+//     TrilinosSparseSpaceType::CommunicatorPointerType tpetra_comm = Teuchos::rcp(new TrilinosSparseSpaceType::CommunicatorType(raw_mpi_comm));
 
 //     // Create a map
-//     TrilinosSparseSpaceType::MapType Map(size,0,tpetra_comm);
+//     const int global_elems = 0;
+//     TrilinosSparseSpaceType::MapPointerType map = Teuchos::rcp(new TrilinosSparseSpaceType::MapType(global_elems, 0, tpetra_comm));
 
 //     // Create an Tpetra_Matrix
-//     std::vector<int> NumNz;
-//     TrilinosSparseMatrixType mult(Copy, Map, NumNz.data());
+//     TrilinosSparseSpaceType::GraphPointerType graph = Teuchos::rcp(new TrilinosSparseSpaceType::GraphType(map, map, 0));
+//     TrilinosSparseMatrixType mult(graph);
 
 //     // Solution
 //     TrilinosSparseSpaceType::BDBtProductOperation(mult, matrix_1, matrix_2);
