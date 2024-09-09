@@ -502,7 +502,8 @@ public:
             Mult(*aux_1, rB, *aux_2, CallFillCompleteOnResult, KeepAllHardZeros);
 
             // Doing a swap
-            std::swap(rA, *aux_2);
+            MatrixPointerType p_A = Teuchos::rcp(&rA, false);
+            std::swap(p_A, aux_2);
         } else { // Empty matrix
             // Second multiplication
             Mult(*aux_1, rB, rA, CallFillCompleteOnResult, KeepAllHardZeros);
@@ -556,7 +557,8 @@ public:
             TransposeMult(*aux_1, rB, *aux_2, {false, true}, CallFillCompleteOnResult, KeepAllHardZeros);
 
             // Doing a swap
-            std::swap(rA, *aux_2);
+            MatrixPointerType p_A = Teuchos::rcp(&rA, false);
+            std::swap(p_A, aux_2);
         } else { // Empty matrix
             // Second multiplication
             TransposeMult(*aux_1, rB, rA, {false, true}, CallFillCompleteOnResult, KeepAllHardZeros);
