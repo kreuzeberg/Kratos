@@ -272,85 +272,85 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalTransposeMultMatrixMatrix, KratosT
     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(mult, multiply_reference);
 }
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalBtDBProductOperation, KratosTrilinosApplicationMPITestSuite)
-// {
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalBtDBProductOperation, KratosTrilinosApplicationMPITestSuite)
+{
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy matrix
-//     const int size = 2 * r_comm.Size();
-//     auto matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
-//     auto local_matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
-//     auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
-//     auto local_matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
+    // The dummy matrix
+    const int size = 2 * r_comm.Size();
+    auto matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
+    auto local_matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
+    auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
+    auto local_matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
 
-//     // Tpetra communicator
-//     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-//     TrilinosSparseSpaceType::CommunicatorPointerType tpetra_comm = Teuchos::rcp(new TrilinosSparseSpaceType::CommunicatorType(raw_mpi_comm));
+    // Tpetra communicator
+    auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
+    TrilinosSparseSpaceType::CommunicatorPointerType tpetra_comm = Teuchos::rcp(new TrilinosSparseSpaceType::CommunicatorType(raw_mpi_comm));
 
-//     // Create a map
-//     const int global_elems = 0;
-//     TrilinosSparseSpaceType::MapPointerType map = Teuchos::rcp(new TrilinosSparseSpaceType::MapType(global_elems, 0, tpetra_comm));
+    // Create a map
+    const int global_elems = 0;
+    TrilinosSparseSpaceType::MapPointerType map = Teuchos::rcp(new TrilinosSparseSpaceType::MapType(global_elems, 0, tpetra_comm));
 
-//     // Create an Tpetra_Matrix
-//     TrilinosSparseSpaceType::GraphPointerType graph = Teuchos::rcp(new TrilinosSparseSpaceType::GraphType(map, map, 0));
-//     TrilinosSparseMatrixType mult(graph);
+    // Create an Tpetra_Matrix
+    TrilinosSparseSpaceType::GraphPointerType graph = Teuchos::rcp(new TrilinosSparseSpaceType::GraphType(map, map, 0));
+    TrilinosSparseMatrixType mult(graph);
 
-//     // Solution
-//     TrilinosSparseSpaceType::BtDBProductOperation(mult, *matrix_1, *matrix_2);
+    // Solution
+    TrilinosSparseSpaceType::BtDBProductOperation(mult, *matrix_1, *matrix_2);
 
-//     // Check
-//     TrilinosLocalMatrixType multiply_reference;
-//     MathUtils<double>::BtDBProductOperation(multiply_reference, local_matrix_1, local_matrix_2);
-//     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(mult, multiply_reference);
+    // Check
+    TrilinosLocalMatrixType multiply_reference;
+    MathUtils<double>::BtDBProductOperation(multiply_reference, local_matrix_1, local_matrix_2);
+    TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(mult, multiply_reference);
 
-//     // Non zero matrix
-//     auto second_mult = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
+    // Non zero matrix
+    auto second_mult = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
 
-//     // Solution
-//     TrilinosSparseSpaceType::BtDBProductOperation(second_mult, *matrix_1, *matrix_2);
-//     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(second_mult, multiply_reference);
-// }
+    // Solution
+    TrilinosSparseSpaceType::BtDBProductOperation(*second_mult, *matrix_1, *matrix_2);
+    TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(*second_mult, multiply_reference);
+}
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalBDBtProductOperation, KratosTrilinosApplicationMPITestSuite)
-// {
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalBDBtProductOperation, KratosTrilinosApplicationMPITestSuite)
+{
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy matrix
-//     const int size = 2 * r_comm.Size();
-//     auto matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
-//     auto local_matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
-//     auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
-//     auto local_matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
+    // The dummy matrix
+    const int size = 2 * r_comm.Size();
+    auto matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
+    auto local_matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0, true);
+    auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 1.0, true);
+    auto local_matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 1.0, true);
 
-//     // Tpetra communicator
-//     auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
-//     TrilinosSparseSpaceType::CommunicatorPointerType tpetra_comm = Teuchos::rcp(new TrilinosSparseSpaceType::CommunicatorType(raw_mpi_comm));
+    // Tpetra communicator
+    auto raw_mpi_comm = MPIDataCommunicator::GetMPICommunicator(r_comm);
+    TrilinosSparseSpaceType::CommunicatorPointerType tpetra_comm = Teuchos::rcp(new TrilinosSparseSpaceType::CommunicatorType(raw_mpi_comm));
 
-//     // Create a map
-//     const int global_elems = 0;
-//     TrilinosSparseSpaceType::MapPointerType map = Teuchos::rcp(new TrilinosSparseSpaceType::MapType(global_elems, 0, tpetra_comm));
+    // Create a map
+    const int global_elems = 0;
+    TrilinosSparseSpaceType::MapPointerType map = Teuchos::rcp(new TrilinosSparseSpaceType::MapType(global_elems, 0, tpetra_comm));
 
-//     // Create an Tpetra_Matrix
-//     TrilinosSparseSpaceType::GraphPointerType graph = Teuchos::rcp(new TrilinosSparseSpaceType::GraphType(map, map, 0));
-//     TrilinosSparseMatrixType mult(graph);
+    // Create an Tpetra_Matrix
+    TrilinosSparseSpaceType::GraphPointerType graph = Teuchos::rcp(new TrilinosSparseSpaceType::GraphType(map, map, 0));
+    TrilinosSparseMatrixType mult(graph);
 
-//     // Solution
-//     TrilinosSparseSpaceType::BDBtProductOperation(mult, matrix_1, matrix_2);
+    // Solution
+    TrilinosSparseSpaceType::BDBtProductOperation(mult, *matrix_1, *matrix_2);
 
-//     // Check
-//     TrilinosLocalMatrixType multiply_reference;
-//     MathUtils<double>::BDBtProductOperation(multiply_reference, local_matrix_1, local_matrix_2);
-//     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(mult, multiply_reference);
+    // Check
+    TrilinosLocalMatrixType multiply_reference;
+    MathUtils<double>::BDBtProductOperation(multiply_reference, local_matrix_1, local_matrix_2);
+    TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(mult, multiply_reference);
 
-//     // Non zero matrix
-//     auto second_mult = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
+    // Non zero matrix
+    auto second_mult = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
 
-//     // Solution
-//     TrilinosSparseSpaceType::BDBtProductOperation(second_mult, matrix_1, matrix_2);
-//     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(second_mult, multiply_reference);
-// }
+    // Solution
+    TrilinosSparseSpaceType::BDBtProductOperation(*second_mult, *matrix_1, *matrix_2);
+    TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(*second_mult, multiply_reference);
+}
 
 KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalInplaceMult, KratosTrilinosApplicationMPITestSuite)
 {
