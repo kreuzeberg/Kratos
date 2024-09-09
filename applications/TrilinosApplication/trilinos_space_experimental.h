@@ -484,8 +484,9 @@ public:
         rA.resumeFill();
 
         // Define first auxiliary matrix
-        std::vector<size_t> NumNz; // In Tpetra, non-zero counts are size_t
-        MatrixPointerType aux_1 = Teuchos::rcp(new MatrixType(rA.getRowMap(), NumNz));
+        const auto& r_row_map_a = rA.getRowMap();
+        GraphPointerType graph_a = Teuchos::rcp(new GraphType(r_row_map_a, r_row_map_a, 0));
+        MatrixPointerType aux_1 = Teuchos::rcp(new MatrixType(graph_a));
 
         // First multiplication
         TransposeMult(rB, rD, *aux_1, {true, false}, CallFillCompleteOnResult, KeepAllHardZeros);
@@ -493,13 +494,15 @@ public:
         // Already existing matrix
         if (rA.getGlobalNumEntries() > 0) {
             // Create a Tpetra_Matrix
-            MatrixPointerType aux_2 = Teuchos::rcp(new MatrixType(rB.getRowMap(), NumNz));
+            const auto& r_row_map_b = rB.getRowMap();
+            GraphPointerType graph_b = Teuchos::rcp(new GraphType(r_row_map_b, r_row_map_b, 0));
+            MatrixPointerType aux_2 = Teuchos::rcp(new MatrixType(graph_b));
 
             // Second multiplication
             Mult(*aux_1, rB, *aux_2, CallFillCompleteOnResult, KeepAllHardZeros);
 
             // Doing a swap
-            rA.swap(*aux_2);
+            std::swap(rA, *aux_2);
         } else { // Empty matrix
             // Second multiplication
             Mult(*aux_1, rB, rA, CallFillCompleteOnResult, KeepAllHardZeros);
@@ -535,8 +538,9 @@ public:
         rA.resumeFill();
 
         // Define first auxiliary matrix
-        std::vector<size_t> NumNz; // In Tpetra, non-zero counts are size_t
-        MatrixPointerType aux_1 = Teuchos::rcp(new MatrixType(rA.getRowMap(), NumNz));
+        const auto& r_row_map_a = rA.getRowMap();
+        GraphPointerType graph_a = Teuchos::rcp(new GraphType(r_row_map_a, r_row_map_a, 0));
+        MatrixPointerType aux_1 = Teuchos::rcp(new MatrixType(graph_a));
 
         // First multiplication
         Mult(rB, rD, *aux_1, CallFillCompleteOnResult, KeepAllHardZeros);
@@ -544,7 +548,9 @@ public:
         // Already existing matrix
         if (rA.getGlobalNumEntries() > 0) {
             // Create a Tpetra_Matrix
-            MatrixPointerType aux_2 = Teuchos::rcp(new MatrixType(rB.getRowMap(), NumNz));
+            const auto& r_row_map_b = rB.getRowMap();
+            GraphPointerType graph_b = Teuchos::rcp(new GraphType(r_row_map_b, r_row_map_b, 0));
+            MatrixPointerType aux_2 = Teuchos::rcp(new MatrixType(graph_b));
 
             // Second multiplication
             TransposeMult(*aux_1, rB, *aux_2, {false, true}, CallFillCompleteOnResult, KeepAllHardZeros);
