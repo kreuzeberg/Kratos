@@ -524,23 +524,23 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalSetToZeroVector, KratosTrilinosApp
     TrilinosCPPTestExperimentalUtilities::CheckSparseVectorFromLocalVector(*vector, local_vector);
 }
 
-// KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalCopyMatrixValues, KratosTrilinosApplicationMPITestSuite)
-// {
-//     // The data communicator
-//     const auto& r_comm = Testing::GetDefaultDataCommunicator();
+KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalCopyMatrixValues, KratosTrilinosApplicationMPITestSuite)
+{
+    // The data communicator
+    const auto& r_comm = Testing::GetDefaultDataCommunicator();
 
-//     // The dummy vector
-//     const int size = 2 * r_comm.Size();
-//     auto matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
-//     auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0);
-//     auto local_matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0);
+    // The dummy vector
+    const int size = 2 * r_comm.Size();
+    auto matrix_1 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0, true);
+    auto matrix_2 = TrilinosCPPTestExperimentalUtilities::GenerateDummySparseMatrix(r_comm, size, 0.0);
+    auto local_matrix = TrilinosCPPTestExperimentalUtilities::GenerateDummyLocalMatrix(size, 0.0);
 
-//     // Solution
-//     TrilinosSparseSpaceType::CopyMatrixValues(*matrix_1, *matrix_2);
+    // Solution
+    TrilinosSparseSpaceType::CopyMatrixValues(*matrix_1, *matrix_2);
 
-//     // Check
-//     TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(*matrix_1, local_matrix);
-// }
+    // Check
+    TrilinosCPPTestExperimentalUtilities::CheckSparseMatrixFromLocalMatrix(*matrix_1, local_matrix);
+}
 
 // KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalCombineMatricesGraphs, KratosTrilinosApplicationMPITestSuite)
 // {
@@ -589,7 +589,7 @@ KRATOS_TEST_CASE_IN_SUITE(TrilinosExperimentalSetToZeroVector, KratosTrilinosApp
 
 //     // Test the norm of the matrix
 //     double norm = 0.0;
-//     norm = TrilinosSparseSpaceType::CheckAndCorrectZeroDiagonalValues(r_process_info, matrix12x12, vector12, SCALING_DIAGONAL::NO_SCALING);
+//     norm = TrilinosSparseSpaceType::CheckAndCorrectZeroDiagonalValues(r_process_info, *matrix12x12, *vector12, SCALING_DIAGONAL::NO_SCALING);
 //     KRATOS_EXPECT_DOUBLE_EQ(norm, 1.0);
 //     if (r_comm.Rank() == 0) {
 //         const auto& raw_values = matrix12x12.ExpertExtractValues();

@@ -124,6 +124,12 @@ public:
     using MatrixPointerType = Teuchos::RCP<MatrixType>;
     using VectorPointerType = Teuchos::RCP<VectorType>;
 
+    /// Column indices of row non-zero values type
+    using ColumnViewType = typename MatrixType::nonconst_global_inds_host_view_type;
+
+    /// Row non-zero values type
+    using ValueViewType = typename MatrixType::nonconst_values_host_view_type;
+
     /// Some other definitions
     // using DofUpdaterType = TrilinosDofUpdater<ClassType>;
     // using DofUpdaterPointerType = typename DofUpdater<ClassType>::UniquePointer;
@@ -1145,7 +1151,7 @@ public:
 
     /**
      * @brief Copy values from one matrix to another
-     * @details It is assumed that the sparcity of both matrices is compatible
+     * @details It is assumed that the sparsity of both matrices is compatible
      * @param rA The matrix where assigning values
      * @param rB The matrix to be copied
      */
@@ -1157,36 +1163,51 @@ public:
         // Cleaning destination matrix
         SetToZero(rA);
 
-        // The current process id
-        const int rank = rA.getMap()->getComm()->getRank();
+        // Resume fill on the destination matrix
+        rA.resumeFill();
 
         // Row maps must be the same
         const bool same_col_map = rA.getColMap()->isSameAs(*rB.getColMap());
 
-        // Getting the graphs
+        // Getting the graph of the source matrix
         auto r_graph_b = rB.getCrsGraph();
 
         // Copy values from rB to rA
-        int i;
-        size_t num_entries; // Number of non-zero entries (rB matrix)
-        Teuchos::ArrayView<const ST> vals; // Row non-zero values (rB matrix)
-        Teuchos::ArrayView<const GO> cols; // Column indices of row non-zero values (rB matrix)
+        std::size_t num_entries; // Number of non-zero entries in rB matrix
+        ColumnViewType cols;     // Column indices of row non-zero values (rB matrix)
+        ValueViewType vals;      // Row non-zero values (rB matrix)
+
         if (same_col_map) {
-            for (i = 0; i < rB.getLocalNumRows(); ++i) {
-                rB.getLocalRowView(i, cols, vals);
-                rA.replaceLocalValues(i, cols, vals);
+            for (LO i = 0; i < static_cast<LO>(rB.getNodeNumRows()); ++i) {  // `i` should be a LocalOrdinal (LO)
+                const auto global_row_index = rB.getRowMap()->getGlobalElement(i);
+                rB.getGlobalRowCopy(global_row_index, cols, vals, num_entries);
+
+                // Convert global column indices to local column indices
+                Teuchos::Array<LO> local_cols(num_entries);
+                for (size_t j = 0; j < num_entries; ++j) {
+                    local_cols[j] = rA.getColMap()->getLocalElement(cols[j]);
+                }
+
+                // Sum values into local matrix using local row and column indices
+                rA.sumIntoLocalValues(i, Teuchos::ArrayView<const LO>(local_cols), Teuchos::ArrayView<const ST>(vals.data(), num_entries));
             }
         } else {
-            for (i = 0; i < rB.getLocalNumRows(); ++i) {
-                rB.getLocalRowView(i, cols, vals);
-                const int global_row_index = r_graph_b->getRowMap()->getGlobalElement(i);
-                Teuchos::Array<int> global_cols(cols.size());
-                for (int j = 0; j < cols.size(); ++j) {
+            for (LO i = 0; i < static_cast<LO>(rB.getNodeNumRows()); ++i) {
+                const auto global_row_index = rB.getRowMap()->getGlobalElement(i);
+                rB.getGlobalRowCopy(global_row_index, cols, vals, num_entries);
+
+                Teuchos::Array<GO> global_cols(num_entries);
+                for (std::size_t j = 0; j < num_entries; ++j) {
                     global_cols[j] = r_graph_b->getColMap()->getGlobalElement(cols[j]);
                 }
-                rA.replaceGlobalValues(global_row_index, global_cols(), vals());
+
+                // Sum values into global matrix using global row and column indices
+                rA.sumIntoGlobalValues(global_row_index, Teuchos::ArrayView<const GO>(global_cols), Teuchos::ArrayView<const ST>(vals.data(), num_entries));
             }
         }
+
+        // Complete fill of the matrix
+        rA.fillComplete();
     }
 
     /**
