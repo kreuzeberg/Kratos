@@ -26,7 +26,6 @@ class OpenFOAMWrapper(CoSimulationSolverWrapper):
             "end_time"                 : 0.0,
             "strong_coupling"          : true,
             "first_solver_in_sequence" : false
-                                          
         }""")
 
         self.settings["solver_wrapper_settings"].ValidateAndAssignDefaults(settings_defaults)
@@ -50,11 +49,10 @@ class OpenFOAMWrapper(CoSimulationSolverWrapper):
         for model_part_name in self.settings["solver_wrapper_settings"]["import_meshes"].GetStringArray():
             interface_config = {"model_part_name" : model_part_name}
             self.ImportCouplingInterface(interface_config)
-
-        # Test output modelPart
-        # modelPart = self.model["interface"]
-        # vtu_output: KM.VtuOutput = KM.VtkOutput(modelPart)
-        # vtu_output.PrintOutput("test")
+            # Test output modelPart
+            modelPart = self.model[model_part_name]
+            vtu_output: KM.VtuOutput = KM.VtkOutput(modelPart)
+            vtu_output.PrintOutput(model_part_name)
 
         super().Initialize()
         for data in self.data_dict.values():
